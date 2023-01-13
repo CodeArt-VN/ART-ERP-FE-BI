@@ -1,0 +1,142 @@
+.calendar-heatmap-holder {
+    display: flex;
+    // flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+
+    .col1,
+    .col2 {
+        flex: auto;
+        overflow: hidden;
+    }
+
+    .col2 {
+
+        min-width: 160px;
+
+        .info {
+            border-left: solid 2px red;
+            padding-left: 8px;
+            margin-left: 16px;
+            font-size: 10px;
+
+            .number {
+                display: block;
+                font-size: 16px;
+            }
+
+            .title {
+                display: block;
+                line-height: 30px;
+                text-transform: none;
+                padding-bottom: 10px;
+                padding-left: 0 !important;
+            }
+        }
+    }
+
+    .calendar-heatmap {
+        width: auto;
+        color: var(--ion-color-primary);
+        overflow: hidden;
+        overflow-x: auto;
+
+        .title{
+            position: unset !important;
+            margin-top: 0 !important;
+        }
+        .header {
+
+            text-align: center;
+
+            td {
+                height: 15px;
+                font-size: 11px;
+                border: none;
+
+            }
+        }
+
+        td {
+            height: 30px;
+            width: 30px;
+            min-width: 30px;
+            text-align: center;
+            border: solid 1px var(--ion-color-primary);
+            padding: 0;
+            cursor: pointer;
+
+            div {
+                width: 100%;
+                height: 100%;
+                line-height: 30px;
+                font-size: 12px;
+                color: var(--ion-color-dark);
+                text-shadow: 1px 1px 9px var(--ion-color-dark-contrast);
+                cursor: pointer;
+            }
+        }
+
+        &.month-view {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-content: flex-start;
+
+            .month {
+                flex: auto;
+                min-width: 235px;
+                flex-grow: 0;
+
+                .month-contain {
+                    display: flex;
+                    flex-direction: column;
+                    flex-wrap: wrap;
+                    align-content: flex-start;
+
+                    height: calc(30px * 7);
+                    padding-top: 1px;
+
+                    .header {
+                        color: var(--ion-color-primary);
+                        text-align: right;
+                        padding-right: 8px;
+                        width: 50px;
+                        font-size: 11px;
+                        border: none;
+                    }
+
+                    >div {
+                        flex: auto;
+                        flex-grow: 0;
+                        width: 30px;
+                        height: 30px;
+                        text-align: center;
+                        line-height: 30px;
+                        max-height: 30px;
+                        font-size: 10px;
+                        color: var(--ion-color-dark);
+                        text-shadow: 1px 1px 9px var(--ion-color-dark-contrast);
+                        border: solid 1px var(--ion-color-primary);
+                        margin: -1px 0 0 -1px;
+                        cursor: pointer;
+                    }
+                }
+
+
+            }
+        }
+    }
+}
+
+.color-name {
+    height: 50px; 
+    color: #fff; 
+    font-weight: bold;
+    display: flex;
+    vertical-align: middle;
+    justify-content: center;
+    align-items: center;
+    text-shadow: 1px 1px #000000;
+}

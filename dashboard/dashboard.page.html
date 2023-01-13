@@ -1,0 +1,399 @@
+<ion-header>
+	<ion-toolbar>
+		<ion-buttons slot="start" class="ion-hide-sm-down_">
+			<ion-button color="dark" class="ion-hide-sm-down">
+				{{'erp.app.pages.bi.dashboard.page-title' | translate}}
+			</ion-button>
+		</ion-buttons>
+
+		<ion-buttons slot="end">
+			<ion-button (click)="refresh()" title="{{'erp.app.pages.bi.dashboard.refresh' | translate}}">
+				<ion-icon slot="icon-only" name="reload-outline"></ion-icon>
+			</ion-button>
+
+			<ion-button title="{{'erp.app.pages.bi.dashboard.show-feature' | translate}}" (click)="pageConfig.isShowFeature = !pageConfig.isShowFeature;">
+				<ion-icon slot="icon-only" [name]="pageConfig.isShowFeature? 'close-outline':'list-circle-outline'">
+				</ion-icon>
+			</ion-button>
+
+		</ion-buttons>
+	</ion-toolbar>
+</ion-header>
+
+
+<ion-content appScrollbarTheme>
+
+	<ion-fab [hidden]="!pageConfig.isShowFeature" [ngClass]="{withSearch: pageConfig.isShowSearch}" class="feature" vertical="top" horizontal="end" slot="fixed">
+		<div class="ion-padding">
+			
+
+			<div>
+				<div class="title">{{'erp.app.pages.bi.dashboard.group-by' | translate}}</div>
+				<ng-container *ngFor="let f of rpt.rptGlobal.frequency">
+					<ion-button [fill]="rpt.rptGlobal.query.frequency == f.Id ? 'solid' : 'outline'" size="small" (click)="changeFrequency(f)">
+						{{f.Name}}
+					</ion-button>
+				</ng-container>
+				<div class="query-time"></div>
+			</div>
+
+			<div>
+				<div class="title">{{'erp.app.pages.bi.dashboard.time' | translate}}</div>
+
+				<ion-button *ngIf="rpt.rptGlobal.query.frequency == 1" (click)="changeDateFilter('d')" [fill]="rpt.rptGlobal.query.type=='d'? 'solid': 'outline'" size="small">{{'erp.app.pages.bi.dashboard.d' | translate}}</ion-button>
+				<ion-button *ngIf="rpt.rptGlobal.query.frequency == 1" (click)="changeDateFilter('dw')" [fill]="rpt.rptGlobal.query.type=='dw'? 'solid': 'outline'" size="small">{{'erp.app.pages.bi.dashboard.dw' | translate}}</ion-button>
+				<ion-button *ngIf="rpt.rptGlobal.query.frequency == 1" (click)="changeDateFilter('dm')" [fill]="rpt.rptGlobal.query.type=='dm'? 'solid': 'outline'" size="small">{{'erp.app.pages.bi.dashboard.dm' | translate}}</ion-button>
+
+				<ion-button *ngIf="rpt.rptGlobal.query.frequency == 2" (click)="changeDateFilter('m')" [fill]="rpt.rptGlobal.query.type=='m'? 'solid': 'outline'" size="small">{{'erp.app.pages.bi.dashboard.m' | translate}}</ion-button>
+				<ion-button *ngIf="rpt.rptGlobal.query.frequency == 2" (click)="changeDateFilter('m3')" [fill]="rpt.rptGlobal.query.type=='m3'? 'solid': 'outline'" size="small">{{'erp.app.pages.bi.dashboard.m3' | translate}}</ion-button>
+				<ion-button *ngIf="rpt.rptGlobal.query.frequency == 2" (click)="changeDateFilter('m6')" [fill]="rpt.rptGlobal.query.type=='m6'? 'solid': 'outline'" size="small">{{'erp.app.pages.bi.dashboard.m6' | translate}}</ion-button>
+				<ion-button *ngIf="rpt.rptGlobal.query.frequency == 2" (click)="changeDateFilter('my')" [fill]="rpt.rptGlobal.query.type=='my'? 'solid': 'outline'" size="small">{{'erp.app.pages.bi.dashboard.my' | translate}}</ion-button>
+
+				<ion-button *ngIf="rpt.rptGlobal.query.frequency == 3" (click)="changeDateFilter('q')" [fill]="rpt.rptGlobal.query.type=='q'? 'solid': 'outline'" size="small">{{'erp.app.pages.bi.dashboard.q' | translate}}</ion-button>
+				<ion-button *ngIf="rpt.rptGlobal.query.frequency == 3" (click)="changeDateFilter('q2')" [fill]="rpt.rptGlobal.query.type=='q2'? 'solid': 'outline'" size="small">{{'erp.app.pages.bi.dashboard.q2' | translate}}</ion-button>
+				<ion-button *ngIf="rpt.rptGlobal.query.frequency == 3" (click)="changeDateFilter('q3')" [fill]="rpt.rptGlobal.query.type=='q3'? 'solid': 'outline'" size="small">{{'erp.app.pages.bi.dashboard.q3' | translate}}</ion-button>
+				<ion-button *ngIf="rpt.rptGlobal.query.frequency == 3" (click)="changeDateFilter('qy')" [fill]="rpt.rptGlobal.query.type=='qy'? 'solid': 'outline'" size="small">{{'erp.app.pages.bi.dashboard.qy' | translate}}</ion-button>
+
+				<ion-button *ngIf="rpt.rptGlobal.query.frequency == 4" (click)="changeDateFilter('y')" [fill]="rpt.rptGlobal.query.type=='y'? 'solid': 'outline'" size="small">{{'erp.app.pages.bi.dashboard.y' | translate}}</ion-button>
+				<ion-button *ngIf="rpt.rptGlobal.query.frequency == 4" (click)="changeDateFilter('y2')" [fill]="rpt.rptGlobal.query.type=='y2'? 'solid': 'outline'" size="small">{{'erp.app.pages.bi.dashboard.y2' | translate}}</ion-button>
+				<ion-button *ngIf="rpt.rptGlobal.query.frequency == 4" (click)="changeDateFilter('y3')" [fill]="rpt.rptGlobal.query.type=='y3'? 'solid': 'outline'" size="small">{{'erp.app.pages.bi.dashboard.y3' | translate}}</ion-button>
+
+				<ion-button (click)="changeDateFilter('set')" [fill]="rpt.rptGlobal.query.type=='set'? 'solid': 'outline'" size="small">{{'erp.app.pages.bi.dashboard.option' | translate}}</ion-button>
+
+				<div *ngIf="rpt.rptGlobal.query.type=='set'" class="date-pick">
+					<input (change)="changeDateFilter('setdone')" [(ngModel)]="rpt.rptGlobal.query.fromDate" required type="date" pattern="\d{1,2}/\d{1,2}/\d{4}" class="datepicker" name="date" value="" />
+					<input (change)="changeDateFilter('setdone')" [(ngModel)]="rpt.rptGlobal.query.toDate" required type="date" pattern="\d{1,2}/\d{1,2}/\d{4}" class="datepicker" name="date" value="" />
+				</div>
+				<div class="query-time">{{rpt.rptGlobal.query.fromDate}} - {{rpt.rptGlobal.query.toDate}}</div>
+			</div>
+
+			<div>
+				<div class="title">{{'erp.app.pages.bi.dashboard.branch' | translate}}</div>
+				<ng-container *ngFor="let b of rpt.rptGlobal.branch">
+					<ion-button *ngIf="b.ShowBtn && b.Id != 16" [fill]="b.IsHidden ? 'outline' : 'solid'" size="small" (click)="toogleBranchDataset(b)">
+						{{b.Name}}
+					</ion-button>
+				</ng-container>
+				<div class="query-time"></div>
+			</div>
+
+		</div>
+
+		<div class="chart-box" style="background-color: transparent;">
+			<div class="title">{{'erp.app.pages.bi.dashboard.lost-reason' | translate}}</div>
+			<div style="height: 320px;" class="chart-contain">
+				<ion-spinner *ngIf="charts.LostReason.IsLoading" class="chart-loading" name="dots"></ion-spinner>
+				<canvas id="lostReasonCanvas" #lostReasonCanvas height="320"></canvas>
+			</div>
+		</div>
+
+		<!-- <div class="chart-box kpi">
+			<div class="title">{{'erp.app.pages.bi.dashboard.pin-chart' | translate}}</div>
+			<div class="chart-contain">
+				<canvas id="cCanvas" #cCanvas></canvas>
+			</div>
+		</div>
+
+		<div class="chart-box kpi">
+			<div class="title">{{'erp.app.pages.bi.dashboard.pin-chart' | translate}}</div>
+			<div class="chart-contain">
+				<canvas id="cCanvas" #cCanvas></canvas>
+			</div>
+		</div>
+
+		<div class="chart-box">
+			<div class="title">{{'erp.app.pages.bi.dashboard.pin-chart' | translate}}</div>
+			<div class="chart-contain">
+				<canvas id="cCanvas" #cCanvas></canvas>
+			</div>
+		</div> -->
+
+	</ion-fab>
+
+
+
+			
+
+
+	<div class="main-view" style="max-width: 1140px; margin: auto;">
+		<div class="row-1">
+			<div class="top-main-chart">
+				<div class="number-container">
+					<div class="number">{{pageData.NumberOfEvents}}</div>
+					<div class="title">{{'erp.app.pages.bi.dashboard.numbers-of-events' | translate}}</div>
+				</div>
+				<div class="chart-contain">
+					<ion-spinner *ngIf="charts.SoLuongTiec.IsLoading" class="chart-loading" name="dots"></ion-spinner>
+					<canvas id="soLuongTiecCanvas" #soLuongTiecCanvas></canvas>
+				</div>
+
+			</div>
+
+			<div class="top-chart multi-lines">
+				<div>
+					<span class="number">{{numberOfWeekendEvents}}%</span>
+					<span class="title">Weekend</span>
+				</div>
+				<div>
+					<span class="number">{{numberOfWeekdayEvents}}%</span>
+					<span class="title">Weekday</span>
+				</div>
+				<div>
+					<span class="number">{{numberOfOccupancyRate}}%</span>
+					<span class="title"><ion-text color="dark">
+						<b>Occupancy rate</b>
+					</ion-text></span>
+					<div class="stats" style="margin-top: 16px;">
+						<!-- <ion-text color="success">
+							<ion-icon name="arrow-up"></ion-icon>
+							+2%
+						</ion-text> -->
+					</div>
+				</div>
+			</div>
+
+			<!-- Số doanh thu -->
+			<div class="top-chart">
+				<div class="number">{{pageData.DoanhThu}} B</div>
+				<div class="title">{{'erp.app.pages.bi.dashboard.gross' | translate}}</div>
+				<div class="stats">
+					<!-- <ion-text color="success">
+						<ion-icon name="arrow-up"></ion-icon>
+						+1%
+					</ion-text> -->
+				</div>
+			</div>
+
+			<!-- Số lượng khách -->
+			<div class="top-chart">
+				<div class="number">{{pageData.NumberOfGuests}} K</div>
+				<div class="title">{{'erp.app.pages.bi.dashboard.number-of-guests' | translate}}</div>
+				<div class="stats">
+					<!-- <ion-text color="danger">
+						<ion-icon name="arrow-down"></ion-icon>
+						1%
+					</ion-text> -->
+				</div>
+			</div>
+		</div>
+
+		<!-- <div class="row-2">
+			<div class="title">Thông tin chi nhánh</div>
+			<div class="branch-info-holder">
+				<div class="calendar-heatmap">
+					<table>
+						<tr class="header">
+							<td style="min-width: 70px; min-height: 30px;" *ngFor="let ba of rpt.rptGlobal.branch">
+								<div class="color-name" [style.background-color]="ba.Color">{{ba.Name}}</div>
+								<div class="color-name" [style.background-color]="ba.Color">{{ba.Color}}</div>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+		</div> -->
+
+		<div class="row-2">
+			<div class="title">{{'erp.app.pages.bi.dashboard.day-info' | translate}}</div>
+			<div class="calendar-heatmap-holder">
+
+				<div class="col1">
+					<div style="height: auto; width: 100%; 	display: flex; justify-content: flex-start; margin-top: 20px;" class="chart-contain">
+
+						<div class="calendar-heatmap" *ngIf="this.rpt.rptGlobal.query.frequency == 1">
+							<table>
+								<ng-container *ngFor="let ds of calendarHeatmapData.datasets">
+									<tr *ngIf="!ds.hidden">
+										<td *ngFor="let d of ds.data">
+											<div [ngStyle]="{'background-color': ds.color + d.opacity}" (click)="selectedHeatNode = d; selectedHeatNode.color = ds.color;">
+												{{d.value}}
+											</div>
+										</td>
+									</tr>
+								</ng-container>
+								<tr class="header">
+									<td *ngFor="let l of calendarHeatmapData.labels">{{l}}</td>
+								</tr>
+							</table>
+						</div>
+						<div class="calendar-heatmap month-view" *ngIf="this.rpt.rptGlobal.query.frequency == 2">
+							<!-- Vẽ từng dataset -->
+							<ng-container *ngFor="let ds of calendarHeatmapData.datasets">
+								<!-- Vẽ từng tháng -->
+								<div class="month" *ngIf="!ds.hidden">
+									<div class="month-contain">
+										<div class="header" *ngFor="let l of calendarHeatmapData.weekLabels">{{l}}
+										</div>
+										<div *ngFor="let d of ds.data" (click)="selectedHeatNode = d; selectedHeatNode.color = ds.color;" [ngStyle]="{'background-color': ds.color + d.opacity, 'border-style': d.value < 0? 'none': 'solid', 'border-color': d.value >= 0 ? ds.color : 'transparent'}">
+											<span *ngIf="d.value>=0">{{d.value}}</span>
+										</div>
+									</div>
+								</div>
+							</ng-container>
+						</div>
+					</div>
+				</div>
+				<div class="col2">
+					<div class="info" [ngStyle]="{'border-color': (selectedHeatNode.color + ( selectedHeatNode.total > 0 ? selectedHeatNode.opacity : 'ff' ) ) }">
+						<div class="multi">
+							<!-- Chi nhánh -->
+							<div>
+								<span class="title">Chi nhánh</span>
+								<span class="number">{{selectedHeatNode.name}}</span>
+							</div>
+							<!-- Số lượng tiệc -->
+							<div>
+								<span class="title">{{'erp.app.pages.bi.dashboard.number-event' | translate}}</span>
+								<span class="number">{{selectedHeatNode.value}}</span>
+							</div>
+							<!-- Doanh thu -->
+							<div>
+								<span class="title">{{'erp.app.pages.bi.dashboard.gross' | translate}}</span>
+								<span class="number">{{selectedHeatNode.total}} M</span>
+							</div>
+							<!-- Số lượng khách -->
+							<!-- <div>
+								<span class="title">{{'erp.app.pages.bi.dashboard.number-guest' | translate}}</span>
+								<span class="number">{{selectedHeatNode.value}}</span>
+							</div> -->
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+
+		<div class="row-3">
+
+			<div style="height: 225px; min-width: 40%; background-color: transparent;" class="chart-box">
+				<div class="title">{{'erp.app.pages.bi.dashboard.total-target' | translate}}</div>
+				<div class="chart-contain">
+					<ion-spinner *ngIf="charts.DoanhThuChiTieu.IsLoading" class="chart-loading" name="dots"></ion-spinner>
+					<canvas id="doanhThuChiTieuCanvas" #doanhThuChiTieuCanvas height="255"></canvas>
+				</div>
+			</div>
+
+			<div style="height: 225px; min-width: 40%; background-color: transparent;" class="chart-box">
+				<div class="title">{{'erp.app.pages.bi.dashboard.cost-target' | translate}}</div>
+				<div class="chart-contain">
+					<ion-spinner *ngIf="charts.ChiPhiChiTieu.IsLoading" class="chart-loading" name="dots"></ion-spinner>
+					<canvas id="chiPhiChiTieuCanvas" #chiPhiChiTieuCanvas height="255"></canvas>
+				</div>
+			</div>
+
+			<div class="chart-box">
+				<div class="title">{{'erp.app.pages.bi.dashboard.sumup-inquiry-lost' | translate}}</div>
+				<div style="height: 210px;" class="chart-contain">
+					<ion-spinner *ngIf="charts.Funnel.IsLoading" class="chart-loading" name="dots"></ion-spinner>
+					<canvas id="funnelCanvas" #funnelCanvas></canvas>
+				</div>
+			</div>
+
+			<div class="chart-box">
+				<div class="title">{{'erp.app.pages.bi.dashboard.total-per-customer-type' | translate}}</div>
+				<div class="chart-contain">
+					<ion-spinner *ngIf="charts.SaleByService.IsLoading" class="chart-loading" name="dots"></ion-spinner>
+					<canvas id="saleByServiceCanvas" #saleByServiceCanvas></canvas>
+				</div>
+			</div>
+			<!-- <div class="chart-box">
+				<div class="title">saleByLocationCanvas</div>
+				<div class="chart-contain">
+					<ion-spinner *ngIf="charts.Funnel.IsLoading" class="chart-loading" name="dots"></ion-spinner>
+					<canvas id="saleByLocationCanvas" #saleByLocationCanvas></canvas>
+				</div>
+			</div> -->
+			<div class="chart-box">
+				<div class="title">{{'erp.app.pages.bi.dashboard.inquiry-by-resource' | translate}}</div>
+				<div class="chart-contain">
+					<ion-spinner *ngIf="charts.InquiryBySource.IsLoading" class="chart-loading" name="dots"></ion-spinner>
+					<canvas id="inquiryBySourceCanvas" #inquiryBySourceCanvas></canvas>
+				</div>
+			</div>
+			<div style="width: 100%; height: 400px; " class="chart-box">
+				<div class="title">{{'erp.app.pages.bi.dashboard.top-customer' | translate}}</div>
+				<div class="chart-contain">
+					<ion-spinner *ngIf="charts.Top10Customer.IsLoading" class="chart-loading" name="dots"></ion-spinner>
+					<canvas id="top10CustomerCanvas" #top10CustomerCanvas></canvas>
+				</div>
+			</div>
+
+			<!-- <div class="chart-box">
+				<div class="title">Doanh thu - Dòng tiền vào</div>
+				<div class="chart-contain">
+					<ion-spinner *ngIf="charts.Funnel.IsLoading" class="chart-loading" name="dots"></ion-spinner>
+					<canvas id="saleByLocationCanvas" #saleByLocationCanvas></canvas>
+				</div>
+			</div> -->
+			<div class="chart-box" style="min-width: 40%; height: 300px;">
+				<div class="title">{{'erp.app.pages.bi.dashboard.pnl' | translate}}</div>
+				<div class="chart-contain">
+					<ion-spinner *ngIf="charts.PNL.IsLoading" class="chart-loading" name="dots"></ion-spinner>
+					<canvas id="pnlCanvas" #pnlCanvas></canvas>
+				</div>
+			</div>
+			<div class="chart-box" style="min-width: 40%; height: 300px;">
+				<div class="title">{{'erp.app.pages.bi.dashboard.cash-flow' | translate}}</div>
+				<div class="chart-contain">
+					<ion-spinner *ngIf="charts.CashFlow.IsLoading" class="chart-loading" name="dots"></ion-spinner>
+					<canvas id="cashFlowCanvas" #cashFlowCanvas></canvas>
+				</div>
+			</div>
+			<!-- <div class="chart-box">
+				<div class="title">Doanh thu - Chi phí</div>
+				<div class="chart-contain">
+					<ion-spinner *ngIf="charts.Funnel.IsLoading" class="chart-loading" name="dots"></ion-spinner>
+					<canvas id="saleByLocationCanvas" #saleByLocationCanvas></canvas>
+				</div>
+			</div> -->
+			<!-- <div class="chart-box">
+				<div class="title">Chi phí - Dòng tiền ra</div>
+				<div class="chart-contain">
+					<ion-spinner *ngIf="charts.Funnel.IsLoading" class="chart-loading" name="dots"></ion-spinner>
+					<canvas id="saleByLocationCanvas" #saleByLocationCanvas></canvas>
+				</div>
+			</div>
+
+			<div class="chart-box">
+				<div class="title">Doanh thu quá hạn thanh toán</div>
+				<div class="chart-contain">
+					<ion-spinner *ngIf="charts.Funnel.IsLoading" class="chart-loading" name="dots"></ion-spinner>
+					<canvas id="saleByLocationCanvas" #saleByLocationCanvas></canvas>
+				</div>
+			</div>
+
+			<div class="chart-box">
+				<div class="title">Tỉ trọng quá hạn thanh toán</div>
+				<div class="chart-contain">
+					<ion-spinner *ngIf="charts.Funnel.IsLoading" class="chart-loading" name="dots"></ion-spinner>
+					<canvas id="saleByLocationCanvas" #saleByLocationCanvas></canvas>
+				</div>
+			</div> -->
+
+		</div>
+	</div>
+
+
+</ion-content>
+
+
+<ion-content *ngIf="0">
+	<div *ngIf="pageConfig.showSpinner" class="page-loading">
+		<ion-spinner name="dots"></ion-spinner>
+	</div>
+	<div class="empty-message" *ngIf="this.env.user && this.env.user.UserName && !items.length && pageConfig.showSpinner==false">
+		<div class="icon">
+			<img appSvgImage src="./assets/undraw_no_data_qbuo.svg">
+		</div>
+		<div class="message">
+			<div class="title">
+				{{'erp.app.pages.bi.dashboard.empty-title' | translate}}
+			</div>
+			<div class="detail">
+				<ion-text>
+					{{'erp.app.pages.bi.dashboard.empty-detail' | translate}}
+				</ion-text>
+			</div>
+		</div>
+	</div>
+</ion-content>

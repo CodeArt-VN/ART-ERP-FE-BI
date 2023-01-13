@@ -1,0 +1,582 @@
+<ion-header>
+	<ion-toolbar>
+		<ion-buttons slot="start" class="ion-hide-sm-down_">
+			<ion-button color="dark" class="ion-hide-sm-down">
+				Finance management
+			</ion-button>
+		</ion-buttons>
+
+		<ion-buttons slot="end">
+
+
+			<ion-button (click)="refresh()" title="In phiếu">
+				<ion-icon slot="icon-only" name="reload-outline"></ion-icon>
+			</ion-button>
+
+			<ion-button title="Chức năng mở rộng" (click)="pageConfig.isShowFeature = !pageConfig.isShowFeature;">
+				<ion-icon slot="icon-only" [name]="pageConfig.isShowFeature? 'close-outline':'list-circle-outline'">
+				</ion-icon>
+			</ion-button>
+
+		</ion-buttons>
+	</ion-toolbar>
+</ion-header>
+
+<ion-content appScrollbarTheme>
+	<ion-fab [hidden]="!pageConfig.isShowFeature" [ngClass]="{withSearch: pageConfig.isShowSearch}" class="feature" vertical="top" horizontal="end" slot="fixed">
+		<div class="ion-padding">
+			
+
+			<div>
+				<div class="title">Group by / Nhóm theo</div>
+				<ng-container *ngFor="let f of rpt.rptGlobal.frequency">
+					<ion-button [fill]="rpt.rptGlobal.query.frequency == f.Id ? 'solid' : 'outline'" size="small"
+						(click)="changeFrequency(f)">
+						{{f.Name}}
+					</ion-button>
+				</ng-container>
+				<div class="query-time"></div>
+			</div>
+
+			<div>
+				<div class="title">Time / Thời gian</div>
+
+				<ion-button *ngIf="rpt.rptGlobal.query.frequency == 1" (click)="changeDateFillter('d')" 		[fill]="rpt.rptGlobal.query.type=='d'? 'solid': 'outline'" size="small">Hôm nay</ion-button>
+				<ion-button *ngIf="rpt.rptGlobal.query.frequency == 1" (click)="changeDateFillter('dw')" 		[fill]="rpt.rptGlobal.query.type=='dw'? 'solid': 'outline'" size="small">Tuần này</ion-button>
+				<ion-button *ngIf="rpt.rptGlobal.query.frequency == 1" (click)="changeDateFillter('dm')" 		[fill]="rpt.rptGlobal.query.type=='dm'? 'solid': 'outline'" size="small">Tháng này</ion-button>
+				
+				<ion-button *ngIf="rpt.rptGlobal.query.frequency == 2" (click)="changeDateFillter('m')" 		[fill]="rpt.rptGlobal.query.type=='m'? 'solid': 'outline'" size="small">Tháng này</ion-button>
+				<ion-button *ngIf="rpt.rptGlobal.query.frequency == 2" (click)="changeDateFillter('m3')" 		[fill]="rpt.rptGlobal.query.type=='m3'? 'solid': 'outline'" size="small">3 tháng</ion-button>
+				<ion-button *ngIf="rpt.rptGlobal.query.frequency == 2" (click)="changeDateFillter('m6')" 		[fill]="rpt.rptGlobal.query.type=='m6'? 'solid': 'outline'" size="small">6 tháng</ion-button>
+				<ion-button *ngIf="rpt.rptGlobal.query.frequency == 2" (click)="changeDateFillter('my')" 		[fill]="rpt.rptGlobal.query.type=='my'? 'solid': 'outline'" size="small">Năm nay</ion-button>
+				
+				<ion-button *ngIf="rpt.rptGlobal.query.frequency == 3" (click)="changeDateFillter('q')" 		[fill]="rpt.rptGlobal.query.type=='q'? 'solid': 'outline'" size="small">Quý này</ion-button>
+				<ion-button *ngIf="rpt.rptGlobal.query.frequency == 3" (click)="changeDateFillter('q2')" 		[fill]="rpt.rptGlobal.query.type=='q2'? 'solid': 'outline'" size="small">2 quý</ion-button>
+				<ion-button *ngIf="rpt.rptGlobal.query.frequency == 3" (click)="changeDateFillter('q3')" 		[fill]="rpt.rptGlobal.query.type=='q3'? 'solid': 'outline'" size="small">3 quý</ion-button>
+				<ion-button *ngIf="rpt.rptGlobal.query.frequency == 3" (click)="changeDateFillter('qy')" 		[fill]="rpt.rptGlobal.query.type=='qy'? 'solid': 'outline'" size="small">Năm nay</ion-button>
+
+				<ion-button *ngIf="rpt.rptGlobal.query.frequency == 4" (click)="changeDateFillter('y')" 		[fill]="rpt.rptGlobal.query.type=='y'? 'solid': 'outline'" size="small">Năm nay</ion-button>
+				<ion-button *ngIf="rpt.rptGlobal.query.frequency == 4" (click)="changeDateFillter('y2')" 		[fill]="rpt.rptGlobal.query.type=='y2'? 'solid': 'outline'" size="small">2 năm</ion-button>
+				<ion-button *ngIf="rpt.rptGlobal.query.frequency == 4" (click)="changeDateFillter('y3')" 		[fill]="rpt.rptGlobal.query.type=='y3'? 'solid': 'outline'" size="small">3 năm</ion-button>
+				
+				<ion-button (click)="changeDateFillter('set')" 		[fill]="rpt.rptGlobal.query.type=='set'? 'solid': 'outline'" size="small">Tùy chọn...</ion-button>
+
+				<div *ngIf="rpt.rptGlobal.query.type=='set'" class="date-pick" >
+					<input (blur)="changeDateFillter('setdone')" [(ngModel)]="rpt.rptGlobal.query.fromDate" required type="date" pattern="\d{1,2}/\d{1,2}/\d{4}" class="datepicker" name="date" value="" />
+					<input (blur)="changeDateFillter('setdone')" [(ngModel)]="rpt.rptGlobal.query.toDate" required type="date" pattern="\d{1,2}/\d{1,2}/\d{4}" class="datepicker" name="date" value="" />
+
+				</div>
+				<div class="query-time">{{rpt.rptGlobal.query.fromDate}} - {{rpt.rptGlobal.query.toDate}}</div>
+			</div>
+
+			<div >
+				<div class="title">Branch / Chi nhánh</div>
+				<ng-container *ngFor="let b of rpt.rptGlobal.branch">
+					<ion-button [fill]="b.IsHidden ? 'outline' : 'solid'" size="small" (click)="toogleBranchDataset(b)">
+						{{b.Name}}
+					</ion-button>
+				</ng-container>
+				<div class="query-time"></div>
+			</div>
+
+
+			<div class="ion-padding-verticle">
+				<div class="title">So sánh với</div>
+				<div class="title"><br></div>
+				<div>
+					<div class="title">Time / Thời gian</div>
+	
+					<ion-button *ngIf="rpt.rptGlobal.query.frequency == 1" (click)="changeDateFillter('d')" 		[fill]="rpt.rptGlobal.query.type=='d'? 'solid': 'outline'" size="small">Hôm nay</ion-button>
+					<ion-button *ngIf="rpt.rptGlobal.query.frequency == 1" (click)="changeDateFillter('dw')" 		[fill]="rpt.rptGlobal.query.type=='dw'? 'solid': 'outline'" size="small">Tuần này</ion-button>
+					<ion-button *ngIf="rpt.rptGlobal.query.frequency == 1" (click)="changeDateFillter('dm')" 		[fill]="rpt.rptGlobal.query.type=='dm'? 'solid': 'outline'" size="small">Tháng này</ion-button>
+					
+					<ion-button *ngIf="rpt.rptGlobal.query.frequency == 2" (click)="changeDateFillter('m')" 		[fill]="rpt.rptGlobal.query.type=='m'? 'solid': 'outline'" size="small">Tháng này</ion-button>
+					<ion-button *ngIf="rpt.rptGlobal.query.frequency == 2" (click)="changeDateFillter('m3')" 		[fill]="rpt.rptGlobal.query.type=='m3'? 'solid': 'outline'" size="small">3 tháng</ion-button>
+					<ion-button *ngIf="rpt.rptGlobal.query.frequency == 2" (click)="changeDateFillter('m6')" 		[fill]="rpt.rptGlobal.query.type=='m6'? 'solid': 'outline'" size="small">6 tháng</ion-button>
+					<ion-button *ngIf="rpt.rptGlobal.query.frequency == 2" (click)="changeDateFillter('my')" 		[fill]="rpt.rptGlobal.query.type=='my'? 'solid': 'outline'" size="small">Năm nay</ion-button>
+					
+					<ion-button *ngIf="rpt.rptGlobal.query.frequency == 3" (click)="changeDateFillter('q')" 		[fill]="rpt.rptGlobal.query.type=='q'? 'solid': 'outline'" size="small">Quý này</ion-button>
+					<ion-button *ngIf="rpt.rptGlobal.query.frequency == 3" (click)="changeDateFillter('q2')" 		[fill]="rpt.rptGlobal.query.type=='q2'? 'solid': 'outline'" size="small">2 quý</ion-button>
+					<ion-button *ngIf="rpt.rptGlobal.query.frequency == 3" (click)="changeDateFillter('q3')" 		[fill]="rpt.rptGlobal.query.type=='q3'? 'solid': 'outline'" size="small">3 quý</ion-button>
+					<ion-button *ngIf="rpt.rptGlobal.query.frequency == 3" (click)="changeDateFillter('qy')" 		[fill]="rpt.rptGlobal.query.type=='qy'? 'solid': 'outline'" size="small">Năm nay</ion-button>
+	
+					<ion-button *ngIf="rpt.rptGlobal.query.frequency == 4" (click)="changeDateFillter('y')" 		[fill]="rpt.rptGlobal.query.type=='y'? 'solid': 'outline'" size="small">Năm nay</ion-button>
+					<ion-button *ngIf="rpt.rptGlobal.query.frequency == 4" (click)="changeDateFillter('y2')" 		[fill]="rpt.rptGlobal.query.type=='y2'? 'solid': 'outline'" size="small">2 năm</ion-button>
+					<ion-button *ngIf="rpt.rptGlobal.query.frequency == 4" (click)="changeDateFillter('y3')" 		[fill]="rpt.rptGlobal.query.type=='y3'? 'solid': 'outline'" size="small">3 năm</ion-button>
+					
+					<ion-button (click)="changeDateFillter('set')" 		[fill]="rpt.rptGlobal.query.type=='set'? 'solid': 'outline'" size="small">Tùy chọn...</ion-button>
+	
+					<div *ngIf="rpt.rptGlobal.query.type=='set'" class="date-pick" >
+						<input (blur)="changeDateFillter('setdone')" [(ngModel)]="rpt.rptGlobal.query.fromDate" required type="date" pattern="\d{1,2}/\d{1,2}/\d{4}" class="datepicker" name="date" value="" />
+						<input (blur)="changeDateFillter('setdone')" [(ngModel)]="rpt.rptGlobal.query.toDate" required type="date" pattern="\d{1,2}/\d{1,2}/\d{4}" class="datepicker" name="date" value="" />
+	
+					</div>
+					<div class="query-time">{{rpt.rptGlobal.query.fromDate}} - {{rpt.rptGlobal.query.toDate}}</div>
+				</div>
+	
+				<div >
+					<div class="title">Branch / Chi nhánh</div>
+					<ng-container *ngFor="let b of rpt.rptGlobal.branch">
+						<ion-button [fill]="b.IsHidden ? 'outline' : 'solid'" size="small" (click)="toogleBranchDataset(b)">
+							{{b.Name}}
+						</ion-button>
+					</ng-container>
+					<div class="query-time"></div>
+				</div>
+			</div>
+
+
+			<div>
+				<div class="title">PnL Template / Mẫu báo cáo PnL</div>
+				<ion-button [fill]="1 ? 'solid' : 'outline'" size="small">
+					PnL
+				</ion-button>
+				<div class="query-time"></div>
+			</div>
+
+			<div>
+				<div class="title">CF Template / Mẫu báo cáo CF</div>
+				<ion-button [fill]="1 ? 'solid' : 'outline'" size="small">
+					CF
+				</ion-button>
+				<div class="query-time"></div>
+			</div>
+
+			<div *ngIf="0"> 
+				<div class="title">
+					Forecast / Dự phóng
+					<ion-icon style="font-size: 20px;" class="ion-float-right" name="arrow-down"></ion-icon>
+
+				</div>
+				<div>
+					<ion-button size="small">
+						12/2019
+						<ion-icon slot="end" name="close"></ion-icon>
+					</ion-button>
+					<ion-button size="small">
+						2019
+						<ion-icon slot="end" name="close"></ion-icon>
+					</ion-button>
+					<ion-button size="small">
+						01/2020
+						<ion-icon slot="end" name="close"></ion-icon>
+					</ion-button>
+				</div>
+			</div>
+
+
+
+		</div>
+
+		<div *ngIf="0" class="chart-box" style="background-color: transparent;">
+
+			<div class="title">Ratios / Tỷ suất</div>
+			<div class="chart-contain">
+				<table class="data-table">
+					<ng-container *ngFor="let i of dataRatio">
+						<tr (click)="i.isShow=!i.isShow">
+							<td>
+								<div class="data-title" [innerHtml]="i.title"></div>
+							</td>
+							<td class="value">
+								{{i.value}}
+							</td>
+						</tr>
+						<tr class="ratio-bar">
+							<td colspan="2">
+								<div [style.width]="i.value"></div>
+							</td>
+						</tr>
+						<tr class="ratio-bar">
+							<td colspan="2">
+								<div [style.width]="i.value"></div>
+							</td>
+						</tr>
+						<tr class="ratio-bar">
+							<td colspan="2">
+								<div [style.width]="i.value"></div>
+							</td>
+						</tr>
+						<tr class="ratio-bar">
+							<td colspan="2">
+								<div [style.width]="i.value"></div>
+							</td>
+						</tr>
+						<ng-container *ngIf="i.data && i.isShow">
+							<tr *ngFor="let j of i.data">
+								<td>
+									<div class="data-sub-title" [innerHtml]="j.title"></div>
+								</td>
+								<td class="sub-value">
+									{{j.value}}
+								</td>
+							</tr>
+						</ng-container>
+					</ng-container>
+				</table>
+			</div>
+		</div>
+
+		<div *ngIf="0" class="chart-box kpi">
+			<div class="title">Pin chart</div>
+			<div class="chart-contain">
+				<canvas id="cCanvas" #cCanvas></canvas>
+			</div>
+		</div>
+
+		<div *ngIf="0" class="chart-box">
+			<div class="title">Pin chart</div>
+			<div class="chart-contain">
+				<canvas id="cCanvas" #cCanvas></canvas>
+			</div>
+		</div>
+	</ion-fab>
+	
+	<div class="main-view">
+		<div class="row-1" style="display: none;">
+			<div class="top-main-chart">
+				<div class="number-container">
+					<div class="number">58.4 B</div>
+					<div class="title">
+						Cash available for use <br> Tiền khả dụng
+					</div>
+				</div>
+				<div class="chart-contain">
+					<canvas id="soLuongTiecCanvas" #soLuongTiecCanvas></canvas>
+				</div>
+			</div>
+
+
+			<div class="top-chart">
+				<div class="number">20,7 B</div>
+				<div class="title">Opening Balance <br> Tiền và tương đương tiền đầu kỳ </div>
+				<div class="stats">
+					<ion-text color="success">
+						<ion-icon name="arrow-round-up"></ion-icon>
+						+1%
+					</ion-text>
+				</div>
+			</div>
+			<div class="top-chart">
+				<div class="number">58,4 B</div>
+				<div class="title">Ending Balance <br> Tiền và tương đương tiền cuối kỳ</div>
+				<div class="stats">
+					<ion-text color="danger">
+						<ion-icon name="arrow-round-down"></ion-icon>
+						1%
+					</ion-text>
+				</div>
+			</div>
+			<div class="top-chart">
+				<div class="number">32%</div>
+				<div class="title">EAT Margin <br> Biên lợi nhuận sau thuế</div>
+				<div class="stats">
+					<ion-text color="warning">
+						<ion-icon name="arrow-round-down"></ion-icon>
+						0%
+					</ion-text>
+				</div>
+			</div>
+	
+		</div>
+
+
+
+		<div class="row-3">
+
+			<div class="chart-box" style="width: 100%; height: 400px; display: none;">
+				<div class="title">Revenue & COGS</div>
+				<div class="chart-contain">
+					<canvas id="pnlCanvas" #pnlCanvas></canvas>
+				</div>
+			</div>
+
+			<div class="chart-box" style="width: 100%; height: 400px; display: none;">
+				<div class="title">Operating cost</div>
+				<div class="chart-contain">
+					<canvas id="cashFlowCanvas" #cashFlowCanvas></canvas>
+				</div>
+			</div>
+
+			
+			<!-- PnL -->
+			<div class="chart-box" style="width: 100%;">
+				<div class="title">PROFIT AND LOSS</div>
+				<div class="chart-contain" style="overflow-x: auto;">
+					<table class="data-table fix-height">
+						<tr>
+							<td>
+								<div class="data-header data-title bold">
+									P&L <br>
+									Báo cáo kết quả hoạt động kinh doanh
+								</div>
+							</td>
+							<ng-container *ngFor="let p of headerPnL">
+								<td class="data-header" [ngStyle]="{'background-color': p.Branch.Color + '2f'}" *ngIf="!p.Branch.IsHidden && (!p.Branch.IsHiddenDetailColumn || p.IsTotal || p.IsAll )">
+									<div (click)="p.Branch.IsHiddenDetailColumn =! p.Branch.IsHiddenDetailColumn" class="value">{{p.Name}} 
+										<ion-icon class="min-btn" *ngIf="p.IsTotal" [name]="p.Branch.IsHiddenDetailColumn? 'add-circle-outline':'remove-circle-outline'" ></ion-icon> 
+										
+									</div>
+								</td>
+							</ng-container>
+						</tr>
+
+						<ng-container *ngFor="let i of dataPnL">
+							<tr (click)="toggleRow(dataPnL, i, true);" *ngIf="i.show">
+								<td>
+									<div class="data-title" [ngClass]="i.HasChild? ('bold l'+i.level) : ('l'+i.level)" >
+										<!-- <ion-icon [name]=" i.count == 0 ? '' : (i.showdetail ? 'ios-arrow-down':'ios-arrow-forward')"></ion-icon> -->
+										<ion-text title="Phân bổ từ chứng từ gốc" color="warning" *ngIf="i.IsDividedByWeeks"><ion-icon name="information-circle"></ion-icon></ion-text>  
+										{{i.Code}} {{i.ForeignName }} 
+										<span *ngIf="i.ForeignName"><br></span> 
+										{{i.Name}} 
+										
+									</div>
+								</td>
+								<ng-container *ngFor="let p of headerPnL">
+									<td [ngClass]="{bold: i.HasChild}" [ngStyle]="{'background-color': p.Branch.Color + '0f'}" *ngIf="!p.Branch.IsHidden && (!p.Branch.IsHiddenDetailColumn || p.IsTotal || p.IsAll)">
+										<div class="value">{{ i[p.Name] }}</div>
+									</td>
+								</ng-container>
+							</tr>
+						</ng-container>
+					</table>
+				</div>
+			</div>
+
+			<div *ngIf="0" class="chart-box" style="width: 100%;">
+				<div class="title">EBITDA</div>
+				<div class="chart-contain" style="overflow-x: auto;">
+					<table class="data-table fix-height">
+
+						<tr>
+							<td>
+								<div class="data-title bold">
+
+								</div>
+							</td>
+							<td>
+								<div class="value">
+									Actual
+								</div>
+							</td>
+							<td>
+								<div class="value">
+									Budget
+								</div>
+							</td>
+							<td>
+								<div class="value">
+									% Achv'd
+								</div>
+							</td>
+							<td>
+								<div class="value">
+									Last Year
+								</div>
+							</td>
+							<td>
+								<div class="value">
+									% Growth
+								</div>
+							</td>
+
+						</tr>
+						<ng-container *ngFor="let i of dataEBITDA">
+
+							<tr (click)="i.isShow=!i.isShow">
+								<td>
+									<div class="data-title" [ngClass]="{bold: i.data&&i.data.length}"
+										[innerHtml]="i.Name">
+									</div>
+								</td>
+								<td [ngClass]="{bold: i.data&&i.data.length}">
+									<div class="value">
+										{{i.Actual}}
+									</div>
+								</td>
+								<td [ngClass]="{bold: i.data&&i.data.length}">
+									<div class="value">
+										{{i.Budget}}
+									</div>
+								</td>
+								<td [ngClass]="{bold: i.data&&i.data.length}">
+									<div class="value">
+										{{i.Achvd}}
+									</div>
+								</td>
+								<td [ngClass]="{bold: i.data&&i.data.length}">
+									<div class="value">
+										{{i.LastYear}}
+									</div>
+								</td>
+								<td [ngClass]="{bold: i.data&&i.data.length}">
+									<div class="value">
+										{{i.Growth}}
+									</div>
+								</td>
+							</tr>
+							<ng-container *ngIf="i.data && i.isShow">
+								<ng-container *ngFor="let j of i.data">
+									<tr (click)="j.isShow=!j.isShow">
+										<td>
+											<div class="data-sub-title" [ngClass]="{bold: j.data&&j.data.length}"
+												[innerHtml]="j.Name">
+											</div>
+										</td>
+										<td [ngClass]="{bold: j.data&&j.data.length}">
+											<div class="sub-value">{{j.Actual}}</div>
+										</td>
+										<td [ngClass]="{bold: j.data&&j.data.length}">
+											<div class="sub-value">{{j.Budget}}</div>
+										</td>
+										<td [ngClass]="{bold: j.data&&j.data.length}">
+											<div class="sub-value">{{j.Achvd}}</div>
+										</td>
+										<td [ngClass]="{bold: j.data&&j.data.length}">
+											<div class="sub-value">{{j.LastYear}}</div>
+										</td>
+										<td [ngClass]="{bold: j.data&&j.data.length}">
+											<div class="sub-value">{{j.Growth}}</div>
+										</td>
+									</tr>
+
+								</ng-container>
+							</ng-container>
+						</ng-container>
+					</table>
+				</div>
+			</div>
+
+
+			<div class="chart-box" style="width: 100%;">
+				<div class="title">CASH FLOW / Báo cáo lưu chuyển tiền tệ</div>
+				<div class="chart-contain" style="overflow-x: auto;">
+					<table class="data-table fix-height">
+						<tr>
+							<td>
+								<div class="data-header data-title bold">
+									CASH FLOW <br>
+									Báo cáo lưu chuyển tiền tệ
+								</div>
+							</td>
+							<ng-container *ngFor="let p of headerCashFlow">
+								<td class="data-header" [ngStyle]="{'background-color': p.Branch.Color + '2f'}" *ngIf="!p.Branch.IsHidden && (!p.Branch.IsHiddenDetailColumn || p.IsTotal || p.IsAll )">
+									<div (click)="p.Branch.IsHiddenDetailColumn =! p.Branch.IsHiddenDetailColumn" class="value">{{p.Name}} 
+										<ion-icon class="min-btn" *ngIf="p.IsTotal" [name]="p.Branch.IsHiddenDetailColumn? 'add-circle-outline':'remove-circle-outline'" ></ion-icon> 
+										
+									</div>
+								</td>
+							</ng-container>
+						</tr>
+
+						<ng-container *ngFor="let i of dataCashFlow">
+							<tr (click)="toggleRow(dataCashFlow, i, true);" *ngIf="i.show">
+								<td>
+									<div class="data-title" [ngClass]="i.HasChild? ('bold l'+i.level) : ('l'+i.level)" >
+										<!-- <ion-icon [name]=" i.count == 0 ? '' : (i.showdetail ? 'ios-arrow-down':'ios-arrow-forward')"></ion-icon> -->
+										<ion-text title="Phân bổ từ chứng từ gốc" color="warning" *ngIf="i.IsDividedByWeeks"><ion-icon name="information-circle"></ion-icon></ion-text>  
+										{{i.Code}} {{i.ForeignName }} 
+										<span *ngIf="i.ForeignName"><br></span> 
+										{{i.Name}} 
+										
+									</div>
+								</td>
+								<ng-container *ngFor="let p of headerCashFlow">
+									<td [ngClass]="{bold: i.HasChild}" [ngStyle]="{'background-color': p.Branch.Color + '0f'}" *ngIf="!p.Branch.IsHidden && (!p.Branch.IsHiddenDetailColumn || p.IsTotal || p.IsAll)">
+										<div class="value">{{ i[p.Name] }}</div>
+									</td>
+								</ng-container>
+							</tr>
+						</ng-container>
+					</table>
+				</div>
+			</div>
+
+			<div *ngIf="0" class="chart-box" style="width: 100%;">
+				<div class="title">CASH FLOW / Báo cáo lưu chuyển tiền tệ</div>
+				<div class="chart-contain" style="overflow-x: auto;">
+					<table class="data-table fix-height">
+						<tr>
+							<td>
+								<div class="data-title bold">
+									CASH FLOW <br>
+									Báo cáo lưu chuyển tiền tệ
+								</div>
+							</td>
+							<ng-container *ngIf="!rpt.rptGlobal.branch[0].IsHidden">
+								<td  *ngFor="let p of headerCashFlow">
+									<div class="value">{{p}}</div>
+								</td>
+							</ng-container>
+						</tr>
+
+						<ng-container *ngFor="let i of dataCashFlow">
+							<tr (click)="toggleRow(dataCashFlow, i, true);" *ngIf="i.show">
+								<td>
+									<div class="data-title" [ngClass]="i.IsBold? ('bold l'+(i.IDParent?'2':'')) : ('l'+(i.IDParent?'2':''))" >
+										<!-- <ion-icon [name]=" i.count == 0 ? '' : (i.showdetail ? 'ios-arrow-down':'ios-arrow-forward')"></ion-icon> -->
+										{{i.VNS_Category}} <br> {{i.ENG_Category}}
+										
+									</div>
+								</td>
+								<ng-container *ngIf="!rpt.rptGlobal.branch[0].IsHidden">
+									<td [ngClass]="{bold: i.IsBold}" *ngFor="let p of headerCashFlow" >
+										<div class="value">{{ i[p] }}</div>
+									</td>
+								</ng-container>
+							</tr>
+						</ng-container>
+					</table>
+				</div>
+			</div>
+
+			<!-- Ratios -->
+			<div class="chart-box" style="width: 100%;">
+				<div class="title">RATIOS / Tỷ suất</div>
+				<div class="chart-contain" style="overflow-x: auto;">
+					<table class="data-table fix-height">
+						<tr>
+							<td>
+								<div class="data-header data-title bold">
+									
+								</div>
+							</td>
+							<ng-container *ngFor="let p of headerPnL">
+								<td class="data-header" [ngStyle]="{'background-color': p.Branch.Color + '2f'}" *ngIf="!p.Branch.IsHidden && (!p.Branch.IsHiddenDetailColumn || p.IsTotal || p.IsAll )">
+									<div (click)="p.Branch.IsHiddenDetailColumn =! p.Branch.IsHiddenDetailColumn" class="value">{{p.Name}} 
+										<ion-icon class="min-btn" *ngIf="p.IsTotal" [name]="p.Branch.IsHiddenDetailColumn? 'add-circle-outline':'remove-circle-outline'" ></ion-icon> 
+										
+									</div>
+								</td>
+							</ng-container>
+						</tr>
+
+						<ng-container *ngFor="let i of dataRatio">
+							<tr>
+								<td>
+									<div [title]="i.Code" class="data-title" [ngClass]="i.HasChild? ('bold l'+i.level) : ('l'+i.level)" >
+										<!-- <ion-icon [name]=" i.count == 0 ? '' : (i.showdetail ? 'ios-arrow-down':'ios-arrow-forward')"></ion-icon> -->
+										<ion-text title="Phân bổ từ chứng từ gốc" color="warning" *ngIf="i.IsDividedByWeeks"><ion-icon name="information-circle"></ion-icon></ion-text>  
+										{{i.ForeignName }} 
+										<span *ngIf="i.ForeignName"><br></span> 
+										{{i.Name}} 
+										
+									</div>
+								</td>
+								<ng-container *ngFor="let p of headerPnL">
+									<td [ngClass]="{bold: i.HasChild}" [ngStyle]="{'background-color': p.Branch.Color + '0f'}" *ngIf="!p.Branch.IsHidden && (!p.Branch.IsHiddenDetailColumn || p.IsTotal || p.IsAll)">
+										<div class="value">{{ i[p.Name] }}</div>
+									</td>
+								</ng-container>
+							</tr>
+						</ng-container>
+					</table>
+				</div>
+			</div>
+
+		</div>
+	</div>
+
+
+</ion-content>

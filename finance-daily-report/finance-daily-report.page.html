@@ -1,0 +1,342 @@
+<ion-header>
+	<ion-toolbar>
+		<ion-buttons slot="start" class="ion-hide-sm-down_">
+			<ion-button color="dark" class="ion-hide-sm-down">
+				{{'erp.app.pages.bi.finance-daily-report.page-title' | translate}}
+			</ion-button>
+		</ion-buttons>
+
+		<ion-buttons slot="end">
+
+
+			<ion-button (click)="refresh()" title="{{'erp.app.pages.bi.finance-daily-report.refresh' | translate}}">
+				<ion-icon slot="icon-only" name="reload-outline"></ion-icon>
+			</ion-button>
+
+			<ion-button title="{{'erp.app.pages.bi.finance-daily-report.show-feature' | translate}}" (click)="pageConfig.isShowFeature = !pageConfig.isShowFeature;">
+				<ion-icon slot="icon-only" [name]="pageConfig.isShowFeature? 'close-outline':'list-circle-outline'">
+				</ion-icon>
+			</ion-button>
+
+		</ion-buttons>
+	</ion-toolbar>
+</ion-header>
+
+<ion-content appScrollbarTheme>
+	<ion-fab [hidden]="!pageConfig.isShowFeature" [ngClass]="{withSearch: pageConfig.isShowSearch}" class="feature" vertical="top" horizontal="end" slot="fixed">
+		<div class="ion-padding">
+			<div>
+				<div class="title"><b>{{'erp.app.pages.bi.finance-daily-report.balance-report' | translate}}</b></div>
+				<div class="title">{{'erp.app.pages.bi.finance-daily-report.report-date' | translate}}</div>
+
+				<div class="date-pick" >
+					<input (blur)="changeDateFillterBalance()" [(ngModel)]="rpt.rptGlobal.query.reportDate" required type="date" pattern="\d{1,2}/\d{1,2}/\d{4}" class="datepicker" name="date" value="" />
+	
+				</div>
+
+				<div class="query-time">{{rpt.rptGlobal.query.reportDate}}</div>
+			</div>
+			
+			<div>
+				<div class="title">{{'erp.app.pages.bi.finance-daily-report.branch' | translate}}</div>
+				<ng-container *ngFor="let b of rpt.rptGlobal.branch">
+					<ion-button [fill]="b.IsHidden ? 'outline' : 'solid'" size="small" (click)="toogleBranchDataset1(b)">
+						{{b.Name}}
+					</ion-button>
+				</ng-container>
+			</div>
+			<br>
+			<div class="title"><b>{{'erp.app.pages.bi.finance-daily-report.daily-report' | translate}}</b></div>
+			
+			<div>
+
+				<div class="title">{{'erp.app.pages.bi.finance-daily-report.time' | translate}}</div>
+				<ion-button *ngIf="rpt.rptGlobal.query.frequency == 1" (click)="changeDateFillter('cm')" 		[fill]="rpt.rptGlobal.query.type=='cm'? 'solid': 'outline'" size="small">{{'erp.app.pages.bi.finance-daily-report.cm' | translate}}</ion-button>
+				<ion-button *ngIf="rpt.rptGlobal.query.frequency == 1" (click)="changeDateFillter('pm')" 		[fill]="rpt.rptGlobal.query.type=='pm'? 'solid': 'outline'" size="small">{{'erp.app.pages.bi.finance-daily-report.pm' | translate}}</ion-button>
+				
+				<ion-button (click)="changeDateFillter('set')" 		[fill]="rpt.rptGlobal.query.type=='set'? 'solid': 'outline'" size="small">T{{'erp.app.pages.bi.finance-daily-report.other' | translate}}</ion-button>
+
+				<div *ngIf="rpt.rptGlobal.query.type=='set'" class="date-pick" >
+					<input (blur)="changeDateFillter('setdone')" [(ngModel)]="rpt.rptGlobal.query.fromDate" required type="date" pattern="\d{1,2}/\d{1,2}/\d{4}" class="datepicker" name="date" value="" />
+					<input (blur)="changeDateFillter('setdone')" [(ngModel)]="rpt.rptGlobal.query.toDate" required type="date" pattern="\d{1,2}/\d{1,2}/\d{4}" class="datepicker" name="date" value="" />
+
+				</div>
+				<div class="query-time">{{rpt.rptGlobal.query.fromDate}} - {{rpt.rptGlobal.query.toDate}}</div>
+
+				<div class="title">{{'erp.app.pages.bi.finance-daily-report.branch' | translate}}</div>
+				
+				<ng-container *ngFor="let b of pageBranch">
+					<ion-button [fill]="b.IsHidden ? 'outline' : 'solid'" size="small" (click)="toogleBranchDataset(b)">
+						{{b.Name}}
+					</ion-button>
+				</ng-container>
+			</div>
+		</div>
+
+		<!-- <div class="chart-box kpi">
+			<div class="title">Pin chart</div>
+			<div class="chart-contain">
+				<canvas id="cCanvas" #cCanvas></canvas>
+			</div>
+		</div>
+
+		<div class="chart-box">
+			<div class="title">Pin chart</div>
+			<div class="chart-contain">
+				<canvas id="cCanvas" #cCanvas></canvas>
+			</div>
+		</div> -->
+
+	</ion-fab>
+
+	<div class="main-view">
+		<div class="row-1">
+			<div class="chart-box" style="width: 100%;">
+				<div class="title">{{'erp.app.pages.bi.finance-daily-report.daily-balance-report-title' | translate}}</div>
+				<div class="chart-contain" style="overflow-x: auto;">
+					<table class="data-table fix-height">
+						
+						<tr class="company-name">
+							<td align="left">{{'erp.app.pages.bi.finance-daily-report.content' | translate}}</td>
+							<!-- <td align="center">TOTAL</td> -->
+							<ng-container *ngFor="let p of headerDailyBalance">
+								<td class="data-header" [ngStyle]="{'background-color': p.Branch.Color + '2f'}" *ngIf="!p.Branch.IsHidden && (!p.Branch.IsHiddenDetailColumn || p.IsTotal || p.IsAll )">
+									<div (click)="p.Branch.IsHiddenDetailColumn =! p.Branch.IsHiddenDetailColumn" class="value">{{p.Name}} 
+										<!-- <ion-icon class="min-btn" *ngIf="p.IsTotal" [name]="p.Branch.IsHiddenDetailColumn? 'add-circle-outline':'remove-circle-outline'" ></ion-icon>  -->
+										
+									</div>
+								</td>
+							</ng-container>
+						</tr>
+						<ng-container *ngFor="let i of dataDailyBalance">
+							<tr (click)="toggleRow(dataDailyBalance, i, true);" *ngIf="i.show">
+								<td>
+									<div class="data-title" [ngClass]="i.HasChild? ('bold l'+i.level) : ('l'+i.level)" >
+										<ion-icon [name]=" i.count == 0 ? '' : (i.showdetail ? 'ios-arrow-down':'ios-arrow-forward')"></ion-icon>
+										<!-- <ion-text title="" color="warning" *ngIf="i.IsDividedByWeeks"><ion-icon name="information-circle"></ion-icon></ion-text>   -->
+										<!-- {{i.Code}} {{i.ForeignName }} 
+										<span *ngIf="i.ForeignName"><br></span>  -->
+										{{i.Name}} 
+										
+									</div>
+								</td>
+								<ng-container *ngFor="let p of headerDailyBalance">
+									<td [ngClass]="{bold: i.HasChild}" [ngStyle]="{'background-color': p.Branch.Color + '0f'}" *ngIf="!p.Branch.IsHidden && (!p.Branch.IsHiddenDetailColumn || p.IsTotal || p.IsAll)">
+										<div class="value">{{ i[p.Name] }}</div>
+									</td>
+								</ng-container>
+							</tr>
+						</ng-container>
+					</table>
+				</div>
+			</div>
+		</div>
+		<div class="row-1">
+			<div class="chart-box" style="width: 100%;">
+				<div class="title">{{'erp.app.pages.bi.finance-daily-report.daily-report-title' | translate}}: </div><!-- <b>In Hopitality - Tháng 11.2021</b> -->
+				<div class="chart-contain" style="overflow-x: auto; height: 400px; overflow-y: auto;">
+					<table class="data-table fix-height">
+						<tr class="company-name">
+							<td align="left" style="width: 100px">{{'erp.app.pages.bi.finance-daily-report.date' | translate}}</td>
+							<td align="right" >{{'erp.app.pages.bi.finance-daily-report.revenue' | translate}}</td>
+							<td align="right" >{{'erp.app.pages.bi.finance-daily-report.deposit' | translate}}</td>
+							<td align="right" >{{'erp.app.pages.bi.finance-daily-report.receivable' | translate}}</td>
+							<td align="right" >{{'erp.app.pages.bi.finance-daily-report.debt' | translate}}</td>
+							<td align="right" >{{'erp.app.pages.bi.finance-daily-report.total-receive' | translate}}</td>
+							<td align="right" >{{'erp.app.pages.bi.finance-daily-report.total-cost' | translate}}</td>
+						</tr>
+						<ng-container *ngFor="let i of dataDailyGeneral">
+
+							<tr (click)="i.isShow=!i.isShow">
+								<td class="data-code">
+									<div [ngClass]="{bold: i.data}" [innerHtml]="i.adate.substring(0, 10)">
+									</div>
+								</td>
+								<td [ngClass]="{bold: i.data}">
+									
+										{{i.Revenue}}
+									
+								</td>
+								<td>
+									
+										{{i.Deposit}}
+									
+								</td>
+								<td>
+									
+										{{i.Receiveble}}
+									
+								</td>
+								<td>
+									
+										{{i.Liability}}
+									
+								</td>
+								<td>
+									
+										{{i.TotalRevenue}}
+									
+								</td>
+								<td>
+									
+										{{i.TotalExpenditure}}
+									
+								</td>
+							</tr>
+						</ng-container>
+						
+					</table>
+				</div>
+			</div>
+		</div>
+		<div class="row-1" style="margin-top: -30px;">
+			<div class="chart-box" style="width: 100%;margin-top: 0 !important;">
+				<ion-toolbar color="primary">
+					<ion-segment scrollable="true" (ionChange)="segmentChanged($event)" [value]="segmentView">
+						<ion-segment-button value="s1">
+							<ion-label>{{'erp.app.pages.bi.finance-daily-report.revenue-tab' | translate}}</ion-label>
+						</ion-segment-button>
+						<ion-segment-button value="s2">
+							<ion-label>{{'erp.app.pages.bi.finance-daily-report.debt-tab' | translate}}</ion-label>
+						</ion-segment-button>
+						<ion-segment-button value="s3">
+							<ion-label>{{'erp.app.pages.bi.finance-daily-report.receivable-tab' | translate}}</ion-label>
+						</ion-segment-button>
+						<ion-segment-button value="s4">
+							<ion-label>{{'erp.app.pages.bi.finance-daily-report.cost-tab' | translate}}</ion-label>
+						</ion-segment-button>
+					</ion-segment>
+				</ion-toolbar>
+			
+				<div *ngIf="segmentView == 's1'">
+					<div class="chart-contain"  style="overflow-x: auto; height: 400px; overflow-y: auto;">
+						<table class="data-table fix-height">
+							<tr class="company-name">
+								<td align="left" style="min-width: 100px !important">{{'erp.app.pages.bi.finance-daily-report.date' | translate}}</td>
+								<ng-container *ngFor="let p of headerDailyRevenue">
+									<td class="data-header" [ngStyle]="{'background-color': p.Branch.Color + '2f'}" *ngIf="!p.Branch.IsHidden && (!p.Branch.IsHiddenDetailColumn || p.IsTotal || p.IsAll )">
+										<div (click)="p.Branch.IsHiddenDetailColumn =! p.Branch.IsHiddenDetailColumn" class="value">{{p.Name}} 
+											<ion-icon class="min-btn" *ngIf="p.IsTotal" [name]="p.Branch.IsHiddenDetailColumn? 'add-circle-outline':'remove-circle-outline'" ></ion-icon> 
+											
+										</div>
+									</td>
+								</ng-container>
+							</tr>
+							<ng-container *ngFor="let i of dataDailyRevenue">
+								<tr>
+									<td>
+										<div [ngClass]="{bold: i.data}">
+											{{i.adate}} 
+										</div>
+									</td>
+									<ng-container *ngFor="let p of headerDailyRevenue">
+										<td [ngStyle]="{'background-color': p.Branch.Color + '0f'}" *ngIf="!p.Branch.IsHidden && (!p.Branch.IsHiddenDetailColumn || p.IsTotal || p.IsAll)">
+											<div [ngClass]="{bold: p.Name.indexOf('TOTAL') >= 0}">{{ i[p.Name] }}</div>
+										</td>
+									</ng-container>
+								</tr>
+							</ng-container>
+						
+						</table>
+					</div>
+				</div>
+				<div *ngIf="segmentView == 's2'">
+					<div class="chart-contain"  style="overflow-x: auto; height: 400px; overflow-y: auto;">
+						<table class="data-table fix-height">
+							<tr class="company-name">
+								<td align="left"  style="min-width: 100px !important">{{'erp.app.pages.bi.finance-daily-report.date' | translate}} </td>
+								<ng-container *ngFor="let p of headerDailyDebt">
+									<td class="data-header" [ngStyle]="{'background-color': p.Branch.Color + '2f'}" *ngIf="!p.Branch.IsHidden && (!p.Branch.IsHiddenDetailColumn || p.IsTotal || p.IsAll )">
+										<div (click)="p.Branch.IsHiddenDetailColumn =! p.Branch.IsHiddenDetailColumn" class="value">{{p.Name}} 
+											<!-- <ion-icon class="min-btn" *ngIf="p.IsTotal" [name]="p.Branch.IsHiddenDetailColumn? 'add-circle-outline':'remove-circle-outline'" ></ion-icon>  -->
+											
+										</div>
+									</td>
+								</ng-container>
+							</tr>
+							<ng-container *ngFor="let i of dataDailyDebt">
+								<tr>
+									<td>
+										<div [ngClass]="{bold: i.data}">
+											{{i.adate}} 
+										</div>
+									</td>
+									<ng-container *ngFor="let p of headerDailyDebt">
+										<td [ngStyle]="{'background-color': p.Branch.Color + '0f'}" *ngIf="!p.Branch.IsHidden && (!p.Branch.IsHiddenDetailColumn || p.IsTotal || p.IsAll)">
+											<div [ngClass]="{bold: p.Name.indexOf('TOTAL') >= 0}">{{ i[p.Name] }}</div>
+										</td>
+									</ng-container>
+								</tr>
+							</ng-container>
+						
+						</table>
+					</div>
+				</div>
+				<div *ngIf="segmentView == 's3'">
+					<div class="chart-contain"  style="overflow-x: auto; height: 400px; overflow-y: auto;">
+						<table class="data-table fix-height">
+							<tr class="company-name">
+								<td align="left"  style="min-width: 100px !important">{{'erp.app.pages.bi.finance-daily-report.date' | translate}} </td>
+								<ng-container *ngFor="let p of headerDailyRevExpn1">
+									<td class="data-header" [ngStyle]="{'background-color': p.Branch.Color + '2f'}" *ngIf="!p.Branch.IsHidden && (!p.Branch.IsHiddenDetailColumn || p.IsTotal || p.IsAll )">
+										<div (click)="p.Branch.IsHiddenDetailColumn =! p.Branch.IsHiddenDetailColumn" class="value">{{p.Name}} 
+											<!-- <ion-icon class="min-btn" *ngIf="p.IsTotal" [name]="p.Branch.IsHiddenDetailColumn? 'add-circle-outline':'remove-circle-outline'" ></ion-icon>  -->
+											
+										</div>
+									</td>
+								</ng-container>
+							</tr>
+							<ng-container *ngFor="let i of dataDailyRevExpn1">
+								<tr>
+									<td>
+										<div [ngClass]="{bold: i.data}">
+											{{i.adate}} 
+										</div>
+									</td>
+									<ng-container *ngFor="let p of headerDailyRevExpn1">
+										<td [ngStyle]="{'background-color': p.Branch.Color + '0f'}" *ngIf="!p.Branch.IsHidden && (!p.Branch.IsHiddenDetailColumn || p.IsTotal || p.IsAll)">
+											<div [ngClass]="{bold: p.Name.indexOf('TOTAL') >= 0}">{{ i[p.Name] }}</div>
+										</td>
+									</ng-container>
+								</tr>
+							</ng-container>
+						
+						</table>
+					</div>
+				</div>
+				<div *ngIf="segmentView == 's4'">
+					<div class="chart-contain"  style="overflow-x: auto; height: 400px; overflow-y: auto;">
+						<table class="data-table fix-height">
+							<tr class="company-name">
+								<td align="left" style="min-width: 100px !important">{{'erp.app.pages.bi.finance-daily-report.date' | translate}} </td>
+								<ng-container *ngFor="let p of headerDailyRevExpn2">
+									<td class="data-header" [ngStyle]="{'background-color': p.Branch.Color + '2f'}" *ngIf="!p.Branch.IsHidden && (!p.Branch.IsHiddenDetailColumn || p.IsTotal || p.IsAll )">
+										<div (click)="p.Branch.IsHiddenDetailColumn =! p.Branch.IsHiddenDetailColumn" class="value">{{p.Name}} 
+											<!-- <ion-icon class="min-btn" *ngIf="p.IsTotal" [name]="p.Branch.IsHiddenDetailColumn? 'add-circle-outline':'remove-circle-outline'" ></ion-icon>  -->
+											
+										</div>
+									</td>
+								</ng-container>
+							</tr>
+							<ng-container *ngFor="let i of dataDailyRevExpn2">
+								<tr>
+									<td>
+										<div [ngClass]="{bold: i.data}">
+											{{i.adate}} 
+										</div>
+									</td>
+									<ng-container *ngFor="let p of headerDailyRevExpn2">
+										<td [ngStyle]="{'background-color': p.Branch.Color + '0f'}" *ngIf="!p.Branch.IsHidden && (!p.Branch.IsHiddenDetailColumn || p.IsTotal || p.IsAll)">
+											<div [ngClass]="{bold: p.Name.indexOf('TOTAL') >= 0}">{{ i[p.Name] }}</div>
+										</td>
+									</ng-container>
+								</tr>
+							</ng-container>
+						
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</ion-content>

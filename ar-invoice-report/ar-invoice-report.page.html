@@ -1,0 +1,88 @@
+<ion-header>
+	<ion-toolbar>
+		<ion-buttons slot="start" class="ion-hide-sm-down_">
+			<ion-button color="dark" class="ion-hide-sm-down">
+				{{'erp.app.pages.bi.invoices-reports.page-title' | translate}}
+			</ion-button>
+		</ion-buttons>
+		<ion-buttons slot="end">
+			<ion-button (click)="print()" title="{{'erp.app.pages.bi.sales-report.print' | translate}}">
+				<ion-icon slot="icon-only" name="print"></ion-icon>
+			</ion-button>
+			
+			<ion-button (click)="refresh()" title="{{'erp.app.pages.bi.sales-report.refresh' | translate}}">
+				<ion-icon slot="icon-only" name="reload-outline"></ion-icon>
+			</ion-button>
+			
+			<ion-button title="{{'erp.app.pages.bi.sales-report.show-feature' | translate}}" (click)="pageConfig.isShowFeature = !pageConfig.isShowFeature;">
+				<ion-icon slot="icon-only" [name]="pageConfig.isShowFeature? 'close-outline':'list-circle-outline'">
+				</ion-icon>
+			</ion-button>
+		</ion-buttons>
+	</ion-toolbar>
+
+	<ion-toolbar style="--padding-start: 4px;" color="primary">
+		<ion-segment scrollable="true" (ionChange)="segmentChanged($event)" [value]="segmentView">
+			<ion-segment-button value="ar-invoice-report/revenue">
+				<ion-label>{{'erp.app.pages.bi.invoices-reports.revenue' | translate}}</ion-label>
+			</ion-segment-button>
+			<!-- <ion-segment-button value="sales-reports/sale-saleman">
+				<ion-label>{{'erp.app.pages.bi.sales-report.sale-saleman' | translate}}</ion-label>
+			</ion-segment-button> -->
+		</ion-segment>
+	</ion-toolbar>
+</ion-header>
+
+
+
+<ion-content appScrollbarTheme appPrintFix class="A4" [ngClass]="{withFeature: pageConfig.isShowFeature}" forceOverscroll="false">
+	<ion-fab *ngIf="pageConfig.isShowFeature" [ngClass]="{withSearch: pageConfig.isShowSearch}" class="feature no-print " vertical="top" horizontal="end" slot="fixed">
+		<ion-list-header lines="inset">
+			<ion-label color="dark">{{'erp.app.pages.bi.sales-report.sort-conditions' | translate}}</ion-label>
+		</ion-list-header>
+		<div class="ion-padding" style="padding-bottom: 0;">
+
+			<div class="c-control">
+				<label class="c-label">{{'erp.app.pages.bi.sales-report.time' | translate}} ({{filter.fromDate}} - {{filter.toDate}})</label>
+				<ion-button *ngIf="filter.frequency == 1" (click)="changeDateFillter('d')" [fill]="filter.type=='d'? 'solid': 'outline'" size="small">{{'erp.app.pages.bi.sales-report.d' | translate}}</ion-button>
+				<ion-button *ngIf="filter.frequency == 1" (click)="changeDateFillter('dw')" [fill]="filter.type=='dw'? 'solid': 'outline'" size="small">{{'erp.app.pages.bi.sales-report.dw' | translate}}</ion-button>
+				<ion-button *ngIf="filter.frequency == 1" (click)="changeDateFillter('dm')" [fill]="filter.type=='dm'? 'solid': 'outline'" size="small">{{'erp.app.pages.bi.sales-report.dm' | translate}}</ion-button>
+
+				<ion-button *ngIf="filter.frequency == 2" (click)="changeDateFillter('m')" [fill]="filter.type=='m'? 'solid': 'outline'" size="small">{{'erp.app.pages.bi.sales-report.m' | translate}}</ion-button>
+				<ion-button *ngIf="filter.frequency == 2" (click)="changeDateFillter('m3')" [fill]="filter.type=='m3'? 'solid': 'outline'" size="small">{{'erp.app.pages.bi.sales-report.m3' | translate}}</ion-button>
+				<ion-button *ngIf="filter.frequency == 2" (click)="changeDateFillter('m6')" [fill]="filter.type=='m6'? 'solid': 'outline'" size="small">{{'erp.app.pages.bi.sales-report.m6' | translate}}</ion-button>
+				<ion-button *ngIf="filter.frequency == 2" (click)="changeDateFillter('my')" [fill]="filter.type=='my'? 'solid': 'outline'" size="small">{{'erp.app.pages.bi.sales-report.my' | translate}}</ion-button>
+
+				<ion-button *ngIf="filter.frequency == 3" (click)="changeDateFillter('q')" [fill]="filter.type=='q'? 'solid': 'outline'" size="small">{{'erp.app.pages.bi.sales-report.q' | translate}}</ion-button>
+				<ion-button *ngIf="filter.frequency == 3" (click)="changeDateFillter('q2')" [fill]="filter.type=='q2'? 'solid': 'outline'" size="small">{{'erp.app.pages.bi.sales-report.q2' | translate}}</ion-button>
+				<ion-button *ngIf="filter.frequency == 3" (click)="changeDateFillter('q3')" [fill]="filter.type=='q3'? 'solid': 'outline'" size="small">{{'erp.app.pages.bi.sales-report.q3' | translate}}</ion-button>
+				<ion-button *ngIf="filter.frequency == 3" (click)="changeDateFillter('qy')" [fill]="filter.type=='qy'? 'solid': 'outline'" size="small">{{'erp.app.pages.bi.sales-report.qy' | translate}}</ion-button>
+
+				<ion-button *ngIf="filter.frequency == 4" (click)="changeDateFillter('y')" [fill]="filter.type=='y'? 'solid': 'outline'" size="small">{{'erp.app.pages.bi.sales-report.y' | translate}}</ion-button>
+				<ion-button *ngIf="filter.frequency == 4" (click)="changeDateFillter('y2')" [fill]="filter.type=='y2'? 'solid': 'outline'" size="small">{{'erp.app.pages.bi.sales-report.y2' | translate}}</ion-button>
+				<ion-button *ngIf="filter.frequency == 4" (click)="changeDateFillter('y3')" [fill]="filter.type=='y3'? 'solid': 'outline'" size="small">{{'erp.app.pages.bi.sales-report.y3' | translate}}</ion-button>
+
+				<ion-button (click)="changeDateFillter('set')" [fill]="filter.type=='set'? 'solid': 'outline'" size="small">{{'erp.app.pages.bi.sales-report.option' | translate}}</ion-button>
+
+				<div *ngIf="filter.type=='set'" class="date-pick">
+					<input (change)="changeDateFillter('setdone')" [(ngModel)]="filter.fromDate" required type="date" pattern="\d{1,2}/\d{1,2}/\d{4}" class="datepicker" name="date" value="" />
+					<input (change)="changeDateFillter('setdone')" [(ngModel)]="filter.toDate" required type="date" pattern="\d{1,2}/\d{1,2}/\d{4}" class="datepicker" name="date" value="" />
+				</div>
+			</div>
+
+			<div class="c-control">
+				<ion-button [disabled]="submitAttempt" color="primary" expand="block" (click)="runReports()">{{'erp.app.pages.bi.invoices-reports.run-reports' | translate}}</ion-button> 
+				<!-- shape="round" -->
+			</div>
+
+			<div class="c-control">
+				<ion-button [disabled]="submitAttempt" color="primary" fill="outline" expand="block" (click)="exportInvoiceReport()">{{'erp.app.pages.bi.invoices-reports.export-invoice-report' | translate}}</ion-button> 
+				<!-- shape="round" -->
+			</div>
+
+		</div>
+
+
+	</ion-fab>
+	<ion-router-outlet></ion-router-outlet>
+</ion-content>
