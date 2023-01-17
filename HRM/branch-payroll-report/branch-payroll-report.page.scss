@@ -1,0 +1,27 @@
+
+header{
+    height: 60px;
+    .cell.col-number{
+        white-space: normal !important;
+        justify-content: flex-end;
+        text-align: right;
+    }
+}
+header.filter{
+    height: 30px;
+}
+
+.table>form{
+    top:60px;
+}
+
+.table .col-number {
+    max-width: 200px;
+    min-width: 200px;
+}
+
+
+.cell.thucLanh{
+    color: var(--ion-color-primary);
+    font-weight: bold;
+}

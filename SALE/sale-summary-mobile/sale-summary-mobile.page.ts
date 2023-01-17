@@ -1,8 +1,6 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { ActionSheetController, AlertController, LoadingController, PopoverController, NavController, NavParams, Platform } from '@ionic/angular';
-import { ItemsList } from '@ng-select/ng-select/lib/items-list';
 import { TranslateService } from '@ngx-translate/core';
-import { Chart, ChartOptions } from 'chart.js';
 import { PageBase } from 'src/app/page-base';
 import { EnvService } from 'src/app/services/core/env.service';
 import { CustomService } from 'src/app/services/custom.service';
@@ -10,7 +8,7 @@ import { ReportService } from 'src/app/services/report.service';
 import { ApiSetting } from 'src/app/services/static/api-setting';
 import { lib } from 'src/app/services/static/global-functions';
 import { BRA_BranchProvider } from 'src/app/services/static/services.service';
-import { PopoverPage } from '../../SYS/popover/popover.page';
+import { PopoverPage } from '../../../SYS/popover/popover.page';
 
 @Component({
 	selector: 'app-sale-summary-mobile',
