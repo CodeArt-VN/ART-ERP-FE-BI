@@ -10,7 +10,7 @@ import 'chartjs-plugin-labels';
 
 import { CustomService } from 'src/app/services/custom.service';
 import { Observable } from 'rxjs';
-import { CRM_ContactProvider, SALE_OrderProvider } from 'src/app/services/static/services.service';
+import { CRM_ContactProvider } from 'src/app/services/static/services.service';
 
 @Component({
     selector: 'app-dashboard',
@@ -48,8 +48,6 @@ export class DashboardPage extends PageBase {
 
     constructor(
         private pageService: CustomService,
-        public saleOrderProvider: SALE_OrderProvider,
-        public contactProvider: CRM_ContactProvider,
         public actionSheetController: ActionSheetController,
         public env: EnvService,
         public navCtrl: NavController,
@@ -93,7 +91,7 @@ export class DashboardPage extends PageBase {
 
         let beginDate = new Date(this.rpt.rptGlobal.query.fromDate);
         let endDate = new Date(this.rpt.rptGlobal.query.toDate);
-        
+
         let rundate = new Date(beginDate);
         //calc labels
         while (rundate <= endDate) {
@@ -101,77 +99,9 @@ export class DashboardPage extends PageBase {
             rundate.setDate(rundate.getDate() + 1);
         };
 
-        Promise.all([
-            this.saleOrderProvider.read(this.query)
-        ]).then(values => {
-            this.ListOfAllEvents = values[0]['data'];
 
-            this.numberOfEvents = this.ListOfAllEvents.length;
+        super.preLoadData(event);
 
-            const uniqueDate = [...new Set(this.ListOfAllEvents.map(item => lib.dateFormat(item.OrderDate, 'yyyy-mm-dd')))];
-            this.ListOfWeekendEvents = [];
-            this.ListOfWeekdayEvents = [];
-            this.ListOfOccupiedDay = uniqueDate;
-            let counter = 0;
-            for (let index = 0; index < this.ListOfAllEvents.length; index++) {
-                const day = this.ListOfAllEvents[index];
-
-                day.Personal = (day.Personal || 0);
-                day.Corporate = (day.Corporate || 0);
-
-                if (day.IsPersonal == true) {
-                    day.Personal = day.TotalAfterTax;
-                }
-                else if (day.IsPersonal == false) {
-                    day.Corporate = day.TotalAfterTax;
-                }
-
-                var today = new Date(day.OrderDate);
-                if (today.getDay() == 6 || today.getDay() == 0) {
-                    this.ListOfWeekendEvents.push(day);
-                } else {
-                    this.ListOfWeekdayEvents.push(day);
-                }
-                if (counter == this.ListOfAllEvents.length - 1) {
-                    if (this.numberOfEvents != 0) {
-                        this.ListOfAllEvents = [...this.ListOfAllEvents];
-                        this.numberOfWeekendEvents = Math.round(this.ListOfWeekendEvents.length / this.numberOfEvents * 100);
-                        this.numberOfWeekdayEvents = Math.round(this.ListOfWeekdayEvents.length / this.numberOfEvents * 100);
-                        this.numberOfOccupancyRate = Math.round(this.ListOfOccupiedDay.length / this.ListOfDateRange.length * 100);
-                    } else {
-                        this.numberOfWeekendEvents = 0;
-                        this.numberOfWeekdayEvents = 0;
-                        this.numberOfOccupancyRate = 0;
-                    }
-                    super.preLoadData(event);
-                    this.updateChart();
-                };
-                counter++;
-            }
-
-            //When this.ListOfAllEvents == 0 ?
-            if (this.ListOfAllEvents.length == 0) {
-                this.numberOfWeekendEvents = 0;
-                this.numberOfWeekdayEvents = 0;
-                this.numberOfOccupancyRate = 0;
-
-                this.charts.SoLuongTiec.IsLoading = false;
-                this.charts.DoanhThuChiTieu.IsLoading = false;
-                this.charts.ChiPhiChiTieu.IsLoading = false;
-                this.charts.SaleByService.IsLoading = false;
-                this.charts.InquiryBySource.IsLoading = false;
-                this.charts.LostReason.IsLoading = false;  
-                this.charts.Funnel.IsLoading = false;  
-                this.charts.Top10Customer.IsLoading = false;
-                this.charts.PNL.IsLoading = false;  
-                this.charts.CashFlow.IsLoading = false;
-
-                this.env.showTranslateMessage('Không có dữ liệu trong khoảng thời gian được chọn!','warning')
-
-                super.preLoadData(event);
-            }
-            
-        });
     }
 
     changeBranchBtn() {
@@ -201,14 +131,14 @@ export class DashboardPage extends PageBase {
 
     getDatesInRange(startDate, endDate) {
         const date = new Date(startDate.getDate());
-      
+
         const dates = [];
-      
+
         while (date <= endDate) {
-          dates.push(new Date(date));
-          date.setDate(date.getDate() + 1);
+            dates.push(new Date(date));
+            date.setDate(date.getDate() + 1);
         }
-      
+
         return dates;
     }
 
@@ -218,10 +148,10 @@ export class DashboardPage extends PageBase {
         this.charts.ChiPhiChiTieu.IsLoading = true;
         this.charts.SaleByService.IsLoading = true;
         this.charts.InquiryBySource.IsLoading = true;
-        this.charts.LostReason.IsLoading = true;  
-        this.charts.Funnel.IsLoading = true;  
+        this.charts.LostReason.IsLoading = true;
+        this.charts.Funnel.IsLoading = true;
         this.charts.Top10Customer.IsLoading = true;
-        this.charts.PNL.IsLoading = true;  
+        this.charts.PNL.IsLoading = true;
         this.charts.CashFlow.IsLoading = true;
 
         this.rpt.dateQuery(type).then(_ => {
@@ -266,7 +196,7 @@ export class DashboardPage extends PageBase {
     }
 
     buildCharts() {
-        
+
         this.buildTopSum();
         this.buildSoLuongTiecChart(this.soLuongTiecCanvas).subscribe(c => {
             this.charts.SoLuongTiec.Chart = c;
@@ -359,7 +289,7 @@ export class DashboardPage extends PageBase {
             };
             let chart = new Chart(ctx, {
                 type: 'line',
-                options: 
+                options:
                 {
                     maintainAspectRatio: false,
                     responsive: true,
@@ -449,7 +379,7 @@ export class DashboardPage extends PageBase {
                 let sum = ds.Data.filter((e) => {
                     return this.rpt.timeGroupCompare(e, g)
                 });
-    
+
                 group.push(sum.length);
             }
         }
@@ -580,9 +510,9 @@ export class DashboardPage extends PageBase {
                     backgroundColor: 'rgba(0, 0, 0, 0.5)',
                     callbacks: {
                         label: function (tooltipItem, data) {
-                            var value = lib.currencyFormatFriendly( data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index] );
+                            var value = lib.currencyFormatFriendly(data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index]);
                             var label = data.datasets[tooltipItem.datasetIndex].label;
-                            return label + ': '+ value;
+                            return label + ': ' + value;
                         }
                     }
                 },
@@ -594,7 +524,7 @@ export class DashboardPage extends PageBase {
                     point: {
                         radius: 0,
                         hoverRadius: 4,
-                        backgroundColor: ()=>lib.getCssVariableValue('--ion-color-primary'),
+                        backgroundColor: () => lib.getCssVariableValue('--ion-color-primary'),
                         borderWidth: 1,
                         hoverBorderWidth: 2
                     },
@@ -606,27 +536,27 @@ export class DashboardPage extends PageBase {
                     yAxes: [
                         {
                             ticks: {
-                                fontColor: ()=>lib.getCssVariableValue('--ion-color-primary'),
+                                fontColor: () => lib.getCssVariableValue('--ion-color-primary'),
                                 fontSize: 12,
                                 maxTicksLimit: 8,
                                 padding: 20,
-                                userCallback: function(value, index, values) {
-                                    return lib.currencyFormatFriendly(value); 
+                                userCallback: function (value, index, values) {
+                                    return lib.currencyFormatFriendly(value);
                                 }
                             },
                             gridLines: {
-                                color: ()=>lib.getCssVariableValue('--ion-color-primary'),
+                                color: () => lib.getCssVariableValue('--ion-color-primary'),
                                 display: true,
                                 drawTicks: false,
                                 drawBorder: false,
-                                zeroLineColor: ()=>lib.getCssVariableValue('--ion-color-primary'),
+                                zeroLineColor: () => lib.getCssVariableValue('--ion-color-primary'),
                             }
                         }
                     ],
                     xAxes: [
                         {
                             ticks: {
-                                fontColor: ()=>lib.getCssVariableValue('--ion-color-primary'),
+                                fontColor: () => lib.getCssVariableValue('--ion-color-primary'),
                                 fontSize: 10,
                                 //maxTicksLimit: 7,
                                 padding: 15
@@ -737,9 +667,9 @@ export class DashboardPage extends PageBase {
                     backgroundColor: 'rgba(0, 0, 0, 0.5)',
                     callbacks: {
                         label: function (tooltipItem, data) {
-                            var value = lib.currencyFormatFriendly( data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index] );
+                            var value = lib.currencyFormatFriendly(data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index]);
                             var label = data.datasets[tooltipItem.datasetIndex].label;
-                            return label + ': '+ value;
+                            return label + ': ' + value;
                         }
                     }
                 },
@@ -751,7 +681,7 @@ export class DashboardPage extends PageBase {
                     point: {
                         radius: 0,
                         hoverRadius: 4,
-                        backgroundColor: ()=>lib.getCssVariableValue('--ion-color-primary'),
+                        backgroundColor: () => lib.getCssVariableValue('--ion-color-primary'),
                         borderWidth: 1,
                         hoverBorderWidth: 2
                     },
@@ -763,27 +693,27 @@ export class DashboardPage extends PageBase {
                     yAxes: [
                         {
                             ticks: {
-                                fontColor: ()=>lib.getCssVariableValue('--ion-color-primary'),
+                                fontColor: () => lib.getCssVariableValue('--ion-color-primary'),
                                 fontSize: 12,
                                 maxTicksLimit: 8,
                                 padding: 20,
-                                userCallback: function(value, index, values) {
-                                    return lib.currencyFormatFriendly(value); 
+                                userCallback: function (value, index, values) {
+                                    return lib.currencyFormatFriendly(value);
                                 }
                             },
                             gridLines: {
-                                color: ()=>lib.getCssVariableValue('--ion-color-primary'),
+                                color: () => lib.getCssVariableValue('--ion-color-primary'),
                                 display: true,
                                 drawTicks: false,
                                 drawBorder: false,
-                                zeroLineColor: ()=>lib.getCssVariableValue('--ion-color-primary'),
+                                zeroLineColor: () => lib.getCssVariableValue('--ion-color-primary'),
                             }
                         }
                     ],
                     xAxes: [
                         {
                             ticks: {
-                                fontColor: ()=>lib.getCssVariableValue('--ion-color-primary'),
+                                fontColor: () => lib.getCssVariableValue('--ion-color-primary'),
                                 fontSize: 10,
                                 //maxTicksLimit: 7,
                                 padding: 15
@@ -879,24 +809,24 @@ export class DashboardPage extends PageBase {
                     yAxes: [
                         {
                             ticks: {
-                                fontColor: ()=>lib.getCssVariableValue('--ion-color-primary'),
+                                fontColor: () => lib.getCssVariableValue('--ion-color-primary'),
                                 fontSize: 11,
                                 maxTicksLimit: 8,
                                 padding: 10
                             },
                             gridLines: {
-                                color: ()=>lib.getCssVariableValue('--ion-color-primary'),
+                                color: () => lib.getCssVariableValue('--ion-color-primary'),
                                 display: false,
                                 drawTicks: false,
                                 drawBorder: false,
-                                zeroLineColor: ()=>lib.getCssVariableValue('--ion-color-primary'),
+                                zeroLineColor: () => lib.getCssVariableValue('--ion-color-primary'),
                             }
                         }
                     ],
                     xAxes: [
                         {
                             ticks: {
-                                fontColor: ()=>lib.getCssVariableValue('--ion-color-primary'),
+                                fontColor: () => lib.getCssVariableValue('--ion-color-primary'),
                                 fontSize: 10,
                                 //maxTicksLimit: 7,
                                 padding: 15,
@@ -945,10 +875,10 @@ export class DashboardPage extends PageBase {
             ds.type = 'horizontalBar';
             ds.fill = true;
             ds.borderWidth = 1,
-            ds.borderColor = ds._b.Color,
-            ds.backgroundColor = this.rpt.createHorizontalGradientStroke(ctx, width, ds._b.Color),
-            ds.hoverBackgroundColor = ds._b.Color,
-            ds.data = [this.calcSumGroupData(ds, 'Corporate').reduce((a, b) => a + b, 0),this.calcSumGroupData(ds, 'Personal').reduce((a, b) => a + b, 0)];
+                ds.borderColor = ds._b.Color,
+                ds.backgroundColor = this.rpt.createHorizontalGradientStroke(ctx, width, ds._b.Color),
+                ds.hoverBackgroundColor = ds._b.Color,
+                ds.data = [this.calcSumGroupData(ds, 'Corporate').reduce((a, b) => a + b, 0), this.calcSumGroupData(ds, 'Personal').reduce((a, b) => a + b, 0)];
 
             let sumRevenue = 0;
             sumRevenue = ds.data.reduce((a, b) => a + b, 0);
@@ -986,9 +916,9 @@ export class DashboardPage extends PageBase {
                     backgroundColor: 'rgba(0, 0, 0, 0.5)',
                     callbacks: {
                         label: function (tooltipItem, data) {
-                            var value = lib.currencyFormatFriendly( data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index] );
+                            var value = lib.currencyFormatFriendly(data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index]);
                             var label = data.datasets[tooltipItem.datasetIndex].label;
-                            return label + ': '+ value;
+                            return label + ': ' + value;
                         }
                     }
                 },
@@ -1001,32 +931,32 @@ export class DashboardPage extends PageBase {
                     yAxes: [
                         {
                             ticks: {
-                                fontColor: ()=>lib.getCssVariableValue('--ion-color-primary'),
+                                fontColor: () => lib.getCssVariableValue('--ion-color-primary'),
                                 fontSize: 11,
                                 maxTicksLimit: 8,
                                 padding: 10,
-                                
+
                             },
                             gridLines: {
-                                color: ()=>lib.getCssVariableValue('--ion-color-primary'),
+                                color: () => lib.getCssVariableValue('--ion-color-primary'),
                                 display: false,
                                 drawTicks: false,
                                 drawBorder: false,
-                                zeroLineColor: ()=>lib.getCssVariableValue('--ion-color-primary'),
+                                zeroLineColor: () => lib.getCssVariableValue('--ion-color-primary'),
                             }
                         }
                     ],
                     xAxes: [
                         {
                             ticks: {
-                                fontColor: ()=>lib.getCssVariableValue('--ion-color-primary'),
+                                fontColor: () => lib.getCssVariableValue('--ion-color-primary'),
                                 fontSize: 10,
                                 //maxTicksLimit: 7,
                                 padding: 15,
                                 beginAtZero: true,
                                 min: 0,
-                                userCallback: function(value, index, values) {
-                                    return lib.currencyFormatFriendly(value); 
+                                userCallback: function (value, index, values) {
+                                    return lib.currencyFormatFriendly(value);
                                 }
                             },
                             gridLines: {
@@ -1076,12 +1006,12 @@ export class DashboardPage extends PageBase {
                 backgroundColor: this.rpt.createHorizontalGradientStroke(ctx, width, b.Color),
                 hoverBackgroundColor: b.Color,
                 data: [
-                    this.rpt.randomScalingFactor(30,70), 
-                    this.rpt.randomScalingFactor(30,70), 
-                    this.rpt.randomScalingFactor(30,70), 
-                    this.rpt.randomScalingFactor(30,70), 
-                    this.rpt.randomScalingFactor(30,70), 
-                    this.rpt.randomScalingFactor(30,70)
+                    this.rpt.randomScalingFactor(30, 70),
+                    this.rpt.randomScalingFactor(30, 70),
+                    this.rpt.randomScalingFactor(30, 70),
+                    this.rpt.randomScalingFactor(30, 70),
+                    this.rpt.randomScalingFactor(30, 70),
+                    this.rpt.randomScalingFactor(30, 70)
                 ]
             };
             data.datasets.push(object);
@@ -1125,9 +1055,9 @@ export class DashboardPage extends PageBase {
                     callbacks: {
                         "title": (tooltipItem, data) => data.labels[tooltipItem[0].index],
                         label: function (tooltipItem, data) {
-                            var value = lib.currencyFormatFriendly( data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index] );
+                            var value = lib.currencyFormatFriendly(data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index]);
                             var label = data.datasets[tooltipItem.datasetIndex].label;
-                            return label + ': '+ value;
+                            return label + ': ' + value;
                         }
                     }
                 },
@@ -1200,7 +1130,7 @@ export class DashboardPage extends PageBase {
                     position: 'left',
                     labels: {
                         fontSize: 12,
-                        fontColor: ()=>lib.getCssVariableValue('--ion-color-primary'),
+                        fontColor: () => lib.getCssVariableValue('--ion-color-primary'),
                         usePointStyle: true,
                         boxWidth: 8,
                         boxHeight: 50,
@@ -1223,7 +1153,7 @@ export class DashboardPage extends PageBase {
             data: data,
         });
     }
-    
+
     buildTop10CustomerChart() {
         let ctx = this.top10CustomerCanvas.nativeElement;
         var width = ctx.width;
@@ -1243,7 +1173,7 @@ export class DashboardPage extends PageBase {
         };
 
         const uniqueID = [...new Set(this.ListOfAllEvents.map(item => item.IDContact))];
-        for (let i = 0; i < uniqueID.length; i ++) {
+        for (let i = 0; i < uniqueID.length; i++) {
             let Id = uniqueID[i];
             let tempDataList = this.ListOfAllEvents.filter(branch => branch.IDContact == Id);
             const uniqueIDBranch = [...new Set(tempDataList.map(item => item.IDBranch))];
@@ -1253,11 +1183,11 @@ export class DashboardPage extends PageBase {
                 tempTotal += e.TotalAfterTax;
             });
 
-            ListTopCustomer.push({Id: Id, value: tempTotal, IDBranch: uniqueIDBranch});
+            ListTopCustomer.push({ Id: Id, value: tempTotal, IDBranch: uniqueIDBranch });
         }
         indexForListData = [];
         let IDContactHolder = [];
-        ListTopCustomer = ListTopCustomer.sort((n1,n2) => n2.value - n1.value).slice(0, 10);
+        ListTopCustomer = ListTopCustomer.sort((n1, n2) => n2.value - n1.value).slice(0, 10);
         for (let index = 0; index < ListTopCustomer.length; index++) {
             const customer = ListTopCustomer[index];
 
@@ -1268,7 +1198,7 @@ export class DashboardPage extends PageBase {
 
                 let value = IDContactHolder.find(d => d.Id == ele.IDContact);
                 if (!value) {
-                    IDContactHolder.push({Id: ele.IDContact});
+                    IDContactHolder.push({ Id: ele.IDContact });
                     const index = this.rpt.rptGlobal.branch.map(m => m.Id).indexOf(ele.IDBranch, 0);
                     indexForListData.push(index);
 
@@ -1280,10 +1210,10 @@ export class DashboardPage extends PageBase {
                         ds.type = 'horizontalBar';
                         ds.fill = true;
                         ds.borderWidth = 1,
-                        ds.borderColor = ds._b.Color,
-                        ds.backgroundColor = this.rpt.createHorizontalGradientStroke(ctx, width, ds._b.Color),
-                        ds.hoverBackgroundColor = ds._b.Color,
-                        ds.data = [];
+                            ds.borderColor = ds._b.Color,
+                            ds.backgroundColor = this.rpt.createHorizontalGradientStroke(ctx, width, ds._b.Color),
+                            ds.hoverBackgroundColor = ds._b.Color,
+                            ds.data = [];
 
                         for (let index = 0; index < ListTopCustomer.length; index++) {
                             ds.data.push(0);
@@ -1311,13 +1241,13 @@ export class DashboardPage extends PageBase {
                 targetArray;
             }
             else {
-                let arrayTemplate = targetArray ? targetArray : tempListHold.slice(0,this.rpt.rptGlobal.branch.length);
-                let newArray = tempListHold.slice(a,a+this.rpt.rptGlobal.branch.length);
+                let arrayTemplate = targetArray ? targetArray : tempListHold.slice(0, this.rpt.rptGlobal.branch.length);
+                let newArray = tempListHold.slice(a, a + this.rpt.rptGlobal.branch.length);
                 let arrayTemplate2 = arrayTemplate[element];
                 let newArray2 = newArray[element];
                 var sum;
                 if (arrayTemplate2 != newArray2) {
-                    sum = [...arrayTemplate2].map((e,i)=> e+newArray2[i]); //[6,8,10,12]
+                    sum = [...arrayTemplate2].map((e, i) => e + newArray2[i]); //[6,8,10,12]
                 }
                 else {
                     sum = arrayTemplate2;
@@ -1331,19 +1261,19 @@ export class DashboardPage extends PageBase {
         let object;
         for (let m = 0; m < this.rpt.rptGlobal.branch.length; m++) {
             object =
-                {
-                    type: 'horizontalBar',
-                    fill: true,
-                    borderWidth: 1,
-                    color: this.rpt.rptGlobal.branch[m].Color,
-                    hidden: this.rpt.rptGlobal.branch[m].IsHidden,
-                    IDBranch: this.rpt.rptGlobal.branch[m].Id,
-                    label: this.rpt.rptGlobal.branch[m].Name,
-                    borderColor: this.rpt.rptGlobal.branch[m].Color,
-                    backgroundColor: this.rpt.createHorizontalGradientStroke(ctx, width * 3, this.rpt.rptGlobal.branch[m].Color),
-                    hoverBackgroundColor: this.rpt.rptGlobal.branch[m].Color,
-                    data: targetArray[m],
-                }
+            {
+                type: 'horizontalBar',
+                fill: true,
+                borderWidth: 1,
+                color: this.rpt.rptGlobal.branch[m].Color,
+                hidden: this.rpt.rptGlobal.branch[m].IsHidden,
+                IDBranch: this.rpt.rptGlobal.branch[m].Id,
+                label: this.rpt.rptGlobal.branch[m].Name,
+                borderColor: this.rpt.rptGlobal.branch[m].Color,
+                backgroundColor: this.rpt.createHorizontalGradientStroke(ctx, width * 3, this.rpt.rptGlobal.branch[m].Color),
+                hoverBackgroundColor: this.rpt.rptGlobal.branch[m].Color,
+                data: targetArray[m],
+            }
 
             let sumRevenue = 0;
             sumRevenue = object.data.reduce((a, b) => a + b, 0);
@@ -1354,7 +1284,7 @@ export class DashboardPage extends PageBase {
             data.datasets.push(object);
         };
         data.labels = ListTopCustomerName;
-        
+
         this.charts.Top10Customer.IsLoading = false;
         this.charts.Top10Customer.Chart = new Chart(ctx, {
             type: 'horizontalBar',
@@ -1382,9 +1312,9 @@ export class DashboardPage extends PageBase {
                     backgroundColor: 'rgba(0, 0, 0, 0.5)',
                     callbacks: {
                         label: function (tooltipItem, data) {
-                            var value = lib.currencyFormatFriendly( data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index] );
+                            var value = lib.currencyFormatFriendly(data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index]);
                             var label = data.datasets[tooltipItem.datasetIndex].label;
-                            return label + ': '+ value;
+                            return label + ': ' + value;
                         }
                     }
                 },
@@ -1404,25 +1334,25 @@ export class DashboardPage extends PageBase {
                                 autoSkip: false
                             },
                             gridLines: {
-                                color: ()=>lib.getCssVariableValue('--ion-color-primary'),
+                                color: () => lib.getCssVariableValue('--ion-color-primary'),
                                 display: false,
                                 drawTicks: false,
                                 drawBorder: false,
-                                zeroLineColor: ()=>lib.getCssVariableValue('--ion-color-primary'),
+                                zeroLineColor: () => lib.getCssVariableValue('--ion-color-primary'),
                             }
                         }
                     ],
                     xAxes: [
                         {
                             ticks: {
-                                fontColor: ()=>lib.getCssVariableValue('--ion-color-primary'),
+                                fontColor: () => lib.getCssVariableValue('--ion-color-primary'),
                                 fontSize: 10,
                                 //maxTicksLimit: 7,
                                 padding: 15,
                                 beginAtZero: true,
                                 min: 0,
-                                userCallback: function(value, index, values) {
-                                    return lib.currencyFormatFriendly(value); 
+                                userCallback: function (value, index, values) {
+                                    return lib.currencyFormatFriendly(value);
                                 }
                             },
                             gridLines: {
@@ -1534,10 +1464,10 @@ export class DashboardPage extends PageBase {
                             for (let i = 0; i < ev.length; i++) {
                                 tempTotal += ev[i].TotalAfterTax;
                             }
-                            ds.data.push({Order: ev.length, Total: tempTotal});
+                            ds.data.push({ Order: ev.length, Total: tempTotal });
                         }
                         else {
-                            ds.data.push ({Order: ev.length, Total: 0})
+                            ds.data.push({ Order: ev.length, Total: 0 })
                         }
                     }
                     else { //Khác tháng hiện tại
@@ -1568,7 +1498,7 @@ export class DashboardPage extends PageBase {
                 let opacity = Math.round(d.Order / ds.max * 255).toString(16);
                 if (d != -1) {
                     d.Total = Math.round(d.Total / 100000) / 10; //Doanh Thu
-                } 
+                }
                 if (!percent) {
                     percent = 0;
                 }
@@ -1576,7 +1506,7 @@ export class DashboardPage extends PageBase {
                     opacity = '0';
                 }
 
-                let dx = { name: ds._b.Name, value: d.Order, percent: percent, opacity: opacity, total: d.Total, color: ds._b.Color};
+                let dx = { name: ds._b.Name, value: d.Order, percent: percent, opacity: opacity, total: d.Total, color: ds._b.Color };
                 ds.data[j] = dx;
             }
         }
@@ -1600,13 +1530,13 @@ export class DashboardPage extends PageBase {
         var width = ctx.width;
         var height = ctx.height;
         ctx = ctx.getContext("2d");
-        
+
         let ListLabel = this.rpt.timeGroups.map(m => m.Label)
         let GrossProfitdataGenerator = [];
         let RevenuedataGenerator = [];
         let FixedCostdataGenerator = [];
         let VariableCostdataGenerator = [];
-        
+
         var data = {
             labels: ListLabel,
             datasets: []
@@ -1740,7 +1670,7 @@ export class DashboardPage extends PageBase {
 
         //Gross profit CALC
         for (let j = 0; j < data.labels.length; j++) {
-            
+
             // //Gross profit             //Revenue                  //Fixed cost                //Variable cost
             // data.datasets[0].data[j] = data.datasets[4].data[j] - data.datasets[8].data[j] - data.datasets[12].data[j]; //All
             // data.datasets[1].data[j] = data.datasets[5].data[j] - data.datasets[9].data[j] - data.datasets[13].data[j]; //GEM
@@ -1761,7 +1691,7 @@ export class DashboardPage extends PageBase {
             // data.datasets[9].data[j] = data.datasets[19].data[j] - data.datasets[29].data[j] - data.datasets[39].data[j]; //06NBK
 
             //Gross profit             //Revenue                  //Fixed cost                //Variable cost
-            data.datasets[0].data[j] = data.datasets[9].data[j]  - data.datasets[18].data[j] - data.datasets[27].data[j]; //InHoldings
+            data.datasets[0].data[j] = data.datasets[9].data[j] - data.datasets[18].data[j] - data.datasets[27].data[j]; //InHoldings
             data.datasets[1].data[j] = data.datasets[10].data[j] - data.datasets[19].data[j] - data.datasets[28].data[j]; //InHospitality
             data.datasets[2].data[j] = data.datasets[11].data[j] - data.datasets[20].data[j] - data.datasets[29].data[j]; //InDevelopment
             data.datasets[3].data[j] = data.datasets[12].data[j] - data.datasets[21].data[j] - data.datasets[30].data[j]; //DongXuan
@@ -1800,9 +1730,9 @@ export class DashboardPage extends PageBase {
                     backgroundColor: 'rgba(0, 0, 0, 0.5)',
                     callbacks: {
                         label: function (tooltipItem, data) {
-                            var value = lib.currencyFormatFriendly( data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index] );
+                            var value = lib.currencyFormatFriendly(data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index]);
                             var label = data.datasets[tooltipItem.datasetIndex].label;
-                            return label + ': '+ value;
+                            return label + ': ' + value;
                         }
                     }
                 },
@@ -1814,7 +1744,7 @@ export class DashboardPage extends PageBase {
                     point: {
                         radius: 0,
                         hoverRadius: 4,
-                        backgroundColor: ()=>lib.getCssVariableValue('--ion-color-primary'),
+                        backgroundColor: () => lib.getCssVariableValue('--ion-color-primary'),
                         borderWidth: 1,
                         hoverBorderWidth: 2
                     },
@@ -1830,8 +1760,8 @@ export class DashboardPage extends PageBase {
                                 fontSize: 12,
                                 maxTicksLimit: 8,
                                 padding: 20,
-                                userCallback: function(value, index, values) {
-                                    return lib.currencyFormatFriendly(value); 
+                                userCallback: function (value, index, values) {
+                                    return lib.currencyFormatFriendly(value);
                                 }
                             },
                             gridLines: {
@@ -1884,7 +1814,7 @@ export class DashboardPage extends PageBase {
         let CashIndataGenerator = [];
         let CashOutdataGenerator = [];
 
-        
+
         var data = {
             labels: ListLabel,
             datasets: []
@@ -1981,7 +1911,7 @@ export class DashboardPage extends PageBase {
             // data.datasets[9].data[j] = data.datasets[19].data[j] - data.datasets[29].data[j]; //06NBK
 
             //Cash balance             //In                       //Out                
-            data.datasets[0].data[j] = data.datasets[9].data[j]  - data.datasets[18].data[j]; //InHoldings
+            data.datasets[0].data[j] = data.datasets[9].data[j] - data.datasets[18].data[j]; //InHoldings
             data.datasets[1].data[j] = data.datasets[10].data[j] - data.datasets[19].data[j]; //InHospitality
             data.datasets[2].data[j] = data.datasets[11].data[j] - data.datasets[20].data[j]; //InDevelopment
             data.datasets[3].data[j] = data.datasets[12].data[j] - data.datasets[21].data[j]; //DongXuan
@@ -2019,9 +1949,9 @@ export class DashboardPage extends PageBase {
                     backgroundColor: 'rgba(0, 0, 0, 0.5)',
                     callbacks: {
                         label: function (tooltipItem, data) {
-                            var value = lib.currencyFormatFriendly( data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index] );
+                            var value = lib.currencyFormatFriendly(data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index]);
                             var label = data.datasets[tooltipItem.datasetIndex].label;
-                            return label + ': '+ value;
+                            return label + ': ' + value;
                         }
                     }
                 },
@@ -2033,7 +1963,7 @@ export class DashboardPage extends PageBase {
                     point: {
                         radius: 0,
                         hoverRadius: 4,
-                        backgroundColor: ()=>lib.getCssVariableValue('--ion-color-primary'),
+                        backgroundColor: () => lib.getCssVariableValue('--ion-color-primary'),
                         borderWidth: 1,
                         hoverBorderWidth: 2
                     },
@@ -2049,8 +1979,8 @@ export class DashboardPage extends PageBase {
                                 fontSize: 12,
                                 maxTicksLimit: 8,
                                 padding: 20,
-                                userCallback: function(value, index, values) {
-                                    return lib.currencyFormatFriendly(value); 
+                                userCallback: function (value, index, values) {
+                                    return lib.currencyFormatFriendly(value);
                                 }
                             },
                             gridLines: {
