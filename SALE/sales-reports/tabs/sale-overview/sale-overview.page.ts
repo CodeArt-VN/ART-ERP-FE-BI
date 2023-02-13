@@ -4,9 +4,6 @@ import { EnvService } from 'src/app/services/core/env.service';
 import { PageBase } from 'src/app/page-base';
 import { ReportService } from 'src/app/services/report.service';
 import { lib } from 'src/app/services/static/global-functions';
-import Chart from 'chart.js';
-import 'chartjs-plugin-labels';
-import 'chartjs-funnel';
 import { CustomService } from 'src/app/services/custom.service';
 
 @Component({
@@ -160,102 +157,102 @@ export class SaleOverviewPage extends PageBase {
         //     }
         // }
 
-        this.charts.doanhThuChiTieu.Chart = new Chart(ctx, {
-            type: 'bar',
-            options: {
-                maintainAspectRatio: false,
-                responsive: true,
+        // this.charts.doanhThuChiTieu.Chart = new Chart(ctx, {
+        //     type: 'bar',
+        //     options: {
+        //         maintainAspectRatio: false,
+        //         responsive: true,
 
-                layout: {
-                    padding: {
-                        top: 20,
-                    }
-                },
-                legend: {
-                    display: false,
-                    labels: {
-                        fontColor: '#FFF',
-                        usePointStyle: true,
-                        boxWidth: 8,
-                    }
-                },
-                tooltips: {
-                    mode: 'index',
-                    intersect: false,
-                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                    callbacks: {
-                        label: function (tooltipItem, data) {
-                            var value = lib.currencyFormatFriendly( data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index] );
-                            var label = data.datasets[tooltipItem.datasetIndex].label;
-                            return label + ': '+ value;
-                        }
-                    }
-                },
-                hover: {
-                    mode: 'index',
-                    intersect: false
-                },
-                elements: {
-                    point: {
-                        radius: 0,
-                        hoverRadius: 4,
-                        backgroundColor: ()=>lib.getCssVariableValue('--ion-color-primary') + 'e6',
-                        borderWidth: 1,
-                        hoverBorderWidth: 2
-                    },
-                    line: {
-                        borderWidth: 3
-                    }
-                },
-                scales: {
-                    yAxes: [
-                        {
-                            ticks: {
-                                fontColor: ()=>lib.getCssVariableValue('--ion-color-primary'),
-                                fontSize: 12,
-                                maxTicksLimit: 8,
-                                padding: 20,
-                                userCallback: function(value, index, values) {
-                                    return lib.currencyFormatFriendly(value); 
-                                }
-                            },
-                            gridLines: {
-                                color: ()=>lib.getCssVariableValue('--ion-color-primary') + '80',
-                                display: true,
-                                drawTicks: false,
-                                drawBorder: false,
-                                zeroLineColor: ()=>lib.getCssVariableValue('--ion-color-primary') + 'e6',
-                            }
-                        }
-                    ],
-                    xAxes: [
-                        {
-                            ticks: {
-                                fontColor: ()=>lib.getCssVariableValue('--ion-color-primary'),
-                                fontSize: 10,
-                                //maxTicksLimit: 7,
-                                padding: 15,
+        //         layout: {
+        //             padding: {
+        //                 top: 20,
+        //             }
+        //         },
+        //         legend: {
+        //             display: false,
+        //             labels: {
+        //                 fontColor: '#FFF',
+        //                 usePointStyle: true,
+        //                 boxWidth: 8,
+        //             }
+        //         },
+        //         tooltips: {
+        //             mode: 'index',
+        //             intersect: false,
+        //             backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        //             callbacks: {
+        //                 label: function (tooltipItem, data) {
+        //                     var value = lib.currencyFormatFriendly( data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index] );
+        //                     var label = data.datasets[tooltipItem.datasetIndex].label;
+        //                     return label + ': '+ value;
+        //                 }
+        //             }
+        //         },
+        //         hover: {
+        //             mode: 'index',
+        //             intersect: false
+        //         },
+        //         elements: {
+        //             point: {
+        //                 radius: 0,
+        //                 hoverRadius: 4,
+        //                 backgroundColor: ()=>lib.getCssVariableValue('--ion-color-primary') + 'e6',
+        //                 borderWidth: 1,
+        //                 hoverBorderWidth: 2
+        //             },
+        //             line: {
+        //                 borderWidth: 3
+        //             }
+        //         },
+        //         scales: {
+        //             yAxes: [
+        //                 {
+        //                     ticks: {
+        //                         fontColor: ()=>lib.getCssVariableValue('--ion-color-primary'),
+        //                         fontSize: 12,
+        //                         maxTicksLimit: 8,
+        //                         padding: 20,
+        //                         userCallback: function(value, index, values) {
+        //                             return lib.currencyFormatFriendly(value); 
+        //                         }
+        //                     },
+        //                     gridLines: {
+        //                         color: ()=>lib.getCssVariableValue('--ion-color-primary') + '80',
+        //                         display: true,
+        //                         drawTicks: false,
+        //                         drawBorder: false,
+        //                         zeroLineColor: ()=>lib.getCssVariableValue('--ion-color-primary') + 'e6',
+        //                     }
+        //                 }
+        //             ],
+        //             xAxes: [
+        //                 {
+        //                     ticks: {
+        //                         fontColor: ()=>lib.getCssVariableValue('--ion-color-primary'),
+        //                         fontSize: 10,
+        //                         //maxTicksLimit: 7,
+        //                         padding: 15,
                                 
-                            },
-                            gridLines: { 
+        //                     },
+        //                     gridLines: { 
 
-                                display: false,
-                                drawTicks: false,
-                                drawBorder: false,
-                            }
-                        }
-                    ]
-                },
-                plugins: {
-                    labels: {
-                        render: () => { },
-                        fontSize: 12,
+        //                         display: false,
+        //                         drawTicks: false,
+        //                         drawBorder: false,
+        //                     }
+        //                 }
+        //             ]
+        //         },
+        //         plugins: {
+        //             labels: {
+        //                 render: () => { },
+        //                 fontSize: 12,
 
-                    },
-                },
-            },
-            data: data,
-        });
+        //             },
+        //         },
+        //     },
+        //     data: data,
+        // });
     }
 
     chartNameBuild() {

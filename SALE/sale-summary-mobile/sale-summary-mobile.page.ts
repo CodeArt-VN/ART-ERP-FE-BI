@@ -22,6 +22,16 @@ export class SaleSummaryMobilePage extends PageBase {
 		ShowSpinner: true
 	}
 
+	totalPieChartData = [];
+	totalPieChartLabel = [];
+
+	ChartStyle2 = {
+        width: '100%',
+        'min-height': '300px',
+    }
+	
+
+
 	reportQuery: any = {
 		selectedBTNDate: 'today',
 		frequency: 1,
@@ -31,60 +41,10 @@ export class SaleSummaryMobilePage extends PageBase {
 		_saleman: { Id: this.env.user.StaffID, Code: '', FullName: this.env.user.FullName }
 	};
 
-	IDTypeText:any = [
-        {
-            IDType: 72,
-            Type: 'Tiền Mặt',
-			isHidden: true,
-			Amount: 0,
-        },
-        {
-            IDType: 1376,
-            Type: 'Chuyển khoản',
-			isHidden: true,
-			Amount: 0,
-			Banks: [],
-        },
-        {
-            IDType: 1402,
-            Type: 'Credit Card',
-			isHidden: true,
-			Amount: 0,
-			Banks: [],
-        },
-    ];
-
-	bankList = [
-		{
-			Id: 1,
-			Name: 'Vietinbank',
-			isHidden: true,
-			Amount: 0,
-			AmountText: '',
-		},
-		{
-			Id: 2,
-			Name: 'Vietcombank',
-			isHidden: true,
-			Amount: 0,
-			AmountText: '',
-		},
-		{
-			Id: 3,
-			Name: 'MBBank',
-			isHidden: true,
-			Amount: 0,
-			AmountText: '',
-		},
-	];
-
 	TheChange = 0;
 	TheChangeText;
 	ShowDetail = false;
 
-	charts;
-	@ViewChild('barCanvas') barCanvas;
-	@ViewChild('pieCanvas') pieCanvas;
 
 
 	constructor(
@@ -106,10 +66,6 @@ export class SaleSummaryMobilePage extends PageBase {
 		this.reportQuery.fromDate = lib.dateFormat(queryDate, 'yyyy-mm-dd');
 		this.reportQuery.toDate = lib.dateFormat(queryDate, 'yyyy-mm-dd');
 
-		this.charts = {
-			barCanvas: { IsLoading: true, IsNoData: false, Chart: null },
-			pieCanvas: { IsLoading: true, IsNoData: false, Chart: null },
-		};
 	}
 
 	segmentChanged(ev: any) {
@@ -127,13 +83,11 @@ export class SaleSummaryMobilePage extends PageBase {
 
 	}
 
-	destroyChart() {
-		for (var key in this.charts) {
-			let c = this.charts[key].Chart;
-			c?.destroy();
-		}
+	reload(ev:any) {
+		this.totalPieChartData = [];
+		this.preLoadData(ev);
 	}
-	
+
     translateResult;
 	currentPopover = null;
 	async presentPopover(ev: any) {
@@ -190,7 +144,7 @@ export class SaleSummaryMobilePage extends PageBase {
 			.then((resp: any) => {
 				this.submitAttempt = false;
 				this.buildProductReport(resp);
-				this.readPOSPaymentsReport();
+				this.loadedData(null);
 			}).catch(err => {
 				if (err.message != null) {
 					this.env.showMessage(err.message, 'danger');
@@ -307,122 +261,6 @@ export class SaleSummaryMobilePage extends PageBase {
 		this.buildCharts();
 	}
 
-	readPOSPaymentsReport() {
-		this.submitAttempt = true;
-		this.pageProvider.commonService.connect('GET', ApiSetting.apiDomain("BANK/IncomingPayment/POSPaymentsReport/"), this.reportQuery).toPromise()
-			.then((resp: any) => {
-				this.submitAttempt = false;
-				this.buildPOSPaymentsReport(resp);
-				this.loadedData(null);
-			}).catch(err => {
-				if (err.message != null) {
-					this.env.showMessage(err.message, 'danger');
-				}
-				else {
-					this.env.showTranslateMessage('erp.app.pages.approval.request.message.can-not-get-data','danger');
-				}
-				this.submitAttempt = false;
-				this.refresh();
-			})
-	}
-
-	buildPOSPaymentsReport(resp) {
-		let uniqueIDSO = [...new Set(resp.map(item => item.IDSaleOrder))];
-		let uniqueIDType = [...new Set(resp.map(item => item.IDType))];
-		let totalAmount:number = resp.map(x => x.Amount).reduce((a, b) => (+a) + (+b), 0);
-		let totalAfterTax:number = 0;
-
-		//Reset Bank
-		this.bankList.forEach(b => {
-			b.Amount = 0;
-			b.AmountText = '';
-			b.isHidden = true;
-		});
-		
-
-		//Reset IDTypeText
-		this.IDTypeText.forEach(t => {
-			t.Amount = 0;
-			t.AmountText = '';
-			t.isHidden = true;
-			if (t.Banks) {
-				t.Banks = [];
-			}
-			t.ShowBankDetails = false;
-		});
-
-		//Calculate Total Receive For Eachtype
-		resp.forEach(data => {
-			if(uniqueIDType.indexOf(data.IDType) != -1) {
-				let type = this.IDTypeText.find(t => t.IDType == data.IDType);
-
-				if (type) {
-					type.Type;
-					type.Amount += data.Amount;
-					type.AmountText = lib.currencyFormat(type.Amount);
-					type.isHidden = false;
-
-					if (data.Remark) {
-						let bankName = data.Remark.split(' | ')[1];
-
-						let bankInfo = this.bankList.find(b => b.Name == bankName);
-
-						let index = type.Banks.indexOf(bankInfo);
-						if (index == -1) {
-							type.Banks.push({
-								'Name': bankInfo.Name,
-								'isHidden': false,
-								'Amount': data.Amount,
-								'AmountText': lib.currencyFormat(data.Amount),
-							});
-						}
-						else {
-							let bank = type.Banks[index];
-							bank.Amount += data.Amount;
-							bank.AmountText = lib.currencyFormat(bank.Amount);
-						}
-					}
-				}
-            }
-		});
-
-
-		//Calculate TotalAfterTax
-		uniqueIDSO.forEach(idso => {
-			let Order = resp.filter(d => d.IDSaleOrder == idso);
-			totalAfterTax += Order[0].TotalAfterTax;
-		});
-
-		this.TheChange = totalAmount - totalAfterTax;
-		this.TheChangeText = lib.currencyFormat(this.TheChange);
-
-		this.IDTypeText.forEach(type => {
-			if (type.Banks) {
-				let bankDatas = type.Banks;
-				type.Banks = [];
-
-				let uniqueBank:any = [...new Map(bankDatas.map(item =>[item['Name'], item])).values()];
-				uniqueBank.forEach(u => {
-					let sameBank = bankDatas.filter(b => b.Name == u.Name);
-					u.Amount = sameBank.map(x => x.Amount).reduce((a, b) => (+a) + (+b), 0);
-					u.AmountText = lib.currencyFormat(u.Amount);
-				});
-
-				type.Banks = uniqueBank;
-				debugger
-			}
-		});
-		this.IDTypeText.sort((a,b) => b.Amount - a.Amount);
-
-
-		console.log(resp);
-		console.log('Số lượng đơn: ' +uniqueIDSO.length + '\n' + 'ID các đơn hàng: ' + uniqueIDSO);
-		console.log('ID các hình thức: ' + uniqueIDType);
-		console.log('Tổng tiền đã nhận thực tế: ' + totalAmount);
-		console.log('Tổng tiền cần nhận: ' + totalAfterTax);
-		console.log('Tổng tiền dư: ' + this.TheChange);
-	}
-
 	readSaleOrderData() {
 		this.submitAttempt = true;
 		this.pageProvider.commonService.connect('GET', ApiSetting.apiDomain("SALE/Order/SaleOrderReport/"), this.reportQuery).toPromise()
@@ -484,9 +322,11 @@ export class SaleSummaryMobilePage extends PageBase {
 			}],
 			hoverOffset: 50,
 		};
-		await this.charts.pieCanvas.Chart?.destroy();
-		this.rpt.buildPieChart(this.charts.pieCanvas.Chart, this.pieCanvas.nativeElement, data);
 
+		for (let idx = 0; idx < dataArray.length; idx++) {
+			let tempData = {value: dataArray[idx],name: labelsArray[idx]};
+			this.totalPieChartData.push(tempData);
+		}
 	}
 
 	myHeaderFn(record, recordIndex, records) {
@@ -525,6 +365,19 @@ export class SaleSummaryMobilePage extends PageBase {
 	colorArray = ['#FF3333', '#FF9933', '#FFFF33', '#99FF33', '#33FF33', '#33FF99', '#33FFFF', '#3399FF', '#3333FF', '#9933FF', '#FF33FF', '#FF3399', '#FF9999', '#FFCC99', '#FFFF99', '#CCFF99', '#99FF99', '#99FFCC', '#99FFFF', '#99CCFF', '#9999FF', '#CC99FF', '#FF99FF', '#FF99CC', '#CC0000', '#CC6600', '#CCCC00', '#66CC00', '#00CC00', '#00CC66', '#00CCCC', '#006600', '#0000CC', '#6600CC', '#CC00CC', '#CC0066', '#FF9999', '#FFCC99', '#FFFF99', '#CCFF99', '#99FF99', '#99FFCC', '#99FFFF', '#99CCFF', '#9999FF', '#CC99FF', '#FF99FF', '#FF99CC', '#FF3333', '#FF9933', '#FFFF33', '#99FF33', '#33FF33', '#33FF99', '#33FFFF', '#3399FF', '#3333FF', '#9933FF', '#FF33FF', '#FF3399', '#CC0000', '#CC6600', '#CCCC00', '#66CC00', '#00CC00', '#00CC66', '#00CCCC', '#006600', '#0000CC', '#6600CC', '#CC00CC', '#CC0066', '#FF9999', '#FFCC99', '#FFFF99', '#CCFF99', '#99FF99', '#99FFCC', '#99FFFF', '#99CCFF', '#9999FF', '#CC99FF', '#FF99FF', '#FF99CC', '#FF3333', '#FF9933', '#FFFF33', '#99FF33', '#33FF33', '#33FF99', '#33FFFF', '#3399FF', '#3333FF', '#9933FF', '#FF33FF', '#FF3399', '#CC0000', '#CC6600', '#CCCC00', '#66CC00', '#00CC00', '#00CC66', '#00CCCC', '#006600', '#0000CC', '#6600CC', '#CC00CC', '#CC0066', '#FF9999', '#FFCC99', '#FFFF99', '#CCFF99', '#99FF99', '#99FFCC', '#99FFFF', '#99CCFF', '#9999FF', '#CC99FF', '#FF99FF', '#FF99CC', '#FF3333', '#FF9933', '#FFFF33', '#99FF33', '#33FF33', '#33FF99', '#33FFFF', '#3399FF', '#3333FF', '#9933FF', '#FF33FF', '#FF3399', '#CC0000', '#CC6600', '#CCCC00', '#66CC00', '#00CC00', '#00CC66', '#00CCCC', '#006600', '#0000CC', '#6600CC', '#CC00CC', '#CC0066',];
 
 
+	totalPieChart = {
+        Id: 'totalPieChart',
+        Title: '',
+        Subtext: '',
+        SeriesName: '',
+
+        Legend: false,
+		ItemLabel: false,
+		ColorTemplate: this.colorArray,
+        Data: this.totalPieChartData,
+        Type: 'Pie',
+        Style: this.ChartStyle2
+    }
 
 }
 

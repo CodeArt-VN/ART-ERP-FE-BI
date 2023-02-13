@@ -4,8 +4,6 @@ import { EnvService } from 'src/app/services/core/env.service';
 import { PageBase } from 'src/app/page-base';
 import { ReportService } from 'src/app/services/report.service';
 import { lib } from 'src/app/services/static/global-functions';
-import Chart from 'chart.js';
-import 'chartjs-plugin-labels';
 
 import { CustomService } from 'src/app/services/custom.service';
 
@@ -40,19 +38,6 @@ export class StaffDashboardPage extends PageBase {
         {Icon:'list', Title: 'Tasks', Form: 'todo'},
     ]
 
-    charts;
-    @ViewChild('soLuongTiecCanvas') soLuongTiecCanvas;
-    @ViewChild('doanhThuChiTieuCanvas') doanhThuChiTieuCanvas;
-    @ViewChild('chiPhiChiTieuCanvas') chiPhiChiTieuCanvas;
-
-    @ViewChild('saleByServiceCanvas') saleByServiceCanvas;
-    @ViewChild('inquiryBySourceCanvas') inquiryBySourceCanvas;
-    @ViewChild('lostReasonCanvas') lostReasonCanvas;
-    @ViewChild('funnelCanvas') funnelCanvas;
-    @ViewChild('top10CustomerCanvas') top10CustomerCanvas;
-    @ViewChild('pnlCanvas') pnlCanvas;
-    @ViewChild('cashFlowCanvas') cashFlowCanvas;
-
     constructor(
         private pageService: CustomService,
         public actionSheetController: ActionSheetController,
@@ -62,18 +47,6 @@ export class StaffDashboardPage extends PageBase {
         public rpt: ReportService,
     ) {
         super();
-        this.charts = {
-            SoLuongTiec: { IsLoading: true, IsNoData: false, Chart: null },
-            DoanhThuChiTieu: { IsLoading: true, IsNoData: false, Chart: null },
-            ChiPhiChiTieu: { IsLoading: true, IsNoData: false, Chart: null },
-            SaleByService: { IsLoading: true, IsNoData: false, Chart: null },
-            InquiryBySource: { IsLoading: true, IsNoData: false, Chart: null },
-            LostReason: { IsLoading: true, IsNoData: false, Chart: null },
-            Funnel: { IsLoading: true, IsNoData: false, Chart: null },
-            Top10Customer: { IsLoading: true, IsNoData: false, Chart: null },
-            PNL: { IsLoading: true, IsNoData: false, Chart: null },
-            CashFlow: { IsLoading: true, IsNoData: false, Chart: null },
-        };
     }
 
     ionViewDidEnter() {
@@ -107,26 +80,22 @@ export class StaffDashboardPage extends PageBase {
     }
 
     updateChart() {
-        for (var key in this.charts) {
-            let c = this.charts[key].Chart;
-            c?.destroy();
-        }
 
         this.buildCharts();
     }
 
     toogleBranchDataset(b) {
         b.IsHidden = !b.IsHidden;
-        for (var key in this.charts) {
-            let c = this.charts[key].Chart;
+        // for (var key in this.charts) {
+        //     let c = this.charts[key].Chart;
 
-            c.data.datasets.forEach(function (ds) {
-                if (ds.IDBranch == b.Id) {
-                    ds.hidden = b.IsHidden;
-                }
-            });
-            c.update();
-        }
+        //     c.data.datasets.forEach(function (ds) {
+        //         if (ds.IDBranch == b.Id) {
+        //             ds.hidden = b.IsHidden;
+        //         }
+        //     });
+        //     c.update();
+        // }
         this.buildTopSum();
     }
 

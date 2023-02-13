@@ -5,9 +5,6 @@ import { PageBase } from 'src/app/page-base';
 
 import { ReportService } from 'src/app/services/report.service';
 import { lib } from 'src/app/services/static/global-functions';
-import Chart from 'chart.js';
-import 'chartjs-plugin-labels';
-import 'chartjs-funnel';
 import { SALE_OrderProvider } from 'src/app/services/static/services.service';
 import { CustomService } from 'src/app/services/custom.service';
 
@@ -62,6 +59,12 @@ export class SaleDailyReportPage extends PageBase {
         { title: 'Cash-out <br> Dòng tiền ra', value: 20 },
         { title: 'Cash available for use <br> Tiền khả dụng', value: 15 },
     ];
+
+    PnLChartLabel = [];
+    PnLChartData = [];
+
+    CashFlowChartLabel = [];
+    CashFlowChartData = [];
 
     soLuongTiecChart: any;
     @ViewChild('soLuongTiecCanvas') soLuongTiecCanvas;
@@ -233,95 +236,96 @@ export class SaleDailyReportPage extends PageBase {
 
         }
 
+        this.PnLChartLabel = this.rpt.timeGroups.map(m => m.Label);
+        this.PnLChartData = data.datasets;
 
 
+        // this.pnlChart = new Chart(ctx, {
+        //     type: 'bar',
+        //     options: {
+        //         maintainAspectRatio: false,
+        //         responsive: true,
 
-        this.pnlChart = new Chart(ctx, {
-            type: 'bar',
-            options: {
-                maintainAspectRatio: false,
-                responsive: true,
+        //         layout: {
+        //             padding: {
+        //                 top: 20,
+        //             }
+        //         },
+        //         legend: {
+        //             display: false,
+        //             labels: {
+        //                 fontColor: '#FFF',
+        //                 usePointStyle: true,
+        //                 boxWidth: 8,
 
-                layout: {
-                    padding: {
-                        top: 20,
-                    }
-                },
-                legend: {
-                    display: false,
-                    labels: {
-                        fontColor: '#FFF',
-                        usePointStyle: true,
-                        boxWidth: 8,
+        //             }
+        //         },
+        //         tooltips: {
+        //             mode: 'index',
+        //             intersect: false,
+        //             backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        //         },
+        //         hover: {
+        //             mode: 'index',
+        //             intersect: false
+        //         },
+        //         elements: {
+        //             point: {
+        //                 radius: 0,
+        //                 hoverRadius: 4,
+        //                 backgroundColor: ()=>lib.getCssVariableValue('--ion-color-primary') + 'e6',
+        //                 borderWidth: 1,
+        //                 hoverBorderWidth: 2
+        //             },
+        //             line: {
+        //                 borderWidth: 3
+        //             }
+        //         },
+        //         scales: {
+        //             yAxes: [
+        //                 {
+        //                     ticks: {
+        //                         fontColor: ()=>lib.getCssVariableValue('--ion-color-primary'),
+        //                         fontSize: 12,
+        //                         maxTicksLimit: 8,
+        //                         padding: 20
+        //                     },
+        //                     gridLines: {
+        //                         color: ()=>lib.getCssVariableValue('--ion-color-primary') + '80',
+        //                         display: true,
+        //                         drawTicks: false,
+        //                         drawBorder: false,
+        //                         zeroLineColor: ()=>lib.getCssVariableValue('--ion-color-primary') + 'e6',
+        //                     }
+        //                 }
+        //             ],
+        //             xAxes: [
+        //                 {
+        //                     ticks: {
+        //                         fontColor: ()=>lib.getCssVariableValue('--ion-color-primary'),
+        //                         fontSize: 10,
+        //                         //maxTicksLimit: 7,
+        //                         padding: 15
+        //                     },
+        //                     gridLines: {
 
-                    }
-                },
-                tooltips: {
-                    mode: 'index',
-                    intersect: false,
-                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                },
-                hover: {
-                    mode: 'index',
-                    intersect: false
-                },
-                elements: {
-                    point: {
-                        radius: 0,
-                        hoverRadius: 4,
-                        backgroundColor: ()=>lib.getCssVariableValue('--ion-color-primary') + 'e6',
-                        borderWidth: 1,
-                        hoverBorderWidth: 2
-                    },
-                    line: {
-                        borderWidth: 3
-                    }
-                },
-                scales: {
-                    yAxes: [
-                        {
-                            ticks: {
-                                fontColor: ()=>lib.getCssVariableValue('--ion-color-primary'),
-                                fontSize: 12,
-                                maxTicksLimit: 8,
-                                padding: 20
-                            },
-                            gridLines: {
-                                color: ()=>lib.getCssVariableValue('--ion-color-primary') + '80',
-                                display: true,
-                                drawTicks: false,
-                                drawBorder: false,
-                                zeroLineColor: ()=>lib.getCssVariableValue('--ion-color-primary') + 'e6',
-                            }
-                        }
-                    ],
-                    xAxes: [
-                        {
-                            ticks: {
-                                fontColor: ()=>lib.getCssVariableValue('--ion-color-primary'),
-                                fontSize: 10,
-                                //maxTicksLimit: 7,
-                                padding: 15
-                            },
-                            gridLines: {
+        //                         display: false,
+        //                         drawTicks: false,
+        //                         drawBorder: false,
+        //                     }
+        //                 }
+        //             ]
+        //         },
+        //         plugins: {
+        //             labels: {
+        //                 render: () => { },
+        //                 fontSize: 12,
 
-                                display: false,
-                                drawTicks: false,
-                                drawBorder: false,
-                            }
-                        }
-                    ]
-                },
-                plugins: {
-                    labels: {
-                        render: () => { },
-                        fontSize: 12,
-
-                    },
-                },
-            },
-            data: data,
-        });
+        //             },
+        //         },
+        //     },
+        //     data: data,
+        // });
     }
 
     buildCashFlowChart() {
@@ -426,93 +430,95 @@ export class SaleDailyReportPage extends PageBase {
 
         }
 
+        this.CashFlowChartLabel = this.rpt.timeGroups.map(m => m.Label);
+        this.CashFlowChartData = data.datasets;
 
-        this.cashFlowChart = new Chart(ctx, {
-            type: 'bar',
-            options: {
-                maintainAspectRatio: false,
-                responsive: true,
+        // this.cashFlowChart = new Chart(ctx, {
+        //     type: 'bar',
+        //     options: {
+        //         maintainAspectRatio: false,
+        //         responsive: true,
 
-                layout: {
-                    padding: {
-                        top: 20,
-                    }
-                },
-                legend: {
-                    display: false,
-                    labels: {
-                        fontColor: '#FFF',
-                        usePointStyle: true,
-                        boxWidth: 8,
+        //         layout: {
+        //             padding: {
+        //                 top: 20,
+        //             }
+        //         },
+        //         legend: {
+        //             display: false,
+        //             labels: {
+        //                 fontColor: '#FFF',
+        //                 usePointStyle: true,
+        //                 boxWidth: 8,
 
-                    }
-                },
-                tooltips: {
-                    mode: 'index',
-                    intersect: false,
-                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                },
-                hover: {
-                    mode: 'index',
-                    intersect: false
-                },
-                elements: {
-                    point: {
-                        radius: 0,
-                        hoverRadius: 4,
-                        backgroundColor: ()=>lib.getCssVariableValue('--ion-color-primary') + 'e6',
-                        borderWidth: 1,
-                        hoverBorderWidth: 2
-                    },
-                    line: {
-                        borderWidth: 3
-                    }
-                },
-                scales: {
-                    yAxes: [
-                        {
-                            ticks: {
-                                fontColor: ()=>lib.getCssVariableValue('--ion-color-primary'),
-                                fontSize: 12,
-                                maxTicksLimit: 8,
-                                padding: 20
-                            },
-                            gridLines: {
-                                color: ()=>lib.getCssVariableValue('--ion-color-primary') + '80',
-                                display: true,
-                                drawTicks: false,
-                                drawBorder: false,
-                                zeroLineColor: ()=>lib.getCssVariableValue('--ion-color-primary') + 'e6',
-                            }
-                        }
-                    ],
-                    xAxes: [
-                        {
-                            ticks: {
-                                fontColor: ()=>lib.getCssVariableValue('--ion-color-primary'),
-                                fontSize: 10,
-                                //maxTicksLimit: 7,
-                                padding: 15
-                            },
-                            gridLines: {
+        //             }
+        //         },
+        //         tooltips: {
+        //             mode: 'index',
+        //             intersect: false,
+        //             backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        //         },
+        //         hover: {
+        //             mode: 'index',
+        //             intersect: false
+        //         },
+        //         elements: {
+        //             point: {
+        //                 radius: 0,
+        //                 hoverRadius: 4,
+        //                 backgroundColor: ()=>lib.getCssVariableValue('--ion-color-primary') + 'e6',
+        //                 borderWidth: 1,
+        //                 hoverBorderWidth: 2
+        //             },
+        //             line: {
+        //                 borderWidth: 3
+        //             }
+        //         },
+        //         scales: {
+        //             yAxes: [
+        //                 {
+        //                     ticks: {
+        //                         fontColor: ()=>lib.getCssVariableValue('--ion-color-primary'),
+        //                         fontSize: 12,
+        //                         maxTicksLimit: 8,
+        //                         padding: 20
+        //                     },
+        //                     gridLines: {
+        //                         color: ()=>lib.getCssVariableValue('--ion-color-primary') + '80',
+        //                         display: true,
+        //                         drawTicks: false,
+        //                         drawBorder: false,
+        //                         zeroLineColor: ()=>lib.getCssVariableValue('--ion-color-primary') + 'e6',
+        //                     }
+        //                 }
+        //             ],
+        //             xAxes: [
+        //                 {
+        //                     ticks: {
+        //                         fontColor: ()=>lib.getCssVariableValue('--ion-color-primary'),
+        //                         fontSize: 10,
+        //                         //maxTicksLimit: 7,
+        //                         padding: 15
+        //                     },
+        //                     gridLines: {
 
-                                display: false,
-                                drawTicks: false,
-                                drawBorder: false,
-                            }
-                        }
-                    ]
-                },
-                plugins: {
-                    labels: {
-                        render: () => { },
-                        fontSize: 12,
+        //                         display: false,
+        //                         drawTicks: false,
+        //                         drawBorder: false,
+        //                     }
+        //                 }
+        //             ]
+        //         },
+        //         plugins: {
+        //             labels: {
+        //                 render: () => { },
+        //                 fontSize: 12,
 
-                    },
-                },
-            },
-            data: data,
-        });
+        //             },
+        //         },
+        //     },
+        //     data: data,
+        // });
     }
 
 

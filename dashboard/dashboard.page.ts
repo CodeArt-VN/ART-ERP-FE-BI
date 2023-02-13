@@ -4,13 +4,10 @@ import { EnvService } from 'src/app/services/core/env.service';
 import { PageBase } from 'src/app/page-base';
 import { ReportService } from 'src/app/services/report.service';
 import { lib } from 'src/app/services/static/global-functions';
-import Chart from 'chart.js';
-import 'chartjs-funnel'
-import 'chartjs-plugin-labels';
 
 import { CustomService } from 'src/app/services/custom.service';
 import { Observable } from 'rxjs';
-import { CRM_ContactProvider } from 'src/app/services/static/services.service';
+import { CRM_ContactProvider, SALE_OrderProvider } from 'src/app/services/static/services.service';
 
 @Component({
     selector: 'app-dashboard',
@@ -33,21 +30,41 @@ export class DashboardPage extends PageBase {
     numberOfOccupancyRate;
     numberOfEvents;
 
-    charts;
-    @ViewChild('soLuongTiecCanvas') soLuongTiecCanvas;
-    @ViewChild('doanhThuChiTieuCanvas') doanhThuChiTieuCanvas;
-    @ViewChild('chiPhiChiTieuCanvas') chiPhiChiTieuCanvas;
+    lostReasonDataLabel = [];
+    lostReasonData = [];
 
-    @ViewChild('saleByServiceCanvas') saleByServiceCanvas;
-    @ViewChild('inquiryBySourceCanvas') inquiryBySourceCanvas;
-    @ViewChild('lostReasonCanvas') lostReasonCanvas;
-    @ViewChild('funnelCanvas') funnelCanvas;
-    @ViewChild('top10CustomerCanvas') top10CustomerCanvas;
-    @ViewChild('pnlCanvas') pnlCanvas;
-    @ViewChild('cashFlowCanvas') cashFlowCanvas;
+    doanhThuChiTieuChartLabel = [];
+    doanhThuChiTieuChartData = [];
+
+    chiPhiChiTieuChartLabel = [];
+    chiPhiChiTieuChartData = [];
+
+    SoLuongTiecLabel = [];
+    SoLuongTiecData = [];
+
+    sumupInquiryLostLabel = [];
+    sumupInquiryLostData = [];
+
+    inquiryBySourceLabel = [];
+    inquiryBySourceData = [];
+
+    saleByServiceLabel = [];
+    saleByServiceData = [];
+
+    top10CustomerLabel = [];
+    top10CustomerData = [];
+
+    PnLLabel = [];
+    PnLData = [];
+    
+    cashFlowLabel = [];
+    cashFlowData = [];
+    charts;
 
     constructor(
         private pageService: CustomService,
+        public saleOrderProvider: SALE_OrderProvider,
+        public contactProvider: CRM_ContactProvider,
         public actionSheetController: ActionSheetController,
         public env: EnvService,
         public navCtrl: NavController,
@@ -82,7 +99,7 @@ export class DashboardPage extends PageBase {
         this.changeBranchBtn();
     }
 
-    preLoadData(event = null) {
+    loadedData(event = null) {
         this.query.OrderDateFrom = this.rpt.rptGlobal.query.fromDate;
         this.query.OrderDateTo = this.rpt.rptGlobal.query.toDate + ' 23:59:59';
         this.query.IDBranch = this.rpt.rptGlobal.query.branch;
@@ -91,7 +108,7 @@ export class DashboardPage extends PageBase {
 
         let beginDate = new Date(this.rpt.rptGlobal.query.fromDate);
         let endDate = new Date(this.rpt.rptGlobal.query.toDate);
-
+        
         let rundate = new Date(beginDate);
         //calc labels
         while (rundate <= endDate) {
@@ -100,8 +117,77 @@ export class DashboardPage extends PageBase {
         };
 
 
-        super.preLoadData(event);
+        Promise.all([
+            this.saleOrderProvider.read(this.query)
+        ]).then(values => {
+            this.ListOfAllEvents = values[0]['data'];
+            this.items=this.ListOfAllEvents
+            this.numberOfEvents = this.ListOfAllEvents.length;
 
+            const uniqueDate = [...new Set(this.ListOfAllEvents.map(item => lib.dateFormat(item.OrderDate, 'yyyy-mm-dd')))];
+            this.ListOfWeekendEvents = [];
+            this.ListOfWeekdayEvents = [];
+            this.ListOfOccupiedDay = uniqueDate;
+            let counter = 0;
+            for (let index = 0; index < this.ListOfAllEvents.length; index++) {
+                const day = this.ListOfAllEvents[index];
+
+                day.Personal = (day.Personal || 0);
+                day.Corporate = (day.Corporate || 0);
+
+                if (day.IsPersonal == true) {
+                    day.Personal = day.TotalAfterTax;
+                }
+                else if (day.IsPersonal == false) {
+                    day.Corporate = day.TotalAfterTax;
+                }
+
+                var today = new Date(day.OrderDate);
+                if (today.getDay() == 6 || today.getDay() == 0) {
+                    this.ListOfWeekendEvents.push(day);
+                } else {
+                    this.ListOfWeekdayEvents.push(day);
+                }
+                if (counter == this.ListOfAllEvents.length - 1) {
+                    if (this.numberOfEvents != 0) {
+                        this.ListOfAllEvents = [...this.ListOfAllEvents];
+                        this.numberOfWeekendEvents = Math.round(this.ListOfWeekendEvents.length / this.numberOfEvents * 100);
+                        this.numberOfWeekdayEvents = Math.round(this.ListOfWeekdayEvents.length / this.numberOfEvents * 100);
+                        this.numberOfOccupancyRate = Math.round(this.ListOfOccupiedDay.length / this.ListOfDateRange.length * 100);
+                    } else {
+                        this.numberOfWeekendEvents = 0;
+                        this.numberOfWeekdayEvents = 0;
+                        this.numberOfOccupancyRate = 0;
+                    }
+                    super.loadedData(event);
+                    this.updateChart();
+                };
+                counter++;
+            }
+
+            //When this.ListOfAllEvents == 0 ?
+            if (this.ListOfAllEvents.length == 0) {
+                this.numberOfWeekendEvents = 0;
+                this.numberOfWeekdayEvents = 0;
+                this.numberOfOccupancyRate = 0;
+
+                this.charts.SoLuongTiec.IsLoading = false;
+                this.charts.DoanhThuChiTieu.IsLoading = false;
+                this.charts.ChiPhiChiTieu.IsLoading = false;
+                this.charts.SaleByService.IsLoading = false;
+                this.charts.InquiryBySource.IsLoading = false;
+                this.charts.LostReason.IsLoading = false;  
+                this.charts.Funnel.IsLoading = false;  
+                this.charts.Top10Customer.IsLoading = false;
+                this.charts.PNL.IsLoading = false;  
+                this.charts.CashFlow.IsLoading = false;
+
+                this.env.showTranslateMessage('Không có dữ liệu trong khoảng thời gian được chọn!','warning')
+
+                super.loadedData(event);
+            }
+            
+        });
     }
 
     changeBranchBtn() {
@@ -126,19 +212,50 @@ export class DashboardPage extends PageBase {
 
 
     refresh() {
+        this.lostReasonDataLabel = [];
+        this.lostReasonData = [];
+    
+        this.doanhThuChiTieuChartLabel = [];
+        this.doanhThuChiTieuChartData = [];
+    
+        this.chiPhiChiTieuChartLabel = [];
+        this.chiPhiChiTieuChartData = [];
+    
+        this.SoLuongTiecLabel = [];
+        this.SoLuongTiecData = [];
+    
+        this.inquiryBySourceLabel = [];
+        this.inquiryBySourceData = [];
+
+        this.sumupInquiryLostLabel = [];
+        this.sumupInquiryLostData = [];
+    
+        this.saleByServiceLabel = [];
+        this.saleByServiceData = [];
+    
+        this.top10CustomerLabel = [];
+        this.top10CustomerData = [];
+    
+        this.PnLLabel = [];
+        this.PnLData = [];
+        
+        this.cashFlowLabel = [];
+        this.cashFlowData = [];
+
+
         this.preLoadData(null);
     }
 
     getDatesInRange(startDate, endDate) {
         const date = new Date(startDate.getDate());
-
+      
         const dates = [];
-
+      
         while (date <= endDate) {
-            dates.push(new Date(date));
-            date.setDate(date.getDate() + 1);
+          dates.push(new Date(date));
+          date.setDate(date.getDate() + 1);
         }
-
+      
         return dates;
     }
 
@@ -148,10 +265,10 @@ export class DashboardPage extends PageBase {
         this.charts.ChiPhiChiTieu.IsLoading = true;
         this.charts.SaleByService.IsLoading = true;
         this.charts.InquiryBySource.IsLoading = true;
-        this.charts.LostReason.IsLoading = true;
-        this.charts.Funnel.IsLoading = true;
+        this.charts.LostReason.IsLoading = true;  
+        this.charts.Funnel.IsLoading = true;  
         this.charts.Top10Customer.IsLoading = true;
-        this.charts.PNL.IsLoading = true;
+        this.charts.PNL.IsLoading = true;  
         this.charts.CashFlow.IsLoading = true;
 
         this.rpt.dateQuery(type).then(_ => {
@@ -196,19 +313,22 @@ export class DashboardPage extends PageBase {
     }
 
     buildCharts() {
-
+       
         this.buildTopSum();
-        this.buildSoLuongTiecChart(this.soLuongTiecCanvas).subscribe(c => {
-            this.charts.SoLuongTiec.Chart = c;
-            this.charts.SoLuongTiec.IsLoading = false;
-        });
+        // this.buildSoLuongTiecChart(this.soLuongTiecCanvas).subscribe(c => {
+        //     this.charts.SoLuongTiec.Chart = c;
+        //     this.charts.SoLuongTiec.IsLoading = false;
+        // });
+        this.buildSoLuongTiecChart();
         this.buildCalendarHeatmapChart();
-        this.buildfunnelChart();
+        this.buildSumUpInquiryLostChart();
         this.buildDoanhThuChiTieuChart();
         this.buildChiPhiChiTieuChart();
         this.buildInquiryBySourceChart();
         this.buildSaleByServiceChart();
+
         this.buildLostReasonChart();
+        
         this.buildTop10CustomerChart();
 
         this.buildPnLChart();
@@ -256,119 +376,31 @@ export class DashboardPage extends PageBase {
         this.pageData.NumberOfGuests = Math.round(this.pageData.NumberOfGuests / 1000);
     }
 
-    buildSoLuongTiecChart(canvasElement) {
-        let result = new Observable(ob => {
+    buildSoLuongTiecChart(){
+            let dataLineCharts = [];            
+            let tmp = {Data:[]}
+            for (let i = 0; i < this.rpt.rptGlobal.branch.length; i++) {
+                let data=[];
+                const b = this.rpt.rptGlobal.branch[i];
+                tmp.Data = this.ListOfAllEvents.filter(branch => branch.IDBranch == b.Id&&!b.IsHidden);               
+                
+                if (tmp.Data.length){
+                    tmp.Data.forEach(e => {
+                        e.Date = lib.dateFormat(e.OrderDate, 'yyyy-mm-dd');                       
+                        data = this.calcSumGroupData(tmp, 'OrderQuantity');
+                    });
+                    let dataLinechart = {
+                        name:b.Name,
+                        data:data
+                    }
+                    dataLineCharts.push(dataLinechart);
+                }              
+                
+            }           
 
-            let datasets = this.rpt.buildDataset();
+            this.SoLuongTiecLabel = this.rpt.timeGroups.map(m => m.Label);
+            this.SoLuongTiecData = dataLineCharts
 
-
-            for (let i = 0; i < datasets.length; i++) {
-                const ds = datasets[i];
-
-                datasets[i].Data = this.ListOfAllEvents.filter(branch => branch.IDBranch == ds.IDBranch);
-                ds.Data = this.ListOfAllEvents.filter(branch => branch.IDBranch == ds.IDBranch);
-
-                ds.borderWidth = 2.5;
-                ds.borderColor = ds._b.Color;
-                ds.backgroundColor = ds._b.Color;;
-                ds.hoverBackgroundColor = ds._b.Color;
-
-                ds.Data.forEach(e => {
-                    e.Date = lib.dateFormat(e.OrderDate, 'yyyy-mm-dd');
-                    ds.showLine = true;
-                    ds.fill = false;
-                    ds.data = this.calcSumGroupData(ds, 'OrderQuantity');
-                });
-            }
-
-            let ctx = canvasElement.nativeElement.getContext("2d");
-
-            var data = {
-                labels: this.rpt.timeGroups.map(m => m.Label),
-                datasets: datasets,
-            };
-            let chart = new Chart(ctx, {
-                type: 'line',
-                options:
-                {
-                    maintainAspectRatio: false,
-                    responsive: true,
-
-                    layout: {
-                        padding: {
-                            right: 20,
-                        }
-                    },
-                    legend: {
-                        display: false,
-                        labels: {
-                            fontColor: '#FFF',
-                            usePointStyle: true,
-                            boxWidth: 8,
-
-                        }
-                    },
-                    tooltips: {
-                        mode: 'index',
-                        intersect: true,
-                        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                    },
-                    hover: {
-                        mode: 'index',
-                        intersect: false
-                    },
-                    elements: {
-                        point: {
-                            radius: 1,
-                            hoverRadius: 4,
-                            backgroundColor: this.rpt.rptGlobal.branch.Color,
-                            borderWidth: 3,
-                            hoverBorderWidth: 2
-                        },
-                        line: {
-                            borderWidth: 10
-                        }
-                    },
-                    scales: {
-                        yAxes: [
-                            {
-                                ticks: {
-                                    fontColor: lib.getCssVariableValue('--ion-color-primary-contrast') + "aa",
-                                    fontSize: 8,
-                                    maxTicksLimit: 5,
-                                    padding: 10
-                                },
-                                gridLines: {
-                                    display: false,
-                                    drawTicks: true,
-                                    drawBorder: false
-                                }
-                            }
-                        ],
-                        xAxes: [
-                            {
-                                ticks: {
-                                    fontColor: lib.getCssVariableValue('--ion-color-primary-contrast') + "ee",
-                                    fontSize: 8,
-                                    //maxTicksLimit: 7,
-                                    padding: 7
-                                },
-                                gridLines: {
-                                    display: false,
-                                    zeroLineColor: "transparent",
-                                    drawTicks: false,
-                                    drawBorder: false
-                                }
-                            }
-                        ]
-                    },
-                },
-                data: data,
-            });
-
-            ob.next(chart);
-        });
-        return result;
     }
 
     calcSumGroupData(ds, sumby) {
@@ -379,7 +411,7 @@ export class DashboardPage extends PageBase {
                 let sum = ds.Data.filter((e) => {
                     return this.rpt.timeGroupCompare(e, g)
                 });
-
+    
                 group.push(sum.length);
             }
         }
@@ -423,757 +455,183 @@ export class DashboardPage extends PageBase {
     }
 
     buildDoanhThuChiTieuChart() {
-        let ctx = this.doanhThuChiTieuCanvas.nativeElement;
+        let dataBarCharts = [];
+        let tmp ={Data:[]}
+        for (let i = 0; i < this.rpt.rptGlobal.branch.length; i++) {
+            let data=[]
+            const b = this.rpt.rptGlobal.branch[i];
+            tmp.Data =this.items.filter(branch => branch.IDBranch == b.Id&&!b.IsHidden);
 
-        this.charts?.DoanhThuChiTieu?.Chart?.destroy();
-
-        //ctx.height = 255;
-        var width = ctx.width;
-        var height = ctx.height;
-        ctx = ctx.getContext("2d");
-
-        var data = {
-            labels: this.rpt.timeGroups.map(m => m.Label),
-            datasets: []
-        };
-
-        //SAVE FOR LATER USAGE.
-        // let datasetsChiTieu = this.rpt.buildDataset();
-        // for (let i = 0; i < datasetsChiTieu.length; i++) {
-        //     const ds = datasetsChiTieu[i];
-        //     ds.type = 'line';
-        //     ds.showLine = true;
-        //     ds.fill = false;
-        //     ds.label = ds._b.Name + ' - Chỉ tiêu';
-        //     ds.borderColor = ds._b.Color + '77';
-        //     ds.backgroundColor = ds._b.Color + '77';
-        //     ds.hoverBackgroundColor = ds._b.Color + 'CC';
-
-        //     ds.data = this.rpt.calcSumGroupData(ds, 'SaleTarget');
-        // }
-
-        let datasetsDoanhThu = this.rpt.buildDataset();
-        for (let i = 0; i < datasetsDoanhThu.length; i++) {
-            const ds = datasetsDoanhThu[i];
-
-            ds.Data = this.ListOfAllEvents.filter(branch => branch.IDBranch == ds.IDBranch);
-            ds.type = 'bar';
-            ds.label = ds._b.Name + ' - Doanh thu';
-            ds.fill = true;
-            ds.borderWidth = 1;
-            ds.borderColor = ds._b.Color;
-            ds.backgroundColor = this.rpt.createVerticalGradientStroke(ctx, height, ds._b.Color);
-            ds.hoverBackgroundColor = ds._b.Color;
-            ds.data = this.calcSumGroupData(ds, 'TotalAfterTax');
-
-            let sumRevenue = 0;
-            sumRevenue = ds.data.reduce((a, b) => a + b, 0);
-            if (sumRevenue == 0) {
-                ds.hidden = true;
-            };
+            if (tmp.Data.length) {
+                tmp.Data.forEach(e => {
+                    e.Date = lib.dateFormat(e.OrderDate, 'yyyy-mm-dd');                   
+                    data = this.calcSumGroupData(tmp, 'TotalAfterTax');
+                });
+                let dataBarChart = {
+                    name:b.Name + ' - Doanh thu',
+                    data:data
+                }
+                dataBarCharts.push(dataBarChart);
+            }
+           
         }
 
-        // data.datasets = data.datasets.concat(datasetsChiTieu); //later
-        data.datasets = data.datasets.concat(datasetsDoanhThu);
-
-        // for (let i = 0; i < data.datasets[4].data.length; i++) {
-        //     data.datasets[4].data[i] = 0;
-        //     for (let j = 5; j < data.datasets.length; j++) {
-        //         const ds = data.datasets[j];
-        //         data.datasets[4].data[i] += ds.data[i];
-        //     }
-        // }
-
-        this.charts.DoanhThuChiTieu.IsLoading = false;
-        this.charts.DoanhThuChiTieu.Chart = new Chart(ctx, {
-            type: 'bar',
-            options: {
-                maintainAspectRatio: false,
-                responsive: true,
-
-                layout: {
-                    padding: {
-                        top: 20,
-                    }
-                },
-                legend: {
-                    display: false,
-                    labels: {
-                        fontColor: '#FFF',
-                        usePointStyle: true,
-                        boxWidth: 8,
-                    }
-                },
-                tooltips: {
-                    mode: 'index',
-                    intersect: false,
-                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                    callbacks: {
-                        label: function (tooltipItem, data) {
-                            var value = lib.currencyFormatFriendly(data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index]);
-                            var label = data.datasets[tooltipItem.datasetIndex].label;
-                            return label + ': ' + value;
-                        }
-                    }
-                },
-                hover: {
-                    mode: 'index',
-                    intersect: false
-                },
-                elements: {
-                    point: {
-                        radius: 0,
-                        hoverRadius: 4,
-                        backgroundColor: () => lib.getCssVariableValue('--ion-color-primary'),
-                        borderWidth: 1,
-                        hoverBorderWidth: 2
-                    },
-                    line: {
-                        borderWidth: 3
-                    }
-                },
-                scales: {
-                    yAxes: [
-                        {
-                            ticks: {
-                                fontColor: () => lib.getCssVariableValue('--ion-color-primary'),
-                                fontSize: 12,
-                                maxTicksLimit: 8,
-                                padding: 20,
-                                userCallback: function (value, index, values) {
-                                    return lib.currencyFormatFriendly(value);
-                                }
-                            },
-                            gridLines: {
-                                color: () => lib.getCssVariableValue('--ion-color-primary'),
-                                display: true,
-                                drawTicks: false,
-                                drawBorder: false,
-                                zeroLineColor: () => lib.getCssVariableValue('--ion-color-primary'),
-                            }
-                        }
-                    ],
-                    xAxes: [
-                        {
-                            ticks: {
-                                fontColor: () => lib.getCssVariableValue('--ion-color-primary'),
-                                fontSize: 10,
-                                //maxTicksLimit: 7,
-                                padding: 15
-                            },
-                            gridLines: {
-
-                                display: false,
-                                drawTicks: false,
-                                drawBorder: false,
-                            }
-                        }
-                    ]
-                },
-                plugins: {
-                    labels: {
-                        render: () => { },
-                        fontSize: 12,
-
-                    },
-                },
-            },
-            data: data,
-        });
+        this.doanhThuChiTieuChartLabel = this.rpt.timeGroups.map(m => m.Label);
+        this.doanhThuChiTieuChartData = dataBarCharts;
     }
 
     buildChiPhiChiTieuChart() {
-        let ctx = this.chiPhiChiTieuCanvas.nativeElement;
-        //ctx.height = 255;
-        var width = ctx.width;
-        var height = ctx.height;
-        ctx = ctx.getContext("2d");
-
-        var data = {
-            labels: this.rpt.timeGroups.map(m => m.Label),
-            datasets: []
-        };
-
-        let datasetsChiTieu = this.rpt.buildDataset();
-        for (let i = 0; i < datasetsChiTieu.length; i++) {
-            const ds = datasetsChiTieu[i];
-            ds.type = 'line';
-            ds.showLine = true;
-            ds.fill = false;
-            ds.label = ds._b.Name + ' - Chỉ tiêu';
-            ds.borderColor = ds._b.Color + '77';
-            ds.backgroundColor = ds._b.Color + '77';
-            ds.hoverBackgroundColor = ds._b.Color + 'CC';
-
-            ds.data = this.rpt.calcSumGroupData(ds, 'CostTarget');
+        let dataBarCharts = [];
+        let tmp ={Data:[]}
+        for (let i = 0; i < this.rpt.rptGlobal.branch.length; i++) {
+            let data=[]
+            const b = this.rpt.rptGlobal.branch[i];
+             tmp.Data =this.items.filter(branch => branch.IDBranch == b.Id&&!b.IsHidden);
+           
+            if (tmp.Data.length){
+                tmp.Data.forEach(e => {
+                    e.Date = lib.dateFormat(e.OrderDate, 'yyyy-mm-dd');                   
+                    data = this.calcSumGroupData(tmp, 'TotalAfterTax');
+                });
+                
+                let dataBarChart = {
+                    name:b.Name + ' - Chi phí',
+                    data:data
+                }
+                dataBarCharts.push(dataBarChart);
+            }
         }
-
-        let datasetsChiPhi = this.rpt.buildDataset();
-        for (let i = 0; i < datasetsChiPhi.length; i++) {
-            const ds = datasetsChiPhi[i];
-            ds.type = 'bar';
-            ds.label = ds._b.Name + ' - Chi phí';
-            ds.Data = this.ListOfAllEvents.filter(branch => branch.IDBranch == ds.IDBranch);
-            ds.fill = true;
-            ds.borderWidth = 1;
-            ds.borderColor = ds._b.Color;
-            ds.backgroundColor = this.rpt.createVerticalGradientStroke(ctx, height, ds._b.Color);
-            ds.hoverBackgroundColor = ds._b.Color;
-            // ds.data = this.rpt.calcSumGroupData(ds, 'Cost');
-            ds.data = this.calcSumGroupData(ds, 'TotalAfterTax');
-
-            let sumRevenue = 0;
-            sumRevenue = ds.data.reduce((a, b) => a + b, 0);
-            if (sumRevenue == 0) {
-                ds.hidden = true;
-            };
-        }
-
-        // data.datasets = data.datasets.concat(datasetsChiTieu);
-        data.datasets = data.datasets.concat(datasetsChiPhi);
-
-        // for (let i = 0; i < data.datasets[4].data.length; i++) {
-        //     data.datasets[4].data[i] = 0;
-        //     for (let j = 5; j < data.datasets.length; j++) {
-        //         const ds = data.datasets[j];
-        //         data.datasets[4].data[i] += ds.data[i];
-        //     }
-        // }
-
-        this.charts.ChiPhiChiTieu.IsLoading = false;
-        this.charts.ChiPhiChiTieu.Chart = new Chart(ctx, {
-            type: 'bar',
-            options: {
-                maintainAspectRatio: false,
-                responsive: true,
-
-                layout: {
-                    padding: {
-                        top: 20,
-                    }
-                },
-                legend: {
-                    display: false,
-                    labels: {
-                        fontColor: '#FFF',
-                        usePointStyle: true,
-                        boxWidth: 8,
-
-                    }
-                },
-                tooltips: {
-                    mode: 'index',
-                    intersect: false,
-                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                    callbacks: {
-                        label: function (tooltipItem, data) {
-                            var value = lib.currencyFormatFriendly(data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index]);
-                            var label = data.datasets[tooltipItem.datasetIndex].label;
-                            return label + ': ' + value;
-                        }
-                    }
-                },
-                hover: {
-                    mode: 'index',
-                    intersect: false
-                },
-                elements: {
-                    point: {
-                        radius: 0,
-                        hoverRadius: 4,
-                        backgroundColor: () => lib.getCssVariableValue('--ion-color-primary'),
-                        borderWidth: 1,
-                        hoverBorderWidth: 2
-                    },
-                    line: {
-                        borderWidth: 3
-                    }
-                },
-                scales: {
-                    yAxes: [
-                        {
-                            ticks: {
-                                fontColor: () => lib.getCssVariableValue('--ion-color-primary'),
-                                fontSize: 12,
-                                maxTicksLimit: 8,
-                                padding: 20,
-                                userCallback: function (value, index, values) {
-                                    return lib.currencyFormatFriendly(value);
-                                }
-                            },
-                            gridLines: {
-                                color: () => lib.getCssVariableValue('--ion-color-primary'),
-                                display: true,
-                                drawTicks: false,
-                                drawBorder: false,
-                                zeroLineColor: () => lib.getCssVariableValue('--ion-color-primary'),
-                            }
-                        }
-                    ],
-                    xAxes: [
-                        {
-                            ticks: {
-                                fontColor: () => lib.getCssVariableValue('--ion-color-primary'),
-                                fontSize: 10,
-                                //maxTicksLimit: 7,
-                                padding: 15
-                            },
-                            gridLines: {
-
-                                display: false,
-                                drawTicks: false,
-                                drawBorder: false,
-                            }
-                        }
-                    ]
-                },
-                plugins: {
-                    labels: {
-                        render: () => { },
-                        fontSize: 12,
-
-                    },
-                },
-            },
-            data: data,
-        });
+        this.chiPhiChiTieuChartLabel =this.rpt.timeGroups.map(m => m.Label);
+        this.chiPhiChiTieuChartData=dataBarCharts
     }
 
     buildInquiryBySourceChart() {
-        let ctx = this.inquiryBySourceCanvas.nativeElement;
-        var width = ctx.width;
-        var height = ctx.height;
-        ctx = ctx.getContext("2d");
-
-        var data = {
-            labels: ['Marketing', 'Sale Call', 'Walk-in'],
-            datasets: []
-        };
-
-        this.rpt.rptGlobal.branch.forEach(b => {
-            data.datasets.push({
-                hidden: b.IsHidden,
-                IDBranch: b.Id,
-                type: 'horizontalBar',
-                label: b.Name,
-                fill: true,
-                borderWidth: 1,
-                borderColor: b.Color,
-                backgroundColor: this.rpt.createHorizontalGradientStroke(ctx, width, b.Color),
-                hoverBackgroundColor: b.Color,
-                data: [this.rpt.randomScalingFactor(), this.rpt.randomScalingFactor(), this.rpt.randomScalingFactor()]
-            });
-        });
-
-        for (let i = 0; i < data.datasets[0].data.length; i++) {
-            data.datasets[0].data[i] = 0;
-            for (let j = 1; j < data.datasets.length; j++) {
-                const ds = data.datasets[j];
-                data.datasets[0].data[i] += ds.data[i];
+        let dataBarCharts = [];
+        let tmp ={Data:[]}
+        for (let i = 0; i < this.rpt.rptGlobal.branch.length; i++) {
+            let data=[]
+            const b = this.rpt.rptGlobal.branch[i];
+             tmp.Data =this.items.filter(branch => branch.IDBranch == b.Id&&!b.IsHidden);
+           
+            
+            if (tmp.Data.length){
+                tmp.Data.forEach(e => {
+                    e.Date = lib.dateFormat(e.OrderDate, 'yyyy-mm-dd');                   
+                    data = [this.rpt.randomScalingFactor(), this.rpt.randomScalingFactor(), this.rpt.randomScalingFactor()]
+                });
+                
+                let dataBarChart = {
+                    name:b.Name ,
+                    data:data
+                }
+                dataBarCharts.push(dataBarChart);
             }
+           
+            
         }
-
-
-        this.charts.InquiryBySource.IsLoading = false;
-        this.charts.InquiryBySource.Chart = new Chart(ctx, {
-            type: 'horizontalBar',
-            options: {
-                maintainAspectRatio: false,
-                responsive: true,
-
-                layout: {
-                    padding: {
-                        top: 20,
-                    }
-                },
-                legend: {
-                    display: false,
-                    labels: {
-                        fontColor: '#FFF',
-                        usePointStyle: true,
-                        boxWidth: 8,
-
-                    }
-                },
-                tooltips: {
-                    mode: 'index',
-                    intersect: false,
-                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                },
-                hover: {
-                    mode: 'index',
-                    intersect: false
-                },
-
-                scales: {
-                    yAxes: [
-                        {
-                            ticks: {
-                                fontColor: () => lib.getCssVariableValue('--ion-color-primary'),
-                                fontSize: 11,
-                                maxTicksLimit: 8,
-                                padding: 10
-                            },
-                            gridLines: {
-                                color: () => lib.getCssVariableValue('--ion-color-primary'),
-                                display: false,
-                                drawTicks: false,
-                                drawBorder: false,
-                                zeroLineColor: () => lib.getCssVariableValue('--ion-color-primary'),
-                            }
-                        }
-                    ],
-                    xAxes: [
-                        {
-                            ticks: {
-                                fontColor: () => lib.getCssVariableValue('--ion-color-primary'),
-                                fontSize: 10,
-                                //maxTicksLimit: 7,
-                                padding: 15,
-                                beginAtZero: true,
-                                min: 0
-                            },
-                            gridLines: {
-
-                                display: true,
-                                drawTicks: false,
-                                drawBorder: false,
-                            }
-                        }
-                    ]
-                },
-                plugins: {
-                    labels: {
-                        render: () => { },
-                        fontSize: 12,
-
-                    },
-                },
-            },
-            data: data,
-        });
+        this.inquiryBySourceLabel =['Marketing', 'Sale Call', 'Walk-in'];
+      
+        this.inquiryBySourceData = dataBarCharts;
     }
 
     buildSaleByServiceChart() {
-        let ctx = this.saleByServiceCanvas.nativeElement;
-
-        this.charts?.SaleByService?.Chart?.destroy();
-
-        var width = ctx.width;
-        var height = ctx.height;
-        ctx = ctx.getContext("2d");
-
-        var data = {
-            labels: ['CORP', 'PERS'],
-            datasets: []
-        };
-
-        let datasets = this.rpt.buildDataset();
-        for (let i = 0; i < datasets.length; i++) {
-            const ds = datasets[i];
-            ds.Data = this.ListOfAllEvents.filter(branch => branch.IDBranch == ds.IDBranch);
-            ds.type = 'horizontalBar';
-            ds.fill = true;
-            ds.borderWidth = 1,
-                ds.borderColor = ds._b.Color,
-                ds.backgroundColor = this.rpt.createHorizontalGradientStroke(ctx, width, ds._b.Color),
-                ds.hoverBackgroundColor = ds._b.Color,
-                ds.data = [this.calcSumGroupData(ds, 'Corporate').reduce((a, b) => a + b, 0), this.calcSumGroupData(ds, 'Personal').reduce((a, b) => a + b, 0)];
-
-            let sumRevenue = 0;
-            sumRevenue = ds.data.reduce((a, b) => a + b, 0);
-            if (sumRevenue == 0) {
-                ds.hidden = true;
-            };
+        let dataBarCharts = [];
+        let tmp ={Data:[]}
+        for (let i = 0; i < this.rpt.rptGlobal.branch.length; i++) {
+            let data=[]
+            const b = this.rpt.rptGlobal.branch[i];
+             tmp.Data =this.items.filter(branch => branch.IDBranch == b.Id&&!b.IsHidden);
+           
+            
+            if (tmp.Data.length){
+                tmp.Data.forEach(e => {
+                    e.Date = lib.dateFormat(e.OrderDate, 'yyyy-mm-dd');                   
+                    data = [this.calcSumGroupData(tmp, 'Corporate').reduce((a, b) => a + b, 0),this.calcSumGroupData(tmp, 'Personal').reduce((a, b) => a + b, 0)];
+                });
+                
+                let dataBarChart = {
+                    name:b.Name ,
+                    data:data
+                }
+                dataBarCharts.push(dataBarChart);
+            }
         }
 
-        data.datasets = datasets;
-
-        this.charts.SaleByService.IsLoading = false;
-        this.charts.SaleByService.Chart = new Chart(ctx, {
-            type: 'horizontalBar',
-            options: {
-                maintainAspectRatio: false,
-                responsive: true,
-
-                layout: {
-                    padding: {
-                        top: 20,
-                    }
-                },
-                legend: {
-                    display: false,
-                    labels: {
-                        fontColor: '#FFF',
-                        usePointStyle: true,
-                        boxWidth: 8,
-
-                    }
-                },
-                tooltips: {
-                    mode: 'index',
-                    intersect: false,
-                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                    callbacks: {
-                        label: function (tooltipItem, data) {
-                            var value = lib.currencyFormatFriendly(data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index]);
-                            var label = data.datasets[tooltipItem.datasetIndex].label;
-                            return label + ': ' + value;
-                        }
-                    }
-                },
-                hover: {
-                    mode: 'index',
-                    intersect: false
-                },
-
-                scales: {
-                    yAxes: [
-                        {
-                            ticks: {
-                                fontColor: () => lib.getCssVariableValue('--ion-color-primary'),
-                                fontSize: 11,
-                                maxTicksLimit: 8,
-                                padding: 10,
-
-                            },
-                            gridLines: {
-                                color: () => lib.getCssVariableValue('--ion-color-primary'),
-                                display: false,
-                                drawTicks: false,
-                                drawBorder: false,
-                                zeroLineColor: () => lib.getCssVariableValue('--ion-color-primary'),
-                            }
-                        }
-                    ],
-                    xAxes: [
-                        {
-                            ticks: {
-                                fontColor: () => lib.getCssVariableValue('--ion-color-primary'),
-                                fontSize: 10,
-                                //maxTicksLimit: 7,
-                                padding: 15,
-                                beginAtZero: true,
-                                min: 0,
-                                userCallback: function (value, index, values) {
-                                    return lib.currencyFormatFriendly(value);
-                                }
-                            },
-                            gridLines: {
-
-                                display: true,
-                                drawTicks: false,
-                                drawBorder: false,
-                            }
-                        }
-                    ]
-                },
-                plugins: {
-                    labels: {
-                        render: () => { },
-                        fontSize: 12,
-
-                    },
-                },
-            },
-            data: data,
-        });
+        this.saleByServiceLabel = ['CORP', 'PERS'];
+        this.saleByServiceData=dataBarCharts;
     }
 
     buildLostReasonChart() {
-        let ctx = this.lostReasonCanvas.nativeElement;
+        this.lostReasonDataLabel = [
+            { name: 'Full', max: 70 },
+            { name: 'Budget', max: 70 },
+            { name: 'Location', max: 70 },
+            { name: 'Poor Follow-up', max: 70 },
+            { name: 'Indecision', max: 70 },
+            { name: 'Other', max: 70 }
+        ]
 
-        this.charts?.lostReasonCanvas?.Chart?.destroy();
-
-        var width = ctx.width;
-        var height = ctx.height;
-        ctx = ctx.getContext("2d");
-
-        var data = {
-            labels: ['Full', 'Budget', 'Location', 'Poor Follow-up', 'Indecision', 'Other'],
-            datasets: []
-        };
-
-        this.rpt.rptGlobal.branch.forEach(b => {
-            let object = {
-                hidden: b.IsHidden,
-                IDBranch: b.Id,
-                lineTension: 0.3,
-                label: b.Name,
-                fill: true,
-                borderWidth: 1,
-                borderColor: b.Color,
-                backgroundColor: this.rpt.createHorizontalGradientStroke(ctx, width, b.Color),
-                hoverBackgroundColor: b.Color,
-                data: [
-                    this.rpt.randomScalingFactor(30, 70),
-                    this.rpt.randomScalingFactor(30, 70),
-                    this.rpt.randomScalingFactor(30, 70),
-                    this.rpt.randomScalingFactor(30, 70),
-                    this.rpt.randomScalingFactor(30, 70),
-                    this.rpt.randomScalingFactor(30, 70)
-                ]
-            };
-            data.datasets.push(object);
-        });
-
-        // for (let i = 0; i < data.datasets[0].data.length; i++) {
-        //     data.datasets[0].data[i] = 0;
-        //     for (let j = 1; j < data.datasets.length; j++) {
-        //         const ds = data.datasets[j];
-        //         data.datasets[0].data[i] += ds.data[i];
-        //     }
-        // }
-
-
-        this.charts.LostReason.IsLoading = false;
-        this.charts.LostReason.Chart = new Chart(ctx, {
-            type: 'radar',
-            options: {
-                maintainAspectRatio: false,
-                responsive: true,
-
-
-                legend: {
-                    display: false,
-                    labels: {
-                        fontColor: '#FFF',
-                        usePointStyle: true,
-                        boxWidth: 8,
-                    }
-                },
-                // tooltips: {
-                //     mode: 'index',
-                //     intersect: false,
-                //     backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                // },
-                tooltips: {
-                    enabled: true,
-                    mode: 'index',
-                    intersect: false,
-                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                    callbacks: {
-                        "title": (tooltipItem, data) => data.labels[tooltipItem[0].index],
-                        label: function (tooltipItem, data) {
-                            var value = lib.currencyFormatFriendly(data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index]);
-                            var label = data.datasets[tooltipItem.datasetIndex].label;
-                            return label + ': ' + value;
-                        }
-                    }
-                },
-                hover: {
-                    mode: 'index',
-                    intersect: false
-                },
-                scale: {
-                    ticks: {
-                        // fontColor: ()=>lib.getCssVariableValue('--ion-color-primary'),
-                        showLabelBackdrop: false,
-                        beginAtZero: true,
-                        min: 0
-                    },
-                    gridLines: {
-                        circular: true,
-                        // color: ()=>lib.getCssVariableValue('--ion-color-primary'),
-                    },
-                    pointLabels: {
-                        // fontColor: ()=>lib.getCssVariableValue('--ion-color-primary'),
-                        fontSize: 12
-                    }
-                },
-
-            },
-            data: data,
-        });
-    }
-
-    buildfunnelChart() {
-        let ctx = this.funnelCanvas.nativeElement;
-        var width = ctx.width;
-        var height = ctx.height;
-        ctx = ctx.getContext("2d");
-
-        var data = {
-            labels: ['445 Inquiry (100%)', '140 Potential (31%)', '78 Tentative 18%', '50 Confirm 11%'],
-            datasets: [
-                {
-
-                    data: [445, 140, 78, 50],
-                    backgroundColor: [
-                        // "#00bcd4bb",
-                        // "#03a9f4bb",
-                        "#2196f3bb",
-                        '#3f51b5bb',
-                        '#673ab7bb',
-                        '#9c27b0bb',
+        let dataRadarCharts = [];
+        let tmp ={Data:[]}
+        for (let i = 0; i < this.rpt.rptGlobal.branch.length; i++) {
+            let value=[]
+            const b = this.rpt.rptGlobal.branch[i];
+            tmp.Data = this.items.filter(branch => branch.IDBranch == b.Id && !b.IsHidden);
+             
+              
+            if (tmp.Data.length){
+                tmp.Data.forEach(e => {                  
+                    value =  [
+                        this.rpt.randomScalingFactor(30, 70),
+                        this.rpt.randomScalingFactor(30, 70),
+                        this.rpt.randomScalingFactor(30, 70),
+                        this.rpt.randomScalingFactor(30, 70),
+                        this.rpt.randomScalingFactor(30, 70),
+                        this.rpt.randomScalingFactor(30, 70)
                     ]
+                });
+                 let dataRadarChart = {
+                    name: b.Name,
+                    value: value
                 }
-            ],
+                dataRadarCharts.push(dataRadarChart);
+            }
+             
+              
+        }
+        this.lostReasonData = dataRadarCharts;
 
-        };
-
-        this.charts.Funnel.IsLoading = false;
-        this.charts.Funnel.Chart = new Chart(ctx, {
-            type: 'funnel',
-            options: {
-                maintainAspectRatio: false,
-                responsive: true,
-                sort: 'desc',
-                layout: {
-                    padding: {
-                        top: 20,
-                        bottom: 20,
-                        right: 10,
-                    }
-                },
-                legend: {
-                    position: 'left',
-                    labels: {
-                        fontSize: 12,
-                        fontColor: () => lib.getCssVariableValue('--ion-color-primary'),
-                        usePointStyle: true,
-                        boxWidth: 8,
-                        boxHeight: 50,
-                    },
-
-
-                },
-
-                tooltips: {
-                    enabled: true,
-                    mode: "index",
-                    position: "average"
-                },
-
-                plugins: {
-                    labels: { render: 'percentage', }
-                }
-
-            },
-            data: data,
-        });
+        // var data = {
+        //     labels: ['Full', 'Budget', 'Location', 'Poor Follow-up', 'Indecision', 'Other'],
+        //     datasets: []
+        // };
     }
 
-    buildTop10CustomerChart() {
-        let ctx = this.top10CustomerCanvas.nativeElement;
-        var width = ctx.width;
-        var height = ctx.height;
-        ctx = ctx.getContext("2d");
+    buildSumUpInquiryLostChart() {
+        let data = [
+            { value: 445, name: '445 Inquiry (100%)' },
+            { value: 140, name: '140 Potential (31%)' },
+            { value: 78, name: '78 Tentative 18%' },
+            { value: 50, name: '50 Confirm 11%' },
+        ]
 
+        let label = ['Inquiry', 'Potential', 'Tentative', 'Confirm']
+
+        this.sumupInquiryLostLabel = label;
+        this.sumupInquiryLostData = data;
+    }
+    
+    buildTop10CustomerChart() {
         let ListTopCustomer = [];
         let ListTopCustomerName = [];
         let TopCustomerEvents = [];
         let SummaryList = [];
         let indexForListData = [];
         let tempListHold = [];
-
-        var data = {
-            labels: [],
-            datasets: []
-        };
+        let dataBarCharts = [];
 
         const uniqueID = [...new Set(this.ListOfAllEvents.map(item => item.IDContact))];
-        for (let i = 0; i < uniqueID.length; i++) {
+        for (let i = 0; i < uniqueID.length; i ++) {
             let Id = uniqueID[i];
             let tempDataList = this.ListOfAllEvents.filter(branch => branch.IDContact == Id);
             const uniqueIDBranch = [...new Set(tempDataList.map(item => item.IDBranch))];
@@ -1183,11 +641,11 @@ export class DashboardPage extends PageBase {
                 tempTotal += e.TotalAfterTax;
             });
 
-            ListTopCustomer.push({ Id: Id, value: tempTotal, IDBranch: uniqueIDBranch });
+            ListTopCustomer.push({Id: Id, value: tempTotal, IDBranch: uniqueIDBranch});
         }
         indexForListData = [];
         let IDContactHolder = [];
-        ListTopCustomer = ListTopCustomer.sort((n1, n2) => n2.value - n1.value).slice(0, 10);
+        ListTopCustomer = ListTopCustomer.sort((n1,n2) => n2.value - n1.value).slice(0, 10);
         for (let index = 0; index < ListTopCustomer.length; index++) {
             const customer = ListTopCustomer[index];
 
@@ -1198,7 +656,7 @@ export class DashboardPage extends PageBase {
 
                 let value = IDContactHolder.find(d => d.Id == ele.IDContact);
                 if (!value) {
-                    IDContactHolder.push({ Id: ele.IDContact });
+                    IDContactHolder.push({Id: ele.IDContact});
                     const index = this.rpt.rptGlobal.branch.map(m => m.Id).indexOf(ele.IDBranch, 0);
                     indexForListData.push(index);
 
@@ -1210,10 +668,10 @@ export class DashboardPage extends PageBase {
                         ds.type = 'horizontalBar';
                         ds.fill = true;
                         ds.borderWidth = 1,
-                            ds.borderColor = ds._b.Color,
-                            ds.backgroundColor = this.rpt.createHorizontalGradientStroke(ctx, width, ds._b.Color),
-                            ds.hoverBackgroundColor = ds._b.Color,
-                            ds.data = [];
+                        ds.borderColor = ds._b.Color,
+                        // ds.backgroundColor = this.rpt.createHorizontalGradientStroke(ctx, width, ds._b.Color),
+                        ds.hoverBackgroundColor = ds._b.Color,
+                        ds.data = [];
 
                         for (let index = 0; index < ListTopCustomer.length; index++) {
                             ds.data.push(0);
@@ -1241,13 +699,13 @@ export class DashboardPage extends PageBase {
                 targetArray;
             }
             else {
-                let arrayTemplate = targetArray ? targetArray : tempListHold.slice(0, this.rpt.rptGlobal.branch.length);
-                let newArray = tempListHold.slice(a, a + this.rpt.rptGlobal.branch.length);
+                let arrayTemplate = targetArray ? targetArray : tempListHold.slice(0,this.rpt.rptGlobal.branch.length);
+                let newArray = tempListHold.slice(a,a+this.rpt.rptGlobal.branch.length);
                 let arrayTemplate2 = arrayTemplate[element];
                 let newArray2 = newArray[element];
                 var sum;
                 if (arrayTemplate2 != newArray2) {
-                    sum = [...arrayTemplate2].map((e, i) => e + newArray2[i]); //[6,8,10,12]
+                    sum = [...arrayTemplate2].map((e,i)=> e+newArray2[i]); //[6,8,10,12]
                 }
                 else {
                     sum = arrayTemplate2;
@@ -1257,123 +715,16 @@ export class DashboardPage extends PageBase {
                 a = a + this.rpt.rptGlobal.branch.length;
             }
         }
-
-        let object;
         for (let m = 0; m < this.rpt.rptGlobal.branch.length; m++) {
-            object =
-            {
-                type: 'horizontalBar',
-                fill: true,
-                borderWidth: 1,
-                color: this.rpt.rptGlobal.branch[m].Color,
-                hidden: this.rpt.rptGlobal.branch[m].IsHidden,
-                IDBranch: this.rpt.rptGlobal.branch[m].Id,
-                label: this.rpt.rptGlobal.branch[m].Name,
-                borderColor: this.rpt.rptGlobal.branch[m].Color,
-                backgroundColor: this.rpt.createHorizontalGradientStroke(ctx, width * 3, this.rpt.rptGlobal.branch[m].Color),
-                hoverBackgroundColor: this.rpt.rptGlobal.branch[m].Color,
-                data: targetArray[m],
-            }
-
-            let sumRevenue = 0;
-            sumRevenue = object.data.reduce((a, b) => a + b, 0);
-            if (sumRevenue == 0) {
-                object.hidden = true;
-            };
-
-            data.datasets.push(object);
+           
+                let dataBarChart = {
+                    name:this.rpt.rptGlobal.branch[m].Name,
+                    data:targetArray[m],
+                }
+                dataBarCharts.push(dataBarChart);
         };
-        data.labels = ListTopCustomerName;
-
-        this.charts.Top10Customer.IsLoading = false;
-        this.charts.Top10Customer.Chart = new Chart(ctx, {
-            type: 'horizontalBar',
-            options: {
-                maintainAspectRatio: false,
-                responsive: true,
-
-                layout: {
-                    padding: {
-                        top: 20,
-                    }
-                },
-                legend: {
-                    display: false,
-                    labels: {
-                        fontColor: '#FFF',
-                        usePointStyle: true,
-                        boxWidth: 8,
-
-                    }
-                },
-                tooltips: {
-                    mode: 'index',
-                    intersect: false,
-                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                    callbacks: {
-                        label: function (tooltipItem, data) {
-                            var value = lib.currencyFormatFriendly(data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index]);
-                            var label = data.datasets[tooltipItem.datasetIndex].label;
-                            return label + ': ' + value;
-                        }
-                    }
-                },
-                hover: {
-                    mode: 'index',
-                    intersect: false
-                },
-
-                scales: {
-                    yAxes: [
-                        {
-                            ticks: {
-                                fontColor: () => lib.getCssVariableValue('--ion-color-primary'),
-                                fontSize: 11,
-                                maxTicksLimit: 8,
-                                padding: 10,
-                                autoSkip: false
-                            },
-                            gridLines: {
-                                color: () => lib.getCssVariableValue('--ion-color-primary'),
-                                display: false,
-                                drawTicks: false,
-                                drawBorder: false,
-                                zeroLineColor: () => lib.getCssVariableValue('--ion-color-primary'),
-                            }
-                        }
-                    ],
-                    xAxes: [
-                        {
-                            ticks: {
-                                fontColor: () => lib.getCssVariableValue('--ion-color-primary'),
-                                fontSize: 10,
-                                //maxTicksLimit: 7,
-                                padding: 15,
-                                beginAtZero: true,
-                                min: 0,
-                                userCallback: function (value, index, values) {
-                                    return lib.currencyFormatFriendly(value);
-                                }
-                            },
-                            gridLines: {
-
-                                display: true,
-                                drawTicks: false,
-                                drawBorder: false,
-                            }
-                        }
-                    ]
-                },
-                plugins: {
-                    labels: {
-                        render: () => { },
-                        fontSize: 12,
-
-                    },
-                },
-            },
-            data: data,
-        });
+        this.top10CustomerLabel=ListTopCustomerName;
+        this.top10CustomerData = dataBarCharts;
     }
 
     buildCalendarHeatmapChart() {
@@ -1464,10 +815,10 @@ export class DashboardPage extends PageBase {
                             for (let i = 0; i < ev.length; i++) {
                                 tempTotal += ev[i].TotalAfterTax;
                             }
-                            ds.data.push({ Order: ev.length, Total: tempTotal });
+                            ds.data.push({Order: ev.length, Total: tempTotal});
                         }
                         else {
-                            ds.data.push({ Order: ev.length, Total: 0 })
+                            ds.data.push ({Order: ev.length, Total: 0})
                         }
                     }
                     else { //Khác tháng hiện tại
@@ -1498,7 +849,7 @@ export class DashboardPage extends PageBase {
                 let opacity = Math.round(d.Order / ds.max * 255).toString(16);
                 if (d != -1) {
                     d.Total = Math.round(d.Total / 100000) / 10; //Doanh Thu
-                }
+                } 
                 if (!percent) {
                     percent = 0;
                 }
@@ -1506,7 +857,7 @@ export class DashboardPage extends PageBase {
                     opacity = '0';
                 }
 
-                let dx = { name: ds._b.Name, value: d.Order, percent: percent, opacity: opacity, total: d.Total, color: ds._b.Color };
+                let dx = { name: ds._b.Name, value: d.Order, percent: percent, opacity: opacity, total: d.Total, color: ds._b.Color};
                 ds.data[j] = dx;
             }
         }
@@ -1525,18 +876,14 @@ export class DashboardPage extends PageBase {
     }
 
     buildPnLChart() {
-        let ctx = this.pnlCanvas.nativeElement;
-        //ctx.height = 255;
-        var width = ctx.width;
-        var height = ctx.height;
-        ctx = ctx.getContext("2d");
-
+        let dataBarChart = [];
+        
         let ListLabel = this.rpt.timeGroups.map(m => m.Label)
         let GrossProfitdataGenerator = [];
         let RevenuedataGenerator = [];
         let FixedCostdataGenerator = [];
         let VariableCostdataGenerator = [];
-
+       
         var data = {
             labels: ListLabel,
             datasets: []
@@ -1551,23 +898,7 @@ export class DashboardPage extends PageBase {
         }
 
 
-        // let datasetsLinesGross = this.rpt.buildDataset();
-        // for (let i = 0; i < datasetsLinesGross.length; i++) {
-        //     const ds = datasetsLinesGross[i];
-        //     ds.type = 'line';
-        //     ds.label = ds._b.Name + ' - Gross profit',
-        //     ds.Data = this.ListOfAllEvents.filter(branch => branch.IDBranch == ds.IDBranch);
-        //     ds.fill = true;
-        //     ds.borderWidth = 1;
-        //     ds.borderColor = ds._b.Color;
-        //     ds.backgroundColor = this.rpt.createVerticalGradientStroke(ctx, height, ds._b.Color);
-        //     ds.hoverBackgroundColor = ds._b.Color;
-        //     // ds.data = this.rpt.calcSumGroupData(ds, 'Cost');
-        //     ds.data = this.calcSumGroupData(ds, 'TotalAfterTax');
-        // }
-
-        // Lines Gross profit
-        this.rpt.rptGlobal.branch.forEach(b => {
+         this.rpt.rptGlobal.branch.forEach(b => {
             data.datasets.push({
                 hidden: b.IsHidden,
                 IDBranch: b.Id,
@@ -1577,22 +908,12 @@ export class DashboardPage extends PageBase {
                 label: b.Name + ' - Gross profit',
                 borderColor: b.Color,
                 // backgroundColor: b.Color + '77',
-                backgroundColor: this.rpt.createVerticalGradientStroke(ctx, height, b.Color),
+                // backgroundColor: this.rpt.createVerticalGradientStroke(ctx, height, b.Color),
                 hoverBackgroundColor: b.Color,
                 data: GrossProfitdataGenerator,
             });
         });
 
-        // for (let i = 0; i < data.datasets[0].data.length; i++) {
-        //     data.datasets[0].data[i] = 0;
-        //     for (let j = 1; j < data.datasets.length; j++) {
-        //         const ds = data.datasets[j];
-        //         data.datasets[0].data[i] += ds.data[i];
-        //     }
-        // }
-
-
-        //stack Revenue
         this.rpt.rptGlobal.branch.forEach(b => {
             data.datasets.push({
                 hidden: b.IsHidden,
@@ -1604,21 +925,12 @@ export class DashboardPage extends PageBase {
                 borderWidth: 1,
                 borderColor: b.Color,
                 // backgroundColor: this.rpt.createVerticalGradientStroke(ctx, height * 3, b._b.Color), //'#37d16a',
-                backgroundColor: this.rpt.createVerticalGradientStroke(ctx, height * 3, b.Color), //'#37d16a',
+                // backgroundColor: this.rpt.createVerticalGradientStroke(ctx, height * 3, b.Color), //'#37d16a',
                 hoverBackgroundColor: b.Color,
                 data: RevenuedataGenerator,
             });
         });
 
-        // for (let i = 0; i < data.datasets[4].data.length; i++) {
-        //     data.datasets[4].data[i] = 0;
-        //     for (let j = 5; j < data.datasets.length; j++) {
-        //         const ds = data.datasets[j];
-        //         data.datasets[4].data[i] += ds.data[i];
-        //     }
-        // }
-
-        //stack COGS - Fixed cost
         this.rpt.rptGlobal.branch.forEach(b => {
             data.datasets.push({
                 hidden: b.IsHidden,
@@ -1629,19 +941,13 @@ export class DashboardPage extends PageBase {
                 fill: true,
                 borderWidth: 1,
                 borderColor: b.Color,
-                backgroundColor: this.rpt.createVerticalGradientStroke(ctx, height * 3, b.Color), //'#ffce00'
+                // backgroundColor: this.rpt.createVerticalGradientStroke(ctx, height * 3, b.Color), //'#ffce00'
                 hoverBackgroundColor: b.Color,
                 data: FixedCostdataGenerator,
             });
         });
 
-        // for (let i = 0; i < data.datasets[8].data.length; i++) {
-        //     data.datasets[8].data[i] = 0;
-        //     for (let j = 9; j < data.datasets.length; j++) {
-        //         const ds = data.datasets[j];
-        //         data.datasets[8].data[i] += ds.data[i];
-        //     }
-        // }
+     
 
         //stack COGS - Variable cost
         this.rpt.rptGlobal.branch.forEach(b => {
@@ -1654,44 +960,19 @@ export class DashboardPage extends PageBase {
                 fill: true,
                 borderWidth: 1,
                 borderColor: b.Color,
-                backgroundColor: this.rpt.createVerticalGradientStroke(ctx, height * 3, b.Color), //'#de4848'
+                // backgroundColor: this.rpt.createVerticalGradientStroke(ctx, height * 3, b.Color), //'#de4848'
                 hoverBackgroundColor: b.Color,
                 data: VariableCostdataGenerator,
             });
         });
 
-        // for (let i = 0; i < data.datasets[12].data.length; i++) {
-        //     data.datasets[12].data[i] = 0;
-        //     for (let j = 13; j < data.datasets.length; j++) {
-        //         const ds = data.datasets[j];
-        //         data.datasets[12].data[i] += ds.data[i];
-        //     }
-        // }
 
         //Gross profit CALC
         for (let j = 0; j < data.labels.length; j++) {
-
-            // //Gross profit             //Revenue                  //Fixed cost                //Variable cost
-            // data.datasets[0].data[j] = data.datasets[4].data[j] - data.datasets[8].data[j] - data.datasets[12].data[j]; //All
-            // data.datasets[1].data[j] = data.datasets[5].data[j] - data.datasets[9].data[j] - data.datasets[13].data[j]; //GEM
-            // data.datasets[2].data[j] = data.datasets[6].data[j] - data.datasets[10].data[j] - data.datasets[14].data[j]; //WP
-            // data.datasets[3].data[j] = data.datasets[7].data[j] - data.datasets[11].data[j] - data.datasets[15].data[j]; //PVD
-
-            // IF rpt.rptGlobal.branch has INGROUP
-            // //Gross profit             //Revenue                  //Fixed cost                //Variable cost
-            // data.datasets[0].data[j] = data.datasets[10].data[j] - data.datasets[20].data[j] - data.datasets[30].data[j]; //INGROUP
-            // data.datasets[1].data[j] = data.datasets[11].data[j] - data.datasets[21].data[j] - data.datasets[31].data[j]; //InHoldings
-            // data.datasets[2].data[j] = data.datasets[12].data[j] - data.datasets[22].data[j] - data.datasets[32].data[j]; //InHospitality
-            // data.datasets[3].data[j] = data.datasets[13].data[j] - data.datasets[23].data[j] - data.datasets[33].data[j]; //InDevelopment
-            // data.datasets[4].data[j] = data.datasets[14].data[j] - data.datasets[24].data[j] - data.datasets[34].data[j]; //DongXuan
-            // data.datasets[5].data[j] = data.datasets[15].data[j] - data.datasets[25].data[j] - data.datasets[35].data[j]; //MyXuan
-            // data.datasets[6].data[j] = data.datasets[16].data[j] - data.datasets[26].data[j] - data.datasets[36].data[j]; //XuanNam
-            // data.datasets[7].data[j] = data.datasets[17].data[j] - data.datasets[27].data[j] - data.datasets[37].data[j]; //PQTM
-            // data.datasets[8].data[j] = data.datasets[18].data[j] - data.datasets[28].data[j] - data.datasets[38].data[j]; //MetaFood
-            // data.datasets[9].data[j] = data.datasets[19].data[j] - data.datasets[29].data[j] - data.datasets[39].data[j]; //06NBK
-
+            
+         
             //Gross profit             //Revenue                  //Fixed cost                //Variable cost
-            data.datasets[0].data[j] = data.datasets[9].data[j] - data.datasets[18].data[j] - data.datasets[27].data[j]; //InHoldings
+            data.datasets[0].data[j] = data.datasets[9].data[j]  - data.datasets[18].data[j] - data.datasets[27].data[j]; //InHoldings
             data.datasets[1].data[j] = data.datasets[10].data[j] - data.datasets[19].data[j] - data.datasets[28].data[j]; //InHospitality
             data.datasets[2].data[j] = data.datasets[11].data[j] - data.datasets[20].data[j] - data.datasets[29].data[j]; //InDevelopment
             data.datasets[3].data[j] = data.datasets[12].data[j] - data.datasets[21].data[j] - data.datasets[30].data[j]; //DongXuan
@@ -1700,121 +981,27 @@ export class DashboardPage extends PageBase {
             data.datasets[6].data[j] = data.datasets[15].data[j] - data.datasets[24].data[j] - data.datasets[33].data[j]; //PQTM
             data.datasets[7].data[j] = data.datasets[16].data[j] - data.datasets[25].data[j] - data.datasets[34].data[j]; //MetaFood
             data.datasets[8].data[j] = data.datasets[17].data[j] - data.datasets[26].data[j] - data.datasets[35].data[j]; //06NBK
+            
         }
+     
+        let d = {
+            name:data.datasets[0].label,
+            data: data.datasets[0].data,
+        }
+        dataBarChart.push(d);
         data.datasets;
-
-        this.charts.PNL.IsLoading = false;
-        this.charts.PNL.Chart = new Chart(ctx, {
-            type: 'bar',
-            options: {
-                maintainAspectRatio: false,
-                responsive: true,
-
-                layout: {
-                    padding: {
-                        top: 20,
-                    }
-                },
-                legend: {
-                    display: false,
-                    labels: {
-                        fontColor: '#FFF',
-                        usePointStyle: true,
-                        boxWidth: 8,
-
-                    }
-                },
-                tooltips: {
-                    mode: 'index',
-                    intersect: false,
-                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                    callbacks: {
-                        label: function (tooltipItem, data) {
-                            var value = lib.currencyFormatFriendly(data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index]);
-                            var label = data.datasets[tooltipItem.datasetIndex].label;
-                            return label + ': ' + value;
-                        }
-                    }
-                },
-                hover: {
-                    mode: 'index',
-                    intersect: false
-                },
-                elements: {
-                    point: {
-                        radius: 0,
-                        hoverRadius: 4,
-                        backgroundColor: () => lib.getCssVariableValue('--ion-color-primary'),
-                        borderWidth: 1,
-                        hoverBorderWidth: 2
-                    },
-                    line: {
-                        borderWidth: 3
-                    }
-                },
-                scales: {
-                    yAxes: [
-                        {
-                            ticks: {
-                                // fontColor: ()=>lib.getCssVariableValue('--ion-color-primary'),
-                                fontSize: 12,
-                                maxTicksLimit: 8,
-                                padding: 20,
-                                userCallback: function (value, index, values) {
-                                    return lib.currencyFormatFriendly(value);
-                                }
-                            },
-                            gridLines: {
-                                // color: ()=>lib.getCssVariableValue('--ion-color-primary'),
-                                display: true,
-                                drawTicks: false,
-                                drawBorder: false,
-                                // zeroLineColor: ()=>lib.getCssVariableValue('--ion-color-primary'),
-                            }
-                        }
-                    ],
-                    xAxes: [
-                        {
-                            ticks: {
-                                // fontColor: ()=>lib.getCssVariableValue('--ion-color-primary'),
-                                fontSize: 10,
-                                //maxTicksLimit: 7,
-                                padding: 15
-                            },
-                            gridLines: {
-
-                                display: false,
-                                drawTicks: false,
-                                drawBorder: false,
-                            }
-                        }
-                    ]
-                },
-                plugins: {
-                    labels: {
-                        render: () => { },
-                        fontSize: 12,
-
-                    },
-                },
-            },
-            data: data,
-        });
+        this.PnLData=dataBarChart
+        this.PnLLabel = this.rpt.timeGroups.map(m => m.Label)
     }
 
     buildCashFlowChart() {
-        let ctx = this.cashFlowCanvas.nativeElement;
-        //ctx.height = 255;
-        var width = ctx.width;
-        var height = ctx.height;
-        ctx = ctx.getContext("2d");
-
+        let dataBarChart = [];
         let ListLabel = this.rpt.timeGroups.map(m => m.Label)
         let CashBalancedataGenerator = [];
         let CashIndataGenerator = [];
         let CashOutdataGenerator = [];
-
-
+        this.cashFlowLabel=this.rpt.timeGroups.map(m => m.Label)
+        
         var data = {
             labels: ListLabel,
             datasets: []
@@ -1838,7 +1025,7 @@ export class DashboardPage extends PageBase {
                 label: b.Name + ' - Cash balance',
                 borderColor: b.Color,
                 // backgroundColor: b.Color + '77',
-                backgroundColor: this.rpt.createVerticalGradientStroke(ctx, height * 3, b.Color),
+                // backgroundColor: this.rpt.createVerticalGradientStroke(ctx, height * 3, b.Color),
                 hoverBackgroundColor: b.Color,
                 data: CashBalancedataGenerator,
             });
@@ -1855,19 +1042,13 @@ export class DashboardPage extends PageBase {
                 fill: true,
                 borderWidth: 1,
                 borderColor: b.Color,
-                backgroundColor: this.rpt.createVerticalGradientStroke(ctx, height * 3, b.Color), //'#37d16a',
+                // backgroundColor: this.rpt.createVerticalGradientStroke(ctx, height * 3, b.Color), //'#37d16a',
                 hoverBackgroundColor: b.Color,
                 data: CashIndataGenerator,
             });
         });
 
-        // for (let i = 0; i < data.datasets[4].data.length; i++) {
-        //     data.datasets[4].data[i] = 0;
-        //     for (let j = 5; j < data.datasets.length; j++) {
-        //         const ds = data.datasets[j];
-        //         data.datasets[4].data[i] += ds.data[i];
-        //     }
-        // }
+
 
         //stack Cash - out
         this.rpt.rptGlobal.branch.forEach(b => {
@@ -1880,38 +1061,17 @@ export class DashboardPage extends PageBase {
                 fill: true,
                 borderWidth: 1,
                 borderColor: b.Color,
-                backgroundColor: this.rpt.createVerticalGradientStroke(ctx, height * 3, b.Color), //#de4848
+                // backgroundColor: this.rpt.createVerticalGradientStroke(ctx, height * 3, b.Color), //#de4848
                 hoverBackgroundColor: b.Color,
                 data: CashOutdataGenerator,
             });
         });
 
-        // for (let i = 0; i < data.datasets[8].data.length; i++) {
-        //     data.datasets[8].data[i] = 0;
-        //     for (let j = 9; j < data.datasets.length; j++) {
-        //         const ds = data.datasets[j];
-        //         data.datasets[8].data[i] += ds.data[i];
-        //     }
-        // }
-
         //Cash balance CALC
         for (let j = 0; j < data.labels.length; j++) {
 
-            // IF rpt.rptGlobal.branch has INGROUP
-            // //Cash balance             //In                       //Out                
-            // data.datasets[0].data[j] = data.datasets[10].data[j] - data.datasets[20].data[j]; //INGROUP
-            // data.datasets[1].data[j] = data.datasets[11].data[j] - data.datasets[21].data[j]; //InHoldings
-            // data.datasets[2].data[j] = data.datasets[12].data[j] - data.datasets[22].data[j]; //InHospitality
-            // data.datasets[3].data[j] = data.datasets[13].data[j] - data.datasets[23].data[j]; //InDevelopment
-            // data.datasets[4].data[j] = data.datasets[14].data[j] - data.datasets[24].data[j]; //DongXuan
-            // data.datasets[5].data[j] = data.datasets[15].data[j] - data.datasets[25].data[j]; //MyXuan
-            // data.datasets[6].data[j] = data.datasets[16].data[j] - data.datasets[26].data[j]; //XuanNam
-            // data.datasets[7].data[j] = data.datasets[17].data[j] - data.datasets[27].data[j]; //PQTM
-            // data.datasets[8].data[j] = data.datasets[18].data[j] - data.datasets[28].data[j]; //MetaFood
-            // data.datasets[9].data[j] = data.datasets[19].data[j] - data.datasets[29].data[j]; //06NBK
-
             //Cash balance             //In                       //Out                
-            data.datasets[0].data[j] = data.datasets[9].data[j] - data.datasets[18].data[j]; //InHoldings
+            data.datasets[0].data[j] = data.datasets[9].data[j]  - data.datasets[18].data[j]; //InHoldings
             data.datasets[1].data[j] = data.datasets[10].data[j] - data.datasets[19].data[j]; //InHospitality
             data.datasets[2].data[j] = data.datasets[11].data[j] - data.datasets[20].data[j]; //InDevelopment
             data.datasets[3].data[j] = data.datasets[12].data[j] - data.datasets[21].data[j]; //DongXuan
@@ -1922,106 +1082,11 @@ export class DashboardPage extends PageBase {
             data.datasets[8].data[j] = data.datasets[17].data[j] - data.datasets[26].data[j]; //06NBK
         }
 
-        this.charts.CashFlow.IsLoading = false;
-        this.charts.CashFlow.Chart = new Chart(ctx, {
-            type: 'bar',
-            options: {
-                maintainAspectRatio: false,
-                responsive: true,
-
-                layout: {
-                    padding: {
-                        top: 20,
-                    }
-                },
-                legend: {
-                    display: false,
-                    labels: {
-                        fontColor: '#FFF',
-                        usePointStyle: true,
-                        boxWidth: 8,
-
-                    }
-                },
-                tooltips: {
-                    mode: 'index',
-                    intersect: false,
-                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                    callbacks: {
-                        label: function (tooltipItem, data) {
-                            var value = lib.currencyFormatFriendly(data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index]);
-                            var label = data.datasets[tooltipItem.datasetIndex].label;
-                            return label + ': ' + value;
-                        }
-                    }
-                },
-                hover: {
-                    mode: 'index',
-                    intersect: false
-                },
-                elements: {
-                    point: {
-                        radius: 0,
-                        hoverRadius: 4,
-                        backgroundColor: () => lib.getCssVariableValue('--ion-color-primary'),
-                        borderWidth: 1,
-                        hoverBorderWidth: 2
-                    },
-                    line: {
-                        borderWidth: 3
-                    }
-                },
-                scales: {
-                    yAxes: [
-                        {
-                            ticks: {
-                                // fontColor: ()=>lib.getCssVariableValue('--ion-color-primary'),
-                                fontSize: 12,
-                                maxTicksLimit: 8,
-                                padding: 20,
-                                userCallback: function (value, index, values) {
-                                    return lib.currencyFormatFriendly(value);
-                                }
-                            },
-                            gridLines: {
-                                // color: ()=>lib.getCssVariableValue('--ion-color-primary'),
-                                display: true,
-                                drawTicks: false,
-                                drawBorder: false,
-                                // zeroLineColor: ()=>lib.getCssVariableValue('--ion-color-primary'),
-                            }
-                        }
-                    ],
-                    xAxes: [
-                        {
-                            ticks: {
-                                // fontColor: ()=>lib.getCssVariableValue('--ion-color-primary'),
-                                fontSize: 10,
-                                //maxTicksLimit: 7,
-                                padding: 15
-                            },
-                            gridLines: {
-
-                                display: false,
-                                drawTicks: false,
-                                drawBorder: false,
-                            }
-                        }
-                    ]
-                },
-                plugins: {
-                    labels: {
-                        render: () => { },
-                        fontSize: 12,
-
-                    },
-                },
-            },
-            data: data,
-        });
+        let d = {
+            name:data.datasets[0].label,
+            data: data.datasets[0].data,
+        }
+        dataBarChart.push(d);
+        this.cashFlowData=dataBarChart
     }
-
-
-
-
 }

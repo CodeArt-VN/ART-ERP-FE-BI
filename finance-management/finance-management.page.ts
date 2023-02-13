@@ -4,9 +4,6 @@ import { EnvService } from 'src/app/services/core/env.service';
 import { PageBase } from 'src/app/page-base';
 import { ReportService } from 'src/app/services/report.service';
 import { lib } from 'src/app/services/static/global-functions';
-// import Chart from 'chart.js';
-// import 'chartjs-plugin-labels';
-// import 'chartjs-funnel';
 import { CustomService } from 'src/app/services/custom.service';
 
 @Component({
@@ -25,11 +22,11 @@ export class FinanceManagementPage extends PageBase {
     dataCashFlow = []
     dataFullRatio = []
 
-    pnlChart: any;
-    @ViewChild('pnlCanvas') pnlCanvas;
+    // pnlChart: any;
+    // @ViewChild('pnlCanvas') pnlCanvas;
 
-    cashFlowChart: any;
-    @ViewChild('cashFlowCanvas') cashFlowCanvas;
+    // cashFlowChart: any;
+    // @ViewChild('cashFlowCanvas') cashFlowCanvas;
 
 
     constructor(

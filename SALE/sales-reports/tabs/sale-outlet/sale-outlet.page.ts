@@ -4,8 +4,6 @@ import { EnvService } from 'src/app/services/core/env.service';
 import { PageBase } from 'src/app/page-base';
 import { ReportService } from 'src/app/services/report.service';
 import { lib } from 'src/app/services/static/global-functions';
-import Chart from 'chart.js';
-import 'chartjs-plugin-labels';
 import { CustomService } from 'src/app/services/custom.service';
 import { ApiSetting } from 'src/app/services/static/api-setting';
 import { CommonService } from 'src/app/services/core/common.service';
@@ -17,9 +15,7 @@ import { CommonService } from 'src/app/services/core/common.service';
 })
 export class SaleOutletPage extends PageBase {
     today = '';
-    charts;
     reportQuery: any = {};
-    @ViewChild('chartName') chartName;
 
 
     constructor(
@@ -34,9 +30,6 @@ export class SaleOutletPage extends PageBase {
     ) {
         super();
         this.today = lib.dateFormat(new Date, 'hh:MM dd/mm/yyyy');
-        this.charts = {
-            chartName: { IsLoading: true, IsNoData: false, Chart: null },
-        };
 
         this.pageConfig.subscribeReport = this.rpt.Tracking().subscribe((data) => {
             console.log('subscribeReport');
@@ -74,10 +67,6 @@ export class SaleOutletPage extends PageBase {
     }
 
     refresh() {
-        for (var key in this.charts) {
-            let c = this.charts[key].Chart;
-            c?.destroy();
-        }
         this.buildCharts();
     }
 
