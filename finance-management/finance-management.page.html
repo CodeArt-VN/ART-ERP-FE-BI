@@ -71,7 +71,7 @@
 
 			<div >
 				<div class="title">Branch / Chi nhánh</div>
-				<ng-container *ngFor="let b of rpt.rptGlobal.branch">
+				<ng-container *ngFor="let b of reportBranchList">
 					<ion-button [fill]="b.IsHidden ? 'outline' : 'solid'" size="small" (click)="toogleBranchDataset(b)">
 						{{b.Name}}
 					</ion-button>
@@ -116,7 +116,7 @@
 	
 				<div >
 					<div class="title">Branch / Chi nhánh</div>
-					<ng-container *ngFor="let b of rpt.rptGlobal.branch">
+					<ng-container *ngFor="let b of reportBranchList">
 						<ion-button [fill]="b.IsHidden ? 'outline' : 'solid'" size="small" (click)="toogleBranchDataset(b)">
 							{{b.Name}}
 						</ion-button>
@@ -312,12 +312,15 @@
 								</div>
 							</td>
 							<ng-container *ngFor="let p of headerPnL">
-								<td class="data-header" [ngStyle]="{'background-color': p.Branch.Color + '2f'}" *ngIf="!p.Branch.IsHidden && (!p.Branch.IsHiddenDetailColumn || p.IsTotal || p.IsAll )">
-									<div (click)="p.Branch.IsHiddenDetailColumn =! p.Branch.IsHiddenDetailColumn" class="value">{{p.Name}} 
-										<ion-icon class="min-btn" *ngIf="p.IsTotal" [name]="p.Branch.IsHiddenDetailColumn? 'add-circle-outline':'remove-circle-outline'" ></ion-icon> 
-										
-									</div>
-								</td>
+								<ng-container *ngIf="p.Branch">
+									<td class="data-header" [ngStyle]="{'background-color': p.Branch.Color + '2f'}" *ngIf="!p.Branch.IsHidden && (!p.Branch.IsHiddenDetailColumn || p.IsTotal || p.IsAll )">
+										<div (click)="p.Branch.IsHiddenDetailColumn =! p.Branch.IsHiddenDetailColumn" class="value">{{p.Branch.Name}} 
+											<ion-icon class="min-btn" *ngIf="p.IsTotal" [name]="p.Branch.IsHiddenDetailColumn? 'add-circle-outline':'remove-circle-outline'" ></ion-icon> 
+											
+										</div>
+									</td>
+								</ng-container>
+								
 							</ng-container>
 						</tr>
 
@@ -334,9 +337,11 @@
 									</div>
 								</td>
 								<ng-container *ngFor="let p of headerPnL">
-									<td [ngClass]="{bold: i.HasChild}" [ngStyle]="{'background-color': p.Branch.Color + '0f'}" *ngIf="!p.Branch.IsHidden && (!p.Branch.IsHiddenDetailColumn || p.IsTotal || p.IsAll)">
-										<div class="value">{{ i[p.Name] }}</div>
-									</td>
+									<ng-container *ngIf="p.Branch">
+										<td [ngClass]="{bold: i.HasChild}" [ngStyle]="{'background-color': p.Branch.Color + '0f'}" *ngIf="!p.Branch.IsHidden && (!p.Branch.IsHiddenDetailColumn || p.IsTotal || p.IsAll)">
+											<div class="value">{{ i[p.Name] }}</div>
+										</td>
+									</ng-container>
 								</ng-container>
 							</tr>
 						</ng-container>
@@ -461,12 +466,14 @@
 								</div>
 							</td>
 							<ng-container *ngFor="let p of headerCashFlow">
-								<td class="data-header" [ngStyle]="{'background-color': p.Branch.Color + '2f'}" *ngIf="!p.Branch.IsHidden && (!p.Branch.IsHiddenDetailColumn || p.IsTotal || p.IsAll )">
-									<div (click)="p.Branch.IsHiddenDetailColumn =! p.Branch.IsHiddenDetailColumn" class="value">{{p.Name}} 
-										<ion-icon class="min-btn" *ngIf="p.IsTotal" [name]="p.Branch.IsHiddenDetailColumn? 'add-circle-outline':'remove-circle-outline'" ></ion-icon> 
-										
-									</div>
-								</td>
+								<ng-container *ngIf="p.Branch">
+									<td class="data-header" [ngStyle]="{'background-color': p.Branch.Color + '2f'}" *ngIf="!p.Branch.IsHidden && (!p.Branch.IsHiddenDetailColumn || p.IsTotal || p.IsAll )">
+										<div (click)="p.Branch.IsHiddenDetailColumn =! p.Branch.IsHiddenDetailColumn" class="value">{{p.Branch.Name}} 
+											<ion-icon class="min-btn" *ngIf="p.IsTotal" [name]="p.Branch.IsHiddenDetailColumn? 'add-circle-outline':'remove-circle-outline'" ></ion-icon> 
+											
+										</div>
+									</td>
+								</ng-container>
 							</ng-container>
 						</tr>
 
@@ -483,9 +490,11 @@
 									</div>
 								</td>
 								<ng-container *ngFor="let p of headerCashFlow">
-									<td [ngClass]="{bold: i.HasChild}" [ngStyle]="{'background-color': p.Branch.Color + '0f'}" *ngIf="!p.Branch.IsHidden && (!p.Branch.IsHiddenDetailColumn || p.IsTotal || p.IsAll)">
-										<div class="value">{{ i[p.Name] }}</div>
-									</td>
+									<ng-container *ngIf="p.Branch">
+										<td [ngClass]="{bold: i.HasChild}" [ngStyle]="{'background-color': p.Branch.Color + '0f'}" *ngIf="!p.Branch.IsHidden && (!p.Branch.IsHiddenDetailColumn || p.IsTotal || p.IsAll)">
+											<div class="value">{{ i[p.Name] }}</div>
+										</td>
+									</ng-container>
 								</ng-container>
 							</tr>
 						</ng-container>
@@ -504,7 +513,7 @@
 									Báo cáo lưu chuyển tiền tệ
 								</div>
 							</td>
-							<ng-container *ngIf="!rpt.rptGlobal.branch[0].IsHidden">
+							<ng-container *ngIf="!reportBranchList[0].IsHidden">
 								<td  *ngFor="let p of headerCashFlow">
 									<div class="value">{{p}}</div>
 								</td>
@@ -520,7 +529,7 @@
 										
 									</div>
 								</td>
-								<ng-container *ngIf="!rpt.rptGlobal.branch[0].IsHidden">
+								<ng-container *ngIf="!reportBranchList[0].IsHidden">
 									<td [ngClass]="{bold: i.IsBold}" *ngFor="let p of headerCashFlow" >
 										<div class="value">{{ i[p] }}</div>
 									</td>
@@ -543,12 +552,14 @@
 								</div>
 							</td>
 							<ng-container *ngFor="let p of headerPnL">
-								<td class="data-header" [ngStyle]="{'background-color': p.Branch.Color + '2f'}" *ngIf="!p.Branch.IsHidden && (!p.Branch.IsHiddenDetailColumn || p.IsTotal || p.IsAll )">
-									<div (click)="p.Branch.IsHiddenDetailColumn =! p.Branch.IsHiddenDetailColumn" class="value">{{p.Name}} 
-										<ion-icon class="min-btn" *ngIf="p.IsTotal" [name]="p.Branch.IsHiddenDetailColumn? 'add-circle-outline':'remove-circle-outline'" ></ion-icon> 
-										
-									</div>
-								</td>
+								<ng-container *ngIf="p.Branch">
+									<td class="data-header" [ngStyle]="{'background-color': p.Branch.Color + '2f'}" *ngIf="!p.Branch.IsHidden && (!p.Branch.IsHiddenDetailColumn || p.IsTotal || p.IsAll )">
+										<div (click)="p.Branch.IsHiddenDetailColumn =! p.Branch.IsHiddenDetailColumn" class="value">{{p.Branch.Name}} 
+											<ion-icon class="min-btn" *ngIf="p.IsTotal" [name]="p.Branch.IsHiddenDetailColumn? 'add-circle-outline':'remove-circle-outline'" ></ion-icon> 
+											
+										</div>
+									</td>
+								</ng-container>
 							</ng-container>
 						</tr>
 
@@ -565,9 +576,11 @@
 									</div>
 								</td>
 								<ng-container *ngFor="let p of headerPnL">
-									<td [ngClass]="{bold: i.HasChild}" [ngStyle]="{'background-color': p.Branch.Color + '0f'}" *ngIf="!p.Branch.IsHidden && (!p.Branch.IsHiddenDetailColumn || p.IsTotal || p.IsAll)">
-										<div class="value">{{ i[p.Name] }}</div>
-									</td>
+									<ng-container *ngIf="p.Branch">
+										<td [ngClass]="{bold: i.HasChild}" [ngStyle]="{'background-color': p.Branch.Color + '0f'}" *ngIf="!p.Branch.IsHidden && (!p.Branch.IsHiddenDetailColumn || p.IsTotal || p.IsAll)">
+											<div class="value">{{ i[p.Name] }}</div>
+										</td>
+									</ng-container>
 								</ng-container>
 							</tr>
 						</ng-container>

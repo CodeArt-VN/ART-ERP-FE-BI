@@ -219,13 +219,19 @@
 			<div class="chart-box" style="min-width: 40%; height: 300px;">
 				<div class="title">PnL</div>
 				<div class="chart-contain">
-					<canvas id="pnlCanvas" #pnlCanvas></canvas>
+					<!-- <canvas id="pnlCanvas" #pnlCanvas></canvas> -->
+					<ng-container *ngIf="items.length">
+						<app-bar-chart [Title]="" [Label]="PnLChartLabel" [Data]="PnLChartData" ></app-bar-chart>
+					</ng-container>
 				</div>
 			</div>
 			<div class="chart-box" style="min-width: 40%; height: 300px;">
 				<div class="title">Cash flow</div>
 				<div class="chart-contain">
-					<canvas id="cashFlowCanvas" #cashFlowCanvas></canvas>
+					<!-- <canvas id="cashFlowCanvas" #cashFlowCanvas></canvas> -->
+					<ng-container *ngIf="items.length">
+						<app-bar-chart [Title]="" [Label]="CashFlowChartLabel" [Data]="CashFlowChartData" ></app-bar-chart>
+					</ng-container>
 				</div>
 			</div>
 

@@ -4,9 +4,6 @@ import { EnvService } from 'src/app/services/core/env.service';
 import { PageBase } from 'src/app/page-base';
 import { ReportService } from 'src/app/services/report.service';
 import { lib } from 'src/app/services/static/global-functions';
-// import Chart from 'chart.js';
-// import 'chartjs-plugin-labels';
-// import 'chartjs-funnel';
 import { CustomService } from 'src/app/services/custom.service';
 
 @Component({
@@ -25,6 +22,9 @@ export class FinanceManagementPage extends PageBase {
     dataCashFlow = []
     dataFullRatio = []
 
+    reportBranchList = []
+    colorList = ['#84ff00', '#772727', '#00ffae', '#ff4200', '#ffe400', '#2b9a00', '#ff00ae', '#c000ff', '#FF5733', '#5DADE2']
+
     pnlChart: any;
     @ViewChild('pnlCanvas') pnlCanvas;
 
@@ -41,6 +41,18 @@ export class FinanceManagementPage extends PageBase {
         public rpt: ReportService,
     ) {
         super();
+
+        let template = {
+            "ShowBtn": false,
+            "IsHidden": false,
+            "IsHiddenDetailColumn": true,
+        }
+        this.reportBranchList = this.env.branchList.filter(b => b.IDType == '111');
+        for (let index = 0; index < this.reportBranchList.length; index++) {
+            let val = this.reportBranchList[index];
+            Object.assign(val, template);
+            val.Color = this.colorList[index];
+        }
     }
 
     loadData() {
@@ -49,6 +61,10 @@ export class FinanceManagementPage extends PageBase {
         this.preBuildCFTree();
        
 
+    }
+
+    refresh() {
+        super.preLoadData(null);
     }
 
      preBuildCFTree() {
@@ -78,7 +94,7 @@ export class FinanceManagementPage extends PageBase {
                     this.headerCashFlow = this.headerCashFlow.filter(d => removePros.findIndex(i => i == d) == -1);
 
                     this.headerCashFlow = this.headerCashFlow.map(h => {
-                        let branch = this.rpt.rptGlobal.branch.find(f => { return h.indexOf(f.Code) == 0 || h.indexOf('TOTAL-' + f.Code) == 0 });
+                        let branch = this.reportBranchList.find(f => { return h.indexOf(f.Code) == 0 || h.indexOf('TOTAL-' + f.Code) == 0 });
                         return { Name: h, Branch: branch, IsTotal : h.indexOf('TOTAL-')==0, IsAll: h.indexOf('INGROUP')==0 };
                     });
 
@@ -150,6 +166,7 @@ export class FinanceManagementPage extends PageBase {
                 });
 
                 this.dataCashFlow = treeItems;
+                console.log(this.dataCashFlow);
             });
 
         });
@@ -182,7 +199,7 @@ export class FinanceManagementPage extends PageBase {
                     this.headerPnL = this.headerPnL.filter(d => removePros.findIndex(i => i == d) == -1);
 
                     this.headerPnL = this.headerPnL.map(h => {
-                        let branch = this.rpt.rptGlobal.branch.find(f => { return h.indexOf(f.Code) == 0 || h.indexOf('TOTAL-' + f.Code) == 0 });
+                        let branch = this.reportBranchList.find(f => { return h.indexOf(f.Code) == 0 || h.indexOf('TOTAL-' + f.Code) == 0 });
                         return { Name: h, Branch: branch, IsTotal : h.indexOf('TOTAL-')==0, IsAll: h.indexOf('INGROUP')==0 };
                     });
                     console.log('header PnL')
@@ -265,6 +282,7 @@ export class FinanceManagementPage extends PageBase {
                 });
 
                 this.dataPnL = treeItems;
+                console.log(this.dataPnL);
             });
 
         });

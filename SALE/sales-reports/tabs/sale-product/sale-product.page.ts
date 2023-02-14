@@ -4,8 +4,6 @@ import { EnvService } from 'src/app/services/core/env.service';
 import { PageBase } from 'src/app/page-base';
 import { ReportService } from 'src/app/services/report.service';
 import { lib } from 'src/app/services/static/global-functions';
-import Chart from 'chart.js';
-import 'chartjs-plugin-labels';
 import { CustomService } from 'src/app/services/custom.service';
 import { ApiSetting } from 'src/app/services/static/api-setting';
 import { CommonService } from 'src/app/services/core/common.service';

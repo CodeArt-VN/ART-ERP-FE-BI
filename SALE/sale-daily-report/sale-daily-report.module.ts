@@ -3,9 +3,9 @@ import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { DashboardPage } from './dashboard.page';
+
 import { ShareModule } from 'src/app/share.module';
-import { ShareChartsModule } from 'src/app/components/charts/share-charts.module';
+import { SaleDailyReportPage } from './sale-daily-report.page';
 
 @NgModule({
   imports: [
@@ -13,9 +13,8 @@ import { ShareChartsModule } from 'src/app/components/charts/share-charts.module
     CommonModule,
     FormsModule,
     ShareModule,
-    ShareChartsModule,
-    RouterModule.forChild([{ path: '', component: DashboardPage }])
+    RouterModule.forChild([{ path: '', component: SaleDailyReportPage }])
   ],
-  declarations: [DashboardPage]
+  declarations: [SaleDailyReportPage]
 })
-export class DashboardPageModule {}
+export class SaleDailyReportModule {}

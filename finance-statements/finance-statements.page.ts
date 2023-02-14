@@ -4,8 +4,6 @@ import { EnvService } from 'src/app/services/core/env.service';
 import { PageBase } from 'src/app/page-base';
 import { ReportService } from 'src/app/services/report.service';
 import { lib } from 'src/app/services/static/global-functions';
-import Chart from 'chart.js';
-import 'chartjs-plugin-labels';
 import { CustomService } from 'src/app/services/custom.service';
 
 
@@ -56,6 +54,10 @@ export class FinanceStatementsPage extends PageBase {
 
         this.loadData();
         
+    }
+
+    refresh() {
+        super.preLoadData(null);
     }
 
     loadData(){
