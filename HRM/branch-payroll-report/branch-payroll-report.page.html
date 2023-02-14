@@ -1,5 +1,22 @@
 <ion-header>
-	<app-list-toolbar pageTitle="Danh sách" [pageConfig]="pageConfig" [selectedItems]="selectedItems" [query]="query" (add)="add()" (refresh)="refresh()" (export)="export()" (import)="import($event)" (help)="help()" (unselect)="unselect()" (archiveItems)="archiveItems()" (deleteItems)="deleteItems()" (changeBranch)="changeBranch($event)"></app-list-toolbar>
+	<app-list-toolbar [ShowRefresh]="false" [ShowSearch]="false" [pageConfig]="pageConfig" [selectedItems]="selectedItems" [query]="query" (add)="add()" (refresh)="refresh()" (export)="export()" (import)="import($event)" (help)="help()" (unselect)="unselect()" (archiveItems)="archiveItems()" (deleteItems)="deleteItems()" (changeBranch)="changeBranch($event)">
+		<ng-container>
+			<ng-select class="c-input no-check-dirty" appendTo="#ng-select-holder" [clearable]="false" (change)="changeCycle()" [(ngModel)]="selectedCycle" [items]="cycles" bindLabel="Name" bindValue="" placeholder="Chọn kỳ lương...">
+				<ng-template let-i="item" let-search="searchTerm">
+					<div *ngIf="i">
+						<div> <span *ngFor="let l of i.levels">&nbsp;&nbsp;&nbsp;</span> <span>{{i.Name}}</span></div>
+					</div>
+				</ng-template>
+			</ng-select>
+
+			<ion-button (click)="syncFromHR()" title="Đồng bộ từ HR về ERP" class=" ion-hide-sm-down">
+				<ion-icon slot="icon-only" name="sync-outline"></ion-icon>
+			</ion-button>
+			<ion-button (click)="syncToSAP()" title="Đồng bộ về SAP" class=" ion-hide-sm-down">
+				<ion-icon slot="icon-only" name="send-outline"></ion-icon>
+			</ion-button>
+		</ng-container>
+	</app-list-toolbar>
 </ion-header>
 
 <ion-content appScrollbarTheme class="scrollx">
@@ -22,7 +39,7 @@
 		</header>
 		<form (keydown.enter)="refresh()" (submit)="refresh()" action="#">
 			<header class="filter" *ngIf="pageConfig.isShowSearch">
-				
+
 				<!-- <div class="col-code cell">
 					<input (keydown.enter)="refresh()" placeholder="{{'erp.app.pages.ost.branch.name' | translate}}" [ngModelOptions]="{standalone: true}" [(ngModel)]="query.Name" class="c-input" [ngClass]="{active: query.Name}" type="search">
 					<ion-icon class="min-btn" (click)="query.Name=''; refresh()" *ngIf="query.Name" name="close-circle-outline"></ion-icon>
@@ -40,7 +57,7 @@
 			</header>
 		</form>
 		<!-- <app-page-message [itemsLength]="itemsState.length" [showSpinner]="pageConfig.showSpinner"></app-page-message> -->
-		<ng-container *ngFor="let i of itemsState; let j = index;" >
+		<ng-container *ngFor="let i of itemsState; let j = index;">
 			<div class="row" *ngIf="i.show" [ngClass]="{odd: j % 2 != 0}" [ngClass]="{selected: i.checked}">
 				<div [ngClass]="i.HasChild? ('bold ') : ('')" class="col-name cell">
 					<ng-container *ngFor="let w of i.levels; let k = index;"><span class="spacing" *ngIf="k>0"></span></ng-container>

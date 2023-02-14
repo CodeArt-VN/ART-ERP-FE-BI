@@ -1,0 +1,42 @@
+<ion-header>
+	<app-list-toolbar pageTitle="{{'erp.app.pages.pos.pos-menu.page-title' | translate}}" [pageConfig]="pageConfig" [selectedItems]="selectedItems" [query]="query" (add)="add()" (refresh)="refresh()" (export)="export()" (import)="import($event)" (help)="help()" (unselect)="unselect()" (archiveItems)="archiveItems()" (deleteItems)="deleteItems()" (changeBranch)="changeBranch($event)"></app-list-toolbar>
+</ion-header>
+<ion-content appScrollbarTheme  [ngClass]="{withFeature: pageConfig.isShowFeature}">
+	
+	<ion-fab *ngIf="pageConfig.isShowFeature" [ngClass]="{withSearch: pageConfig.isShowSearch}" class="feature" vertical="top" horizontal="end" slot="fixed">
+		<app-query-filter (changeFrequencyComp)="changeFrequency($event)" (changeDateFilterComp)="changeDateFilter($event)"></app-query-filter>
+	</ion-fab>
+	
+	
+	<ng-container *ngIf="items.length">
+		<ion-grid>
+			<ion-row>
+				<ion-col style="height: 250px; margin-top: 20px;"  size-xl="3" size="12">
+					<ng-container *ngIf="ChartData">
+						<app-line-chart [type]="'BasicLine'"  [title]="'Revenue'" [data]="ChartData.Revenue.data" [label]="ChartData.Revenue.label" ></app-line-chart>
+					</ng-container>
+				</ion-col>
+				<ion-col style="height: 250px; margin-top: 20px;"  size-xl="3" size="12">
+					<ng-container *ngIf="ChartData">
+						<app-line-chart  [type]="'BasicLine'" [title]="'Receipt'" [data]="ChartData.Receipt.data" [label]="ChartData.Receipt.label" ></app-line-chart>
+					</ng-container>
+				</ion-col>
+				<ion-col style="height: 250px; margin-top: 20px;"  size-xl="3" size="12">
+					<ng-container *ngIf="ChartPayment.length">
+						<app-pie-chart  [ChartInfo]="Chart1" [ChartData]="ChartPayment" ></app-pie-chart>
+					</ng-container>
+					<!-- <app-pie-chart  [Title]="'Payment'" [Data]="Chart.Payment.data" [Label]="Chart.Payment.label" ></app-pie-chart> -->
+				</ion-col>
+				<ion-col style="height: 250px; margin-top: 20px;"  size-xl="3" size="12">
+					<ng-container *ngIf="ChartPaymentAmount.length">
+						<app-pie-chart  [ChartInfo]="Chart2" [ChartData]="ChartPaymentAmount" ></app-pie-chart>
+					</ng-container>
+					<!-- <app-pie-chart  [Title]="'Payment Amount'" [Data]="Chart.PaymentAmount.data" [Label]="Chart.PaymentAmount.label"  ></app-pie-chart> -->
+				</ion-col>
+			</ion-row>
+		</ion-grid>
+	</ng-container>
+	<app-pos-receipt-item [items]="items"></app-pos-receipt-item>
+
+</ion-content>
+

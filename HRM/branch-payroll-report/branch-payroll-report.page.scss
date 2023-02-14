@@ -25,3 +25,10 @@ header.filter{
     color: var(--ion-color-primary);
     font-weight: bold;
 }
+
+.col-name{
+    position: sticky;
+    left: 0;
+
+    background: var(--ion-color-tertiary-tint);
+}

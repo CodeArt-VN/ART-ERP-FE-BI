@@ -1,0 +1,20 @@
+.table-contain{
+    margin: auto;
+}
+.row-header{
+    border-bottom: 2px solid var(--ion-color-primary);
+    font-size: 10pt;
+    font-weight: bold;
+    color: var(--ion-color-dark);
+    padding-top: 10px;
+    padding-bottom: 5px;
+}
+.row-content{
+    margin-top: 0px;
+    color: var(--ion-color-dark);
+    border: 1px solid var(--menu-right-border-color);
+    col{
+        vertical-align: center;
+    }
+    
+}
