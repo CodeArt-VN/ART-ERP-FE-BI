@@ -56,6 +56,10 @@ export class FinanceStatementsPage extends PageBase {
         
     }
 
+    refresh() {
+        super.preLoadData(null);
+    }
+
     loadData(){
         console.log(this.selectedBranchID)
         this.preBuildBSTree();

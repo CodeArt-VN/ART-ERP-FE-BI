@@ -35,6 +35,9 @@ export class FinanceDailyReportPage extends PageBase {
     dataDailyRevExpn1 = []
     dataDailyRevExpn2 = []
 
+    reportBranchList = []
+    colorList = ['#84ff00', '#772727', '#00ffae', '#ff4200', '#ffe400', '#2b9a00', '#ff00ae', '#c000ff', '#FF5733', '#5DADE2']
+
     selectedBranchID = 22;
     pageBranch = [];
 
@@ -53,12 +56,24 @@ export class FinanceDailyReportPage extends PageBase {
     ) {
         super();
         //this.pageBranch  = ;
-        this.rpt.rptGlobal.branch.forEach(val => this.pageBranch.push(Object.assign({}, val)));
+
+        let template = {
+            "ShowBtn": false,
+            "IsHidden": false,
+            "IsHiddenDetailColumn": true,
+        }
+        this.reportBranchList = this.env.branchList.filter(b => b.IDType == '111');
+        for (let index = 0; index < this.reportBranchList.length; index++) {
+            let val = this.reportBranchList[index];
+            Object.assign(val, template);
+            val.Color = this.colorList[index];
+        }
 
         this.rpt.rptGlobal.query.fromDate = this.defaultFromDate;
         this.rpt.rptGlobal.query.toDate = this.defaultToDate;
         this.rpt.rptGlobal.query.reportDate = this.defaultReportDate;
-        
+
+        this.reportBranchList.forEach(val => this.pageBranch.push(Object.assign({}, val)));
         
         //this.pageBranch.splice(0,1);
         this.pageBranch.forEach((element,index)=>{
@@ -68,6 +83,10 @@ export class FinanceDailyReportPage extends PageBase {
         this.selectedBranchID = this.pageBranch[0].Id;
 
         this.loadData();
+    }
+
+    refresh() {
+        super.preLoadData(null);
     }
 
     loadData(){
@@ -109,7 +128,7 @@ export class FinanceDailyReportPage extends PageBase {
                     this.headerDailyBalance = this.headerDailyBalance.filter(d => removePros.findIndex(i => i == d) == -1);
 
                     this.headerDailyBalance = this.headerDailyBalance.map(h => {
-                        let branch = this.rpt.rptGlobal.branch.find(f => { return h.indexOf(f.Code) == 0 });
+                        let branch = this.reportBranchList.find(f => { return h.indexOf(f.Code) == 0 });
                         return { Name: h, Branch: branch, IsTotal : true, IsAll: h.indexOf('INGROUP')==0 };
                     });
 
@@ -237,7 +256,7 @@ export class FinanceDailyReportPage extends PageBase {
                     let removePros = ["adate", "TOTAL"];
                     this.headerDailyRevenue = this.headerDailyRevenue.filter(d => removePros.findIndex(i => i == d) == -1);
                     this.headerDailyRevenue = this.headerDailyRevenue.map(h => {
-                        let branch = this.rpt.rptGlobal.branch.find(f => { return h.indexOf(f.Code) == 0 || h.indexOf(f.Code + '-TOTAL') == 0 });
+                        let branch = this.reportBranchList.find(f => { return h.indexOf(f.Code) == 0 || h.indexOf(f.Code + '-TOTAL') == 0 });
                         return { Name: h, Branch: branch, IsTotal : h.indexOf('-TOTAL')>0, IsAll: false };
                     });
                 }
@@ -281,7 +300,7 @@ export class FinanceDailyReportPage extends PageBase {
                             //bTotal += bOther
                             bTotal += parseFloat(i[h])
 
-                            i[branchTotal] = lib.formatMoney(bTotal, 0, '', '.');
+                            // i[branchTotal] = lib.formatMoney(bTotal, 0, '', '.');
                         }
 
                         if (i[h]) {
@@ -322,7 +341,7 @@ export class FinanceDailyReportPage extends PageBase {
                         let removePros = ["adate"];
                         this.headerDailyDebt = this.headerDailyDebt.filter(d => removePros.findIndex(i => i == d) == -1);
                         this.headerDailyDebt = this.headerDailyDebt.map(h => {
-                            let branch = this.rpt.rptGlobal.branch.find(f => { return h.indexOf(f.Code) == 0 || h.indexOf('TOTAL') == 0 });
+                            let branch = this.reportBranchList.find(f => { return h.indexOf(f.Code) == 0 || h.indexOf('TOTAL') == 0 });
                             return { Name: h, Branch: branch, IsTotal : true, IsAll: false };
                         });
                     }
@@ -386,7 +405,7 @@ export class FinanceDailyReportPage extends PageBase {
                         let removePros = ["adate"];
                         this.headerDailyRevExpn1 = this.headerDailyRevExpn1.filter(d => removePros.findIndex(i => i == d) == -1);
                         this.headerDailyRevExpn1 = this.headerDailyRevExpn1.map(h => {
-                            let branch = this.rpt.rptGlobal.branch.find(f => { return h.indexOf(f.Code) == 0 || h.indexOf('TOTAL') == 0 });
+                            let branch = this.reportBranchList.find(f => { return h.indexOf(f.Code) == 0 || h.indexOf('TOTAL') == 0 });
                             return { Name: h, Branch: branch, IsTotal : true, IsAll: false };
                         });
                     }
@@ -445,7 +464,7 @@ export class FinanceDailyReportPage extends PageBase {
                         let removePros = ["adate"];
                         this.headerDailyRevExpn2 = this.headerDailyRevExpn2.filter(d => removePros.findIndex(i => i == d) == -1);
                         this.headerDailyRevExpn2 = this.headerDailyRevExpn2.map(h => {
-                            let branch = this.rpt.rptGlobal.branch.find(f => { return h.indexOf(f.Code) == 0 || h.indexOf('TOTAL') == 0 });
+                            let branch = this.reportBranchList.find(f => { return h.indexOf(f.Code) == 0 || h.indexOf('TOTAL') == 0 });
                             return { Name: h, Branch: branch, IsTotal : true, IsAll: false };
                         });
                     }
