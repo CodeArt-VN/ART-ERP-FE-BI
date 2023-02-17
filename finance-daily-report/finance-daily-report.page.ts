@@ -111,7 +111,7 @@ export class FinanceDailyReportPage extends PageBase {
 
             this.pageService.getSAP_RPT_DailyBalance(
                 this.rpt.rptGlobal.query.reportDate, 
-                this.rpt.rptGlobal.query.branch, 4).then((resp: any) => {
+                this.rpt.rptGlobal.query.branch, 4).toPromise().then((resp: any) => {
                 this.headerDailyBalance = [];
                 
                 if (resp.length) {
@@ -203,7 +203,15 @@ export class FinanceDailyReportPage extends PageBase {
                 // this.dataDailyBalance = lib.listToTree(this.rawDailyBalance, 'data');
                 
                 this.dataDailyBalance = treeItems;
-            });
+            }).catch(err => {
+                console.log(err)
+                if (err.message != null) {
+					this.env.showMessage(err.message, 'danger');
+				}
+				else {
+					this.env.showMessage('Không thể lấy được dữ liệu!','danger');
+				}
+            })
 
         });
     }
@@ -217,7 +225,7 @@ export class FinanceDailyReportPage extends PageBase {
             this.pageService.getSAP_RPT_DailyGeneral(
                 this.rpt.rptGlobal.query.fromDate, 
                 this.rpt.rptGlobal.query.toDate, 
-                this.selectedBranchID, 5).then((resp: any) => {
+                this.selectedBranchID, 5).toPromise().then((resp: any) => {
 
                 this.rawDailyGeneral = resp;
 
@@ -245,7 +253,7 @@ export class FinanceDailyReportPage extends PageBase {
             this.pageService.getSAP_RPT_DailyRevenue(
                 this.rpt.rptGlobal.query.fromDate,
                 this.rpt.rptGlobal.query.toDate, 
-                this.rpt.rptGlobal.query.branch, 6).then((resp: any) => {
+                this.rpt.rptGlobal.query.branch, 6).toPromise().then((resp: any) => {
                 this.headerDailyRevenue = [];
                 
                 if (resp.length) {    
@@ -316,8 +324,15 @@ export class FinanceDailyReportPage extends PageBase {
 
                 this.dataDailyRevenue = lib.listToTree(listItems, 'data');
                 
+            }).catch(err => {
+                console.log(err)
+                if (err.message != null) {
+					this.env.showMessage(err.message, 'danger');
+				}
+				else {
+					this.env.showMessage('Không thể lấy được dữ liệu!','danger');
+				}
             });
-
         });
     }
 
@@ -330,7 +345,7 @@ export class FinanceDailyReportPage extends PageBase {
             this.pageService.getSAP_RPT_DailyDebt(
                 this.rpt.rptGlobal.query.fromDate, 
                 this.rpt.rptGlobal.query.toDate,
-                this.rpt.rptGlobal.query.branch, 7).then((resp: any) => {
+                this.rpt.rptGlobal.query.branch, 7).toPromise().then((resp: any) => {
                     this.headerDailyDebt = [];
                 
                     if (resp.length) {    
@@ -380,8 +395,15 @@ export class FinanceDailyReportPage extends PageBase {
                     });
     
                     this.dataDailyDebt = lib.listToTree(listItems, 'data');
+            }).catch(err => {
+                console.log(err)
+                if (err.message != null) {
+					this.env.showMessage(err.message, 'danger');
+				}
+				else {
+					this.env.showMessage('Không thể lấy được dữ liệu!','danger');
+				}
             });
-
         });
     }
 
@@ -394,7 +416,7 @@ export class FinanceDailyReportPage extends PageBase {
             this.pageService.getSAP_RPT_DailyRevExpn1(
                 this.rpt.rptGlobal.query.fromDate, 
                 this.rpt.rptGlobal.query.toDate,
-                this.rpt.rptGlobal.query.branch, 8).then((resp: any) => {
+                this.rpt.rptGlobal.query.branch, 8).toPromise().then((resp: any) => {
                     this.headerDailyRevExpn1 = [];
                 
                     if (resp.length) {    
@@ -439,8 +461,15 @@ export class FinanceDailyReportPage extends PageBase {
                     });
     
                     this.dataDailyRevExpn1 = lib.listToTree(listItems, 'data');
+            }).catch(err => {
+                console.log(err)
+                if (err.message != null) {
+					this.env.showMessage(err.message, 'danger');
+				}
+				else {
+					this.env.showMessage('Không thể lấy được dữ liệu!','danger');
+				}
             });
-
         });
     }
 
@@ -453,7 +482,7 @@ export class FinanceDailyReportPage extends PageBase {
             this.pageService.getSAP_RPT_DailyRevExpn2(
                 this.rpt.rptGlobal.query.fromDate,
                 this.rpt.rptGlobal.query.toDate, 
-                this.rpt.rptGlobal.query.branch, 9).then((resp: any) => {
+                this.rpt.rptGlobal.query.branch, 9).toPromise().then((resp: any) => {
                     this.headerDailyRevExpn2 = [];
                 
                     if (resp.length) {    
@@ -498,8 +527,15 @@ export class FinanceDailyReportPage extends PageBase {
                     });
     
                     this.dataDailyRevExpn2 = lib.listToTree(listItems, 'data');
+            }).catch(err => {
+                console.log(err)
+                if (err.message != null) {
+					this.env.showMessage(err.message, 'danger');
+				}
+				else {
+					this.env.showMessage('Không thể lấy được dữ liệu!','danger');
+				}
             });
-
         });
     }
 

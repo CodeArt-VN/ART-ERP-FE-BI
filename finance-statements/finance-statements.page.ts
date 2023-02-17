@@ -78,7 +78,7 @@ export class FinanceStatementsPage extends PageBase {
                 this.rpt.rptGlobal.query.toDate, 
                 this.selectedBranchID, 
                 13, 
-                this.rpt.rptGlobal.query.reportType).then((resp: any) => {
+                this.rpt.rptGlobal.query.reportType).toPromise().then((resp: any) => {
                 
                     listItems = resp;
 
@@ -146,8 +146,15 @@ export class FinanceStatementsPage extends PageBase {
                     });
                     
                     this.dataCashFlow = treeItems;
+            }).catch(err => {
+                console.log(err)
+                if (err.message != null) {
+					this.env.showMessage(err.message, 'danger');
+				}
+				else {
+					this.env.showMessage('Không thể lấy được dữ liệu!','danger');
+				}
             });
-
         });
     }
 
@@ -162,7 +169,7 @@ export class FinanceStatementsPage extends PageBase {
                 this.rpt.rptGlobal.query.toDate, 
                 this.selectedBranchID, 
                 10,
-                this.rpt.rptGlobal.query.reportType).then((resp: any) => {
+                this.rpt.rptGlobal.query.reportType).toPromise().then((resp: any) => {
                 
                 listItems = resp;
 
@@ -230,8 +237,15 @@ export class FinanceStatementsPage extends PageBase {
                 });
                 
                 this.dataBalanceSheet = treeItems;
+            }).catch(err => {
+                console.log(err)
+                if (err.message != null) {
+					this.env.showMessage(err.message, 'danger');
+				}
+				else {
+					this.env.showMessage('Không thể lấy được dữ liệu!','danger');
+				}
             });
-
         });
     }
     preBuildIncomeTree() {
@@ -245,7 +259,7 @@ export class FinanceStatementsPage extends PageBase {
                 this.rpt.rptGlobal.query.toDate, 
                 this.selectedBranchID, 
                 11,
-                this.rpt.rptGlobal.query.reportType).then((resp: any) => {
+                this.rpt.rptGlobal.query.reportType).toPromise().then((resp: any) => {
                 
                     listItems = resp;
 
@@ -313,8 +327,15 @@ export class FinanceStatementsPage extends PageBase {
                     });
                     
                     this.dataIncomeStatement = treeItems;
+            }).catch(err => {
+                console.log(err)
+                if (err.message != null) {
+					this.env.showMessage(err.message, 'danger');
+				}
+				else {
+					this.env.showMessage('Không thể lấy được dữ liệu!','danger');
+				}
             });
-
         });
     }
 

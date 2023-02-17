@@ -49,19 +49,8 @@ export class StaffDashboardPage extends PageBase {
         super();
     }
 
-    ionViewDidEnter() {
-        this.buildCharts();
-    }
 
-    refresh() {
-        this.updateChart();
-    }
 
-    changeDateFillter(type) {
-        this.rpt.dateQuery(type).then(_ => {
-            this.updateChart();
-        }).catch(err => { let a = err });
-    }
 
     changeFrequency(f) {
         this.rpt.rptGlobal.query.frequency = f.Id;
@@ -75,13 +64,6 @@ export class StaffDashboardPage extends PageBase {
             this.rpt.rptGlobal.query.toDate = '2020-01-31';
         }
 
-        this.changeDateFillter('setdone');
-
-    }
-
-    updateChart() {
-
-        this.buildCharts();
     }
 
     toogleBranchDataset(b) {
@@ -96,50 +78,7 @@ export class StaffDashboardPage extends PageBase {
         //     });
         //     c.update();
         // }
-        this.buildTopSum();
     }
-
-    buildCharts() {
-        
-        this.buildTopSum();
-      
-        
-    }
-
-    buildTopSum() {
-
-        this.pageData.NumberOfEvents = 0;
-        this.pageData.NumberOfGuests = 0;
-        this.pageData.DoanhThu = 0;
-        let datasets = this.rpt.buildDataset();
-        let sumAll = 0;
-        let sumAllDoanhThu = 0;
-        let sumAllGuest = 0;
-        for (let i = 0; i < datasets.length; i++) {
-            const ds = datasets[i];
-            if (!ds.hidden && ds.IDBranch != 1) {
-                this.pageData.DoanhThu += ds.Data.map(m => m.DoanhThu).reduce((a, b) => a + b, 0);
-                this.pageData.NumberOfEvents += ds.Data.map(m => m.Event).reduce((a, b) => a + b, 0);
-                this.pageData.NumberOfGuests += ds.Data.map(m => m.NumberOfGuest).reduce((a, b) => a + b, 0);
-                if (ds.IDBranch == 1) {
-                    sumAll = ds.Data.map(m => m.Event).reduce((a, b) => a + b, 0);
-                    sumAllDoanhThu = ds.Data.map(m => m.DoanhThu).reduce((a, b) => a + b, 0);
-                    sumAllGuest = ds.Data.map(m => m.NumberOfGuest).reduce((a, b) => a + b, 0);
-                }
-            }
-
-        }
-        if (sumAll > 0) {
-            this.pageData.NumberOfEvents = sumAll;
-            this.pageData.NumberOfGuests = sumAllGuest;
-            this.pageData.DoanhThu = sumAllDoanhThu;
-        }
-        this.pageData.DoanhThu = Math.round(this.pageData.DoanhThu / 100000000) / 10;
-        this.pageData.NumberOfGuests = Math.round(this.pageData.NumberOfGuests / 1000);
-
-
-    }
-
    
     open(i){
         this.nav(i.Form)

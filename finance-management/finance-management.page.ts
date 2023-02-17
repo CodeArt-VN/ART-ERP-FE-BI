@@ -77,7 +77,7 @@ export class FinanceManagementPage extends PageBase {
                 this.rpt.rptGlobal.query.fromDate, 
                 this.rpt.rptGlobal.query.toDate, 
                 this.rpt.rptGlobal.query.frequency, 
-                this.rpt.rptGlobal.query.branch, 2).then((resp: any) => {
+                this.rpt.rptGlobal.query.branch, 2).toPromise().then((resp: any) => {
                 this.headerCashFlow = [];
 
                 if (resp.length) {
@@ -167,7 +167,9 @@ export class FinanceManagementPage extends PageBase {
 
                 this.dataCashFlow = treeItems;
                 console.log(this.dataCashFlow);
-            });
+            }).catch(err => {
+                console.log()
+            })
 
         });
     }
@@ -183,7 +185,7 @@ export class FinanceManagementPage extends PageBase {
                 this.rpt.rptGlobal.query.fromDate, 
                 this.rpt.rptGlobal.query.toDate, 
                 this.rpt.rptGlobal.query.frequency, 
-                this.rpt.rptGlobal.query.branch, 1).then((resp: any) => {
+                this.rpt.rptGlobal.query.branch, 1).toPromise().then((resp: any) => {
                 this.headerPnL = [];
 
                 if (resp.length) {
@@ -283,7 +285,9 @@ export class FinanceManagementPage extends PageBase {
 
                 this.dataPnL = treeItems;
                 console.log(this.dataPnL);
-            });
+            }).catch(err => {
+                console.log(err);
+            })
 
         });
     }
