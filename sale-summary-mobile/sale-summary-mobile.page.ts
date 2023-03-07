@@ -1,8 +1,6 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { ActionSheetController, AlertController, LoadingController, PopoverController, NavController, NavParams, Platform } from '@ionic/angular';
-import { ItemsList } from '@ng-select/ng-select/lib/items-list';
+import { Component, ViewChild } from '@angular/core';
+import { ActionSheetController, AlertController, LoadingController, PopoverController, NavController, NavParams } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
-import { Chart, ChartOptions } from 'chart.js';
 import { PageBase } from 'src/app/page-base';
 import { EnvService } from 'src/app/services/core/env.service';
 import { CustomService } from 'src/app/services/custom.service';
@@ -320,7 +318,7 @@ export class SaleSummaryMobilePage extends PageBase {
 			hoverOffset: 50,
 		};
 		await this.charts.pieCanvas.Chart?.destroy();
-		this.rpt.buildPieChart(this.charts.pieCanvas.Chart, this.pieCanvas.nativeElement, data);
+		//this.rpt.buildPieChart(this.charts.pieCanvas.Chart, this.pieCanvas.nativeElement, data);
 
 	}
 
