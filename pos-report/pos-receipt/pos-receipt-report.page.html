@@ -1,42 +1,218 @@
 <ion-header>
-	<app-list-toolbar pageTitle="{{'erp.app.pages.pos.pos-menu.page-title' | translate}}" [pageConfig]="pageConfig" [selectedItems]="selectedItems" [query]="query" (add)="add()" (refresh)="refresh()" (export)="export()" (import)="import($event)" (help)="help()" (unselect)="unselect()" (archiveItems)="archiveItems()" (deleteItems)="deleteItems()" (changeBranch)="changeBranch($event)"></app-list-toolbar>
+	<ion-toolbar>
+		<ion-buttons slot="start" class="ion-hide-sm-down_">
+			<ion-button color="dark" class="ion-hide-sm-down">
+				Receipts Report
+			</ion-button>
+		</ion-buttons>
+
+		<ion-buttons slot="end">
+			<ion-button (click)="refresh()" title="{{'erp.app.pages.bi.dashboard.refresh' | translate}}">
+				<ion-icon slot="icon-only" name="reload-outline"></ion-icon>
+			</ion-button>
+
+			<ion-button title="{{'erp.app.pages.bi.dashboard.show-feature' | translate}}" (click)="pageConfig.isShowFeature = !pageConfig.isShowFeature;">
+				<ion-icon slot="icon-only" [name]="pageConfig.isShowFeature? 'close-outline':'list-circle-outline'">
+				</ion-icon>
+			</ion-button>
+
+		</ion-buttons>
+	</ion-toolbar>
 </ion-header>
-<ion-content appScrollbarTheme  [ngClass]="{withFeature: pageConfig.isShowFeature}">
-	
-	<ion-fab *ngIf="pageConfig.isShowFeature" [ngClass]="{withSearch: pageConfig.isShowSearch}" class="feature" vertical="top" horizontal="end" slot="fixed">
-		<app-query-filter (changeFrequencyComp)="changeFrequency($event)" (changeDateFilterComp)="changeDateFilter($event)"></app-query-filter>
+
+<ion-content appScrollbarTheme class="ion-padding">
+
+	<ion-fab [hidden]="!pageConfig.isShowFeature" [ngClass]="{withSearch: pageConfig.isShowSearch}" class="feature" vertical="top" horizontal="end" slot="fixed">
+
+		<!-- Component Query Filter -->
+		<app-query-filter (changeFrequencyComp)="changeFrequency($event)" (changeDateFilterComp)="changeDateFilter($event)" (toogleBranchDatasetComp)="toogleBranchDataset($event)"></app-query-filter>
+
 	</ion-fab>
-	
-	
-	<ng-container *ngIf="items.length">
-		<ion-grid>
-			<ion-row>
-				<ion-col style="height: 250px; margin-top: 20px;"  size-xl="3" size="12">
-					<ng-container *ngIf="ChartData">
-						<app-line-chart [type]="'BasicLine'"  [title]="'Revenue'" [data]="ChartData.Revenue.data" [label]="ChartData.Revenue.label" ></app-line-chart>
-					</ng-container>
-				</ion-col>
-				<ion-col style="height: 250px; margin-top: 20px;"  size-xl="3" size="12">
-					<ng-container *ngIf="ChartData">
-						<app-line-chart  [type]="'BasicLine'" [title]="'Receipt'" [data]="ChartData.Receipt.data" [label]="ChartData.Receipt.label" ></app-line-chart>
-					</ng-container>
-				</ion-col>
-				<ion-col style="height: 250px; margin-top: 20px;"  size-xl="3" size="12">
-					<ng-container *ngIf="ChartPayment.length">
-						<app-pie-chart  [ChartInfo]="Chart1" [ChartData]="ChartPayment" ></app-pie-chart>
-					</ng-container>
-					<!-- <app-pie-chart  [Title]="'Payment'" [Data]="Chart.Payment.data" [Label]="Chart.Payment.label" ></app-pie-chart> -->
-				</ion-col>
-				<ion-col style="height: 250px; margin-top: 20px;"  size-xl="3" size="12">
-					<ng-container *ngIf="ChartPaymentAmount.length">
-						<app-pie-chart  [ChartInfo]="Chart2" [ChartData]="ChartPaymentAmount" ></app-pie-chart>
-					</ng-container>
-					<!-- <app-pie-chart  [Title]="'Payment Amount'" [Data]="Chart.PaymentAmount.data" [Label]="Chart.PaymentAmount.label"  ></app-pie-chart> -->
-				</ion-col>
-			</ion-row>
-		</ion-grid>
-	</ng-container>
-	<app-pos-receipt-item [items]="items"></app-pos-receipt-item>
 
+	<div class="main-view" *ngIf="items.length">
+		<div class="row-full shadow full-screen">
+			<div>
+
+				<!-- Chart -->
+				<div class="ion-padding">
+					<ion-grid>
+						<ion-row class="hr-group">
+							<ion-col size="12" size-sm="12" size-md="3" size-xl="3">
+								<ng-container *ngIf="items.length">
+									<app-line-chart [title]="'Revenue'" [data]="RevenueChartData"
+										[label]="labelLineChart" [type]="typeLineChart"></app-line-chart>
+								</ng-container>
+							</ion-col>
+							<ion-col size="12" size-sm="12" size-md="3" size-xl="3">
+								<ng-container *ngIf="items.length">
+									<app-line-chart [title]="'Receipts'" [data]="ReceiptsChartData"
+										[label]="labelLineChart" [type]="typeLineChart"></app-line-chart>
+								</ng-container>
+							</ion-col>
+							<ion-col size="12" size-sm="12" size-md="3" size-xl="3">
+								<ng-container *ngIf="items.length">
+									<app-pie-chart [ChartInfo]="Chart1" [ChartData]="PaymentChartData"></app-pie-chart>
+								</ng-container>
+							</ion-col>
+							<ion-col size="12" size-sm="12" size-md="3" size-xl="3">
+								<ng-container *ngIf="items.length">
+									<app-pie-chart [ChartInfo]="Chart2"
+										[ChartData]="PaymentAmountChartData"></app-pie-chart>
+								</ng-container>
+							</ion-col>
+						</ion-row>
+					</ion-grid>
+				</div>
+
+
+				<!-- <app-pos-receipt-item [items]="items"></app-pos-receipt-item> -->
+
+				<!-- List Receipts Report -->
+				<div class="table-contain">
+					<section class="table">
+						<header class="bold">
+							<div class="col-code cell">
+								CreatedOn
+								<ion-icon class="min-btn" *ngIf="sort.Name" [name]="sort.Name == 'Name'?'arrow-down': 'arrow-up'"></ion-icon>
+								<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.Name" name="search" color="primary"></ion-icon>
+							</div>
+
+							<div class="col-code cell">
+								ReceiptsID
+								<ion-icon class="min-btn" *ngIf="sort.Name" [name]="sort.Name == 'Name'?'arrow-down': 'arrow-up'"></ion-icon>
+								<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.Name" name="search" color="primary"></ion-icon>
+							</div>
+
+							<div class="col-code cell">
+								Total Price
+								<ion-icon class="min-btn" *ngIf="sort.Name" [name]="sort.Name == 'Name'?'arrow-down': 'arrow-up'"></ion-icon>
+								<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.Name" name="search" color="primary"></ion-icon>
+							</div>
+
+							<div class="col-code cell">
+								Status
+								<ion-icon class="min-btn" *ngIf="sort.Code" [name]="sort.Code == 'Code'?'arrow-down': 'arrow-up'"></ion-icon>
+								<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.Code" name="search" color="primary"></ion-icon>
+							</div>
+							
+							<div class="col-name cell">
+								Payment
+								<ion-icon class="min-btn" *ngIf="sort.Code" [name]="sort.Code == 'Code'?'arrow-down': 'arrow-up'"></ion-icon>
+								<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.Code" name="search" color="primary"></ion-icon>
+							</div>
+
+							<div class="col-code cell">
+								Type
+								<ion-icon class="min-btn" *ngIf="sort.Code" [name]="sort.Code == 'Code'?'arrow-down': 'arrow-up'"></ion-icon>
+								<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.Code" name="search" color="primary"></ion-icon>
+							</div>
+
+							<div class="col-name cell">
+								Created By
+								<ion-icon class="min-btn" *ngIf="sort.Code" [name]="sort.Code == 'Code'?'arrow-down': 'arrow-up'"></ion-icon>
+								<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.Code" name="search" color="primary"></ion-icon>
+							</div>
+
+							<div class="col-name cell">
+								Payment By
+								<ion-icon class="min-btn" *ngIf="sort.Code" [name]="sort.Code == 'Code'?'arrow-down': 'arrow-up'"></ion-icon>
+								<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.Code" name="search" color="primary"></ion-icon>
+							</div>
+
+							<div class="col-code cell">
+								Table
+								<ion-icon class="min-btn" *ngIf="sort.Code" [name]="sort.Code == 'Code'?'arrow-down': 'arrow-up'"></ion-icon>
+								<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.Code" name="search" color="primary"></ion-icon>
+							</div>
+
+							<div class="col-name cell">
+								Customer
+								<ion-icon class="min-btn" *ngIf="sort.Code" [name]="sort.Code == 'Code'?'arrow-down': 'arrow-up'"></ion-icon>
+								<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.Code" name="search" color="primary"></ion-icon>
+							</div>
+
+							<div class="col-code cell">
+								#Customer
+								<ion-icon class="min-btn" *ngIf="sort.Code" [name]="sort.Code == 'Code'?'arrow-down': 'arrow-up'"></ion-icon>
+								<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.Code" name="search" color="primary"></ion-icon>
+							</div>
+
+							<div class="col-code cell">
+								Action
+								<ion-icon class="min-btn" *ngIf="sort.Code" [name]="sort.Code == 'Code'?'arrow-down': 'arrow-up'"></ion-icon>
+								<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.Code" name="search" color="primary"></ion-icon>
+							</div>
+						</header>
+	
+						<app-page-message [itemsLength]="items.length" [showSpinner]="pageConfig.showSpinner"></app-page-message>
+						<ion-virtual-scroll [items]="items" approxItemHeight="27px">
+							<ng-container *virtualItem="let i; let itemBounds = bounds; let idx = index;">
+								<div class="row" [ngClass]="{selected: i.checked}">
+			
+							<div class="col-code cell">
+								{{i.CreatedOnText}}
+							</div>
+
+							<div class="col-code cell">
+								{{i.ReceiptID}}
+							</div>
+
+							<div class="col-code cell">
+								{{i.TotalPriceText}}
+							</div>
+
+							<div class="col-code cell">
+								{{i.Status}}
+							</div>
+							
+							<div class="col-name cell">
+								{{i.PaymentTypeText}}
+							</div>
+
+							<div class="col-code cell">
+								{{i.Type}}
+							</div>
+
+							<div class="col-name cell">
+								{{i.CreatedBy}}
+							</div>
+
+							<div class="col-name cell">
+								{{i.CreatedBy}}
+							</div>
+
+							<div class="col-code cell">
+								{{i.Table}}
+							</div>
+
+							<div class="col-name cell">
+								{{i.Customer}}
+							</div>
+
+							<div class="col-code cell">
+								<!-- {{i.Customer}} -->
+								0
+							</div>
+
+							<div class="col-code cell">
+								<ion-button><ion-icon name="print"></ion-icon></ion-button>
+							</div>
+								</div>
+							</ng-container>
+						</ion-virtual-scroll>
+
+						<ion-infinite-scroll color="primary" threshold="20%" (ionInfinite)="loadData($event)" [disabled]="!pageConfig.infiniteScroll || pageConfig.isEndOfData">
+							<ion-infinite-scroll-content loadingSpinner="dots"></ion-infinite-scroll-content>
+						</ion-infinite-scroll>
+
+	
+					</section>
+				</div>
+
+
+
+			</div>
+		</div>
+	</div>
+	<app-page-message [itemsLength]="items.length" [showSpinner]="pageConfig.showSpinner"></app-page-message>
 </ion-content>
-

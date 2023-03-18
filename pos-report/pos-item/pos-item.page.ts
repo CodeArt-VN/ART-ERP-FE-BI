@@ -20,8 +20,13 @@ export class PosItemPage extends PageBase {
 
     reportQuery: any = {};
 
+    topSellingProductLabel = [];
+    topSellingProductData = [];
+
     topSellingProduct = [];
     topRevenueProducts = [];
+
+    reportBranchList = [];
 
     ChartType = 'Pie';
 
@@ -60,8 +65,8 @@ export class PosItemPage extends PageBase {
     }
 
     constructor(
-        public pageProvider: CustomService,
-        public branchProvider: BRA_BranchProvider,
+        // public pageProvider: CustomService,
+        // public branchProvider: BRA_BranchProvider,
         public env: EnvService,
         public navCtrl: NavController,
         public rpt: ReportService,
@@ -75,6 +80,7 @@ export class PosItemPage extends PageBase {
     ) {
         super();
         this.pageConfig.isDetailPage = true;
+        this.reportBranchList = this.env.branchList.filter(b => b.IDType == '111');
     }
 
     segmentView = 's1';
@@ -91,7 +97,7 @@ export class PosItemPage extends PageBase {
         this.reportQuery = {
             fromDate: this.rpt.rptGlobal.query.fromDate,
             toDate: this.rpt.rptGlobal.query.toDate + ' 23:59:59',
-            IDBranch: this.env.selectedBranch,
+            IDBranch: this.env.selectedBranchAndChildren,
             // GroupBy: ''
         }; 
 
@@ -104,17 +110,24 @@ export class PosItemPage extends PageBase {
             this.commonService.connect(apiPath.method, apiPath.url(), this.reportQuery).toPromise()
         ]).then(values => { 
 
-            this.items = values[0];
+            this.items = values[0]['Data'];
 
             this.items.sort((a,b) => b.OrderedAmount - a.OrderedAmount);
             this.items = [...this.items];
 
             this.items.forEach(i => {
+                i.Price = Math.round(i.Price);
+                i.TakeawayPrice = Math.round(i.TakeawayPrice);
+                i.DeliveryPrice = Math.round(i.DeliveryPrice);
+                i.TotalRevenue = Math.round(i.TotalRevenue);
                 i.PriceText = lib.currencyFormat(i.Price);
                 i.TakeawayPriceText = lib.currencyFormat(i.TakeawayPrice);
                 i.DeliveryPriceText = lib.currencyFormat(i.DeliveryPrice);
                 i.TotalRevenueText = lib.currencyFormat(i.TotalRevenue);
             });
+
+            Object.assign(this.topSellingProduct, values[0]['topSellingProduct']);
+            Object.assign(this.topRevenueProducts, values[0]['topRevenueProduct']);
 
             this.buildTopSellingProducts();
             this.buildTopRevenueProducts();
@@ -123,11 +136,8 @@ export class PosItemPage extends PageBase {
         });
     }
 
-    topSellingProductLabel = [];
-    topSellingProductData;
-    buildTopSellingProducts() {
-        Object.assign(this.topSellingProduct, this.items);
 
+    buildTopSellingProducts() {
         if (this.topSellingProduct.length) {
 
             this.topSellingProduct.sort((a,b) => b.OrderedAmount - a.OrderedAmount);
@@ -141,8 +151,6 @@ export class PosItemPage extends PageBase {
     }
     
     buildTopRevenueProducts() {
-        Object.assign(this.topRevenueProducts, this.items);
-
         if (this.topRevenueProducts.length) {
 
             this.topRevenueProducts.sort((a,b) => b.TotalRevenue - a.TotalRevenue);
@@ -160,16 +168,26 @@ export class PosItemPage extends PageBase {
 
     changeFrequency(f) {
         this.rpt.rptGlobal.query.frequency = f.Id;
-
-        if (f.Id == 1) {
-            this.changeDateFilter('dw');
-        }
-        else if (f.Id == 2) {
-            this.changeDateFilter('m');
-        }
+        this.changeDateFilter('setdone');
     }
 
     toogleBranchDataset(b) {
-        b.IsHidden = !b.IsHidden;
+        let currentBranch = this.reportBranchList.find(rp => rp.Id == b.Id);
+        this.reportBranchList.forEach(rp => {
+            if (rp.Id != b.Id) {
+                rp.IsHidden = true;
+            }
+            else {
+                rp.IsHidden = false;
+            }
+        });
+
+        if(!currentBranch.IsHidden) {
+            this.env.selectedBranchAndChildren = currentBranch.Query;
+        }
+        else {
+            this.env.selectedBranchAndChildren = "0";
+        }
+        this.loadData();
     }
 }

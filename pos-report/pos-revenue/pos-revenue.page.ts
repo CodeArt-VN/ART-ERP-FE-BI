@@ -26,6 +26,8 @@ export class PosRevenuePage extends PageBase {
     summaryData = [];
     summaryInfo;
 
+    reportBranchList = [];
+
     ChartStyle2 = {
         width: '100%',
         'min-height': '300px',
@@ -59,6 +61,7 @@ export class PosRevenuePage extends PageBase {
     ) {
         super();
         this.pageConfig.isDetailPage = true;
+        this.reportBranchList = this.env.branchList.filter(b => b.IDType == '111');
     }
 
     segmentView = 'Item';
@@ -72,12 +75,29 @@ export class PosRevenuePage extends PageBase {
     }
 
     loadedData(event?: any): void {
-
+        let groupby
+        // this.segmentView = report;
+        if (this.rpt.rptGlobal.query.frequency == 0) {
+            groupby = "Hour"
+        } 
+        if (this.rpt.rptGlobal.query.frequency == 1) {
+            groupby = "Day"
+        } 
+        else if (this.rpt.rptGlobal.query.frequency == 2) {
+            groupby = "Month"
+        }
+        else if (this.rpt.rptGlobal.query.frequency == 3) {
+            groupby = "Quarter"
+        }
+        else if (this.rpt.rptGlobal.query.frequency == 4) {
+            groupby = "Year"
+        }
         this.reportQuery = {
             fromDate: this.rpt.rptGlobal.query.fromDate,
             toDate: this.rpt.rptGlobal.query.toDate,
-            IDBranch: this.env.selectedBranch,
-            GroupBy: "Day"
+            IDBranch: this.env.selectedBranchAndChildren,
+            GroupBy: groupby,
+            GroupItemBy: this.segmentView,
         }; 
 
         let apiPath = {
@@ -85,18 +105,12 @@ export class PosRevenuePage extends PageBase {
             url: function () { return ApiSetting.apiDomain("POS/Report/Revenue") }
         };
 
-        let apiPath2 = {
-            method: "GET",
-            url: function () { return ApiSetting.apiDomain("POS/Report/Dashboard") }
-        };
-
         Promise.all([
             this.commonService.connect(apiPath.method, apiPath.url(), this.reportQuery).toPromise(),
-            this.commonService.connect(apiPath2.method, apiPath2.url(), this.reportQuery).toPromise(),
         ]).then((values:any) => { 
-            this.items = values[0];
+            this.items = values[0]['Categories'];
 
-            this.summaryData = values[1];
+            this.summaryData = values[0]['Summary'];
 
             this.items.sort((a,b) => b.OrderedAmount - a.OrderedAmount);
             this.items = [...this.items];
@@ -177,16 +191,26 @@ export class PosRevenuePage extends PageBase {
 
     changeFrequency(f) {
         this.rpt.rptGlobal.query.frequency = f.Id;
-
-        if (f.Id == 1) {
-            this.changeDateFilter('dw');
-        }
-        else if (f.Id == 2) {
-            this.changeDateFilter('m');
-        }
+        this.changeDateFilter('setdone');
     }
 
     toogleBranchDataset(b) {
-        b.IsHidden = !b.IsHidden;
+        let currentBranch = this.reportBranchList.find(rp => rp.Id == b.Id);
+        this.reportBranchList.forEach(rp => {
+            if (rp.Id != b.Id) {
+                rp.IsHidden = true;
+            }
+            else {
+                rp.IsHidden = false;
+            }
+        });
+
+        if(!currentBranch.IsHidden) {
+            this.env.selectedBranchAndChildren = currentBranch.Query;
+        }
+        else {
+            this.env.selectedBranchAndChildren = "0";
+        }
+        this.loadData();
     }
 }
