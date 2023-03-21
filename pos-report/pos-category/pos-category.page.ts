@@ -25,6 +25,8 @@ export class PosCategoryPage extends PageBase {
     categoryData = [];
     categoryLabel = [];
 
+    reportBranchList = [];
+
     constructor(
         public pageProvider: CustomService,
         public branchProvider: BRA_BranchProvider,
@@ -42,20 +44,7 @@ export class PosCategoryPage extends PageBase {
         super();
         this.pageConfig.isDetailPage = true;
 
-        // this.formGroup = formBuilder.group({
-        //     IDBranch: [''],
-        //     Id: new FormControl({ value: '', disabled: true }),
-        //     Code: [''],
-        //     Name: ['', Validators.required],
-        //     Remark: [''],
-        //     Sort: [''],
-        //     IsDisabled: new FormControl({ value: '', disabled: true }),
-        //     IsDeleted: new FormControl({ value: '', disabled: true }),
-        //     CreatedBy: new FormControl({ value: '', disabled: true }),
-        //     CreatedDate: new FormControl({ value: '', disabled: true }),
-        //     ModifiedBy: new FormControl({ value: '', disabled: true }),
-        //     ModifiedDate: new FormControl({ value: '', disabled: true }),
-        // });
+        this.reportBranchList = this.env.branchList.filter(b => b.IDType == '111');
     }
 
     segmentView = 's1';
@@ -72,7 +61,7 @@ export class PosCategoryPage extends PageBase {
         this.reportQuery = {
             fromDate: this.rpt.rptGlobal.query.fromDate,
             toDate: this.rpt.rptGlobal.query.toDate,
-            IDBranch: this.env.selectedBranch,
+            IDBranch: this.env.selectedBranchAndChildren,
             // GroupBy: ''
         }; 
 
@@ -108,16 +97,9 @@ export class PosCategoryPage extends PageBase {
             this.categoryResults.sort((a,b) => a.TotalRevenue - b.TotalRevenue);
 
             this.categoryLabel = this.categoryResults.map(i => i.ItemGroup );
-            
-            let tempOrderedAmountData = this.categoryResults.map(i => i.OrderedAmount );
-
             let tempRevenueData = this.categoryResults.map(i => i.TotalRevenue );
 
-            // this.categoryData.push({data: tempOrderedAmountData});
-
             this.categoryData = [{name: 'Revenue', data: tempRevenueData}]
-            // this.categoryData.push({data: tempRevenueData});
-            console.log(this.categoryData);
         }
     }
     
@@ -130,16 +112,26 @@ export class PosCategoryPage extends PageBase {
 
     changeFrequency(f) {
         this.rpt.rptGlobal.query.frequency = f.Id;
-
-        if (f.Id == 1) {
-            this.changeDateFilter('dw');
-        }
-        else if (f.Id == 2) {
-            this.changeDateFilter('m');
-        }
+        this.changeDateFilter('setdone');
     }
 
     toogleBranchDataset(b) {
-        b.IsHidden = !b.IsHidden;
+        let currentBranch = this.reportBranchList.find(rp => rp.Id == b.Id);
+        this.reportBranchList.forEach(rp => {
+            if (rp.Id != b.Id) {
+                rp.IsHidden = true;
+            }
+            else {
+                rp.IsHidden = false;
+            }
+        });
+
+        if(!currentBranch.IsHidden) {
+            this.env.selectedBranchAndChildren = currentBranch.Query;
+        }
+        else {
+            this.env.selectedBranchAndChildren = "0";
+        }
+        this.loadData();
     }
 }

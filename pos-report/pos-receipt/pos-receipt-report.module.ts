@@ -7,7 +7,6 @@ import { FormsModule,ReactiveFormsModule  } from '@angular/forms';
 import { ShareModule } from 'src/app/share.module';
 
 import { NgSelectModule } from '@ng-select/ng-select';
-import { POSReceiptItemComponent } from './pos-receipt-item/pos-receipt-item.component';
 import { POSReceiptReportPage } from './pos-receipt-report.page';
 import { ShareChartsModule } from 'src/app/components/charts/share-charts.module';
 
@@ -22,6 +21,6 @@ import { ShareChartsModule } from 'src/app/components/charts/share-charts.module
     ShareModule,
     RouterModule.forChild([{ path: '', component: POSReceiptReportPage }])
   ],
-  declarations: [POSReceiptReportPage,POSReceiptItemComponent]
+  declarations: [POSReceiptReportPage]
 })
 export class POSReceiptReportPageModule {}

@@ -2,13 +2,12 @@ import { Component } from '@angular/core';
 import { NavController, ModalController, AlertController, LoadingController, PopoverController } from '@ionic/angular';
 import { EnvService } from 'src/app/services/core/env.service';
 import { PageBase } from 'src/app/page-base';
-import { POS_MenuDetailProvider, POS_MenuProvider } from 'src/app/services/static/services.service';
 import { Location } from '@angular/common';
 import { environment } from 'src/environments/environment';
 import { ApiSetting } from 'src/app/services/static/api-setting';
 import { CommonService } from 'src/app/services/core/common.service';
-import { groupBy } from 'rxjs/operators';
 import { ReportService } from 'src/app/services/report.service';
+import { lib } from 'src/app/services/static/global-functions';
 
 
 @Component({
@@ -21,6 +20,25 @@ export class POSReceiptReportPage extends PageBase {
     reportQuery;
     reportPaymentQuery;
     ChartData;
+
+    labelLineChart;
+    typeLineChart;
+
+    paymentItems;
+
+    PaymentData = [];
+    PaymentChartData = [];
+
+    PaymentAmountData = [];
+    PaymentAmountChartData = [];
+
+    RevenueData = [];
+    RevenueChartData;
+    ReceiptsData = [];
+    ReceiptsChartData;
+
+    reportBranchList = [];
+
     ChartStyle2 = {
         width: '100%',
         'min-height': '300px',
@@ -49,9 +67,8 @@ export class POSReceiptReportPage extends PageBase {
         Type: 'Pie',
         Style: this.ChartStyle2
     }
+
     constructor(
-        public pageProvider: POS_MenuProvider,
-        public branchProvider: POS_MenuDetailProvider,
         public modalController: ModalController,
         public popoverCtrl: PopoverController,
         public alertCtrl: AlertController,
@@ -62,9 +79,8 @@ export class POSReceiptReportPage extends PageBase {
         public commonService :CommonService,
         public rpt: ReportService,
     ) {
-        super();      
-   
-        this.loadedData();
+        super();
+        this.reportBranchList = this.env.branchList.filter(b => b.IDType == '111');
     }
     changeDateFilter(type) {
         this.rpt.dateQuery(type).then(_ => {
@@ -75,34 +91,38 @@ export class POSReceiptReportPage extends PageBase {
 
     changeFrequency(f) {
         this.rpt.rptGlobal.query.frequency = f.Id;
-        if (f.Id == 1) {
-            this.changeDateFilter('dw');
-        }
-        else if (f.Id == 2) {
-            this.changeDateFilter('m');
-        }
-        else if (f.Id == 3) {
-            this.changeDateFilter('q');
-        }
-        else if (f.Id == 4) {
-            this.changeDateFilter('y');
-        }
-
+        this.changeDateFilter('setdone');
     }
+
     toogleBranchDataset(b) {
-        b.IsHidden = !b.IsHidden;
+        let currentBranch = this.reportBranchList.find(rp => rp.Id == b.Id);
+        this.reportBranchList.forEach(rp => {
+            if (rp.Id != b.Id) {
+                rp.IsHidden = true;
+            }
+            else {
+                rp.IsHidden = false;
+            }
+        });
+
+        if(!currentBranch.IsHidden) {
+            this.env.selectedBranchAndChildren = currentBranch.Query;
+        }
+        else {
+            this.env.selectedBranchAndChildren = "0";
+        }
+        this.loadData();
     }
 
-    paymentlist;
+    paymentList;
 
     preLoadData(event?: any): void {
         this.env.getType('incoming-payment').then(data=>{
-            this.paymentlist = data;
-            this.paymentlist.push({Id:0,Name:""});
-            this.paymentlist.push({Id:1402,Name:"Chuyển Khoản"});
+            this.paymentList = data;
+
             this.buildPieChartsData();
             super.preLoadData(event);
-        })
+        });
     }
 
     loadedData(event?: any): void {
@@ -110,9 +130,10 @@ export class POSReceiptReportPage extends PageBase {
         this.reportQuery = {
             fromDate: this.rpt.rptGlobal.query.fromDate,
             toDate: this.rpt.rptGlobal.query.toDate + ' 23:59:59',
-            IDBranch: this.env.selectedBranch,
-       
-        }; 
+            IDBranch: this.env.selectedBranchAndChildren,
+            SortBy: ['Id_desc'],
+            Skip: 0
+        };
 
 
         let apiPath = {
@@ -120,125 +141,181 @@ export class POSReceiptReportPage extends PageBase {
             url: function () { return ApiSetting.apiDomain("POS/Report/ReceiptList") }
         };
 
-        Promise.all([
+        this.reportQuery.Skip = this.items.length;
 
+        Promise.all([
             this.commonService.connect(apiPath.method, apiPath.url(), this.reportQuery).toPromise()
-        ]).then(values => { 
-            this.items= values[0];
+        ]).then((values:any) => {
+            let Data = values[0];
+
+            if (Data.length == 0) {
+                this.pageConfig.isEndOfData = true;
+            }
+
+            if (Data.length > 0) {
+                let firstRow = Data[0];
+
+                //Fix dupplicate rows
+                if (this.items.findIndex(d => d.ReceiptID == firstRow.ReceiptID) == -1) {
+                    this.items = [...this.items, ...Data];
+                }
+
+                this.items.forEach(i => {
+                    i.CreatedOnText = lib.dateFormat((i.Date || i.CreatedOn), 'yyyy/mm/dd');
+                    i.PaymentTypeText = this.paymentList.find(p => p.Id == i.Type)?.Name;
+                    i.TotalPriceText = lib.currencyFormat(i.TotalPrice);
+                });
+            }
+
             super.loadedData(event); 
-            
         });
     }
-    buildPieChartsData() {
+
+    buildPieChartsData(event?: any): void {
+
+        let groupby
+        // this.segmentView = report;
+        if (this.rpt.rptGlobal.query.frequency == 0) {
+            groupby = "Hour"
+        } 
+        if (this.rpt.rptGlobal.query.frequency == 1) {
+            groupby = "Day"
+        } 
+        else if (this.rpt.rptGlobal.query.frequency == 2) {
+            groupby = "Month"
+        }
+        else if (this.rpt.rptGlobal.query.frequency == 3) {
+            groupby = "Quarter"
+        }
+        else if (this.rpt.rptGlobal.query.frequency == 4) {
+            groupby = "Year"
+        }
         this.reportQuery = {
             fromDate: this.rpt.rptGlobal.query.fromDate,
             toDate: this.rpt.rptGlobal.query.toDate,
-            IDBranch: this.env.selectedBranch,
-            GroupBy: 'Day',  // Hour / Day / Week / Month / Year
-        };
-
-        this.reportPaymentQuery = {
-            fromDate: this.rpt.rptGlobal.query.fromDate,
-            toDate: this.rpt.rptGlobal.query.toDate,
-            IDBranch: this.env.selectedBranch,
-            GroupBy: 'Day',  // Hour / Day / Week / Month / Year
+            IDBranch: this.env.selectedBranchAndChildren,
+            GroupBy: groupby,   // Hour / Day / Week / Month / Year
             isCalcReceiptPayment: true,
         };
 
         let apiPath = {
             method: "GET",
-            url: function () { return ApiSetting.apiDomain("POS/Report/Payment") }
-        };
-        let apiPathDay = {
-            method: "GET",
             url: function () { return ApiSetting.apiDomain("POS/Report/Day") }
         };
-        Promise.all([
-            this.commonService.connect(apiPath.method, apiPath.url(), this.reportPaymentQuery).toPromise(),
-            this.commonService.connect(apiPathDay.method, apiPathDay.url(), this.reportQuery).toPromise()
-        ]).then((values:any) => { 
-            let datapayment = [];
-            let datapaymentamount = []; 
-            values[0].forEach(r=>{
-                r.paymentname = this.paymentlist.find(d=>d.Id == r.IDType).Name;
 
-                datapayment.push({name:r.paymentname,value:r.TotalQuantity});
-                datapaymentamount.push({name:r.paymentname,value:r.TotalReceive});
-            })
-            this.ChartPayment = datapayment;
-            this.ChartPaymentAmount = datapaymentamount;
-            this.ChartData = {
-                Revenue: {
-                    label: values[1].map(r=>r.Date),
-                    data:[{name:"Revenue",data:values[1].map(r=>r.Revenue)}]
-                },
-                Receipt: {
-                    label: values[1].map(r=>r.Date),
-                    data:[{name:"Receipt",data:values[1].map(r=>r.Receipts)}]
-                }
-               
-            }
+        Promise.all([
+            this.commonService.connect(apiPath.method, apiPath.url(), this.reportQuery).toPromise(),
+        ]).then(values => {
+
+            // this.items = values[0]['Data'];
+            this.RevenueData = values[0]['Revenue'];
+            this.ReceiptsData = values[0]['Receipts'];
+            this.PaymentData = values[0]['PaymentMethods'];
+            this.PaymentAmountData = values[0]['PaymentAmounts'];
+
+            this.RevenueData.forEach(i => {
+                i.Revenue = Math.round(i.Revenue);
+                i.Day = new Date(i.Date).getDate();
+                i.Month = new Date(i.Date).getMonth() + 1;
+                // i.Quarter = new Date(i.Date).getMonth() + 1;
+                i.Year = new Date(i.Date).getFullYear();
+            });
+
+            this.ReceiptsData.forEach(i => {
+                i.Day = new Date(i.Date).getDate();
+                i.Month = new Date(i.Date).getMonth() + 1;
+                // i.Quarter = new Date(i.Date).getMonth() + 1;
+                i.Year = new Date(i.Date).getFullYear();
+            });
+
+            this.buildRevenueData();
+            this.buildReceiptsData();
+            this.buildPaymentData();
+            this.buildPaymentAmountData();
+            
+            this.labelLineChart = this.rpt.timeGroups.map(m => m.Label);
+            this.typeLineChart = "BasicLine";
+            
+            super.loadedData(event);
         });
     }
-    // FormatDataToChart(items,Chart){
-    //     let data=[];
-    //     items.reduce(function (res, value) {
-    //         if(Chart=='Revenue'){
-    //             if (!res[new Date(value.CreatedOn).getFullYear()]) {
-    //                 res[new Date(value.CreatedOn).getFullYear()] = { name: new Date(value.CreatedOn).getFullYear(), value: 0 };
-    //                 data.push(res[new Date(value.CreatedOn).getFullYear()])
-    //             }
-    //             res[new Date(value.CreatedOn).getFullYear()].value += value.TotalPrice;
-    //             return res;
-    //         }
-    //         if(Chart=='Receipt'){
-    //             if (!res[new Date(value.CreatedOn).getFullYear()]) {
-    //                 res[new Date(value.CreatedOn).getFullYear()] = { name: new Date(value.CreatedOn).getFullYear(), value: 0 };
-    //                 data.push(res[new Date(value.CreatedOn).getFullYear()])
-    //             }
-    //             res[new Date(value.CreatedOn).getFullYear()].value += 1;
-    //             return res;
-    //         }
-    //         if(Chart=='Payment'){
-    //             if (!res[value.Type]) {
-    //                 res[value.Type] = { name: value.Type, value: 0 };
-    //                 data.push(res[value.Type])
-    //             }
-    //             res[value.Type].value += 1;
-    //             return res;
-    //         }
-    //         if(Chart=='PaymentAmount'){
-    //             if (!res[value.Type]) {
-    //                 res[value.Type] = { name: value.Type, value: 0 };
-    //                 data.push(res[value.Type])
-    //             }
-    //             res[value.Type].value += value.Payments;
-    //             return res;
-    //         }
-           
-    //     }, {});
-    //     return data;
-    // }
-    
-    
-    // LoadChart(){
-    //     this.ChartData = {
-    //         revenue:{
-    //             label: this.FormatDataToChart(this.items,'Revenue').map(e=> "năm " + e.name),
-    //             data: [{name:'Revenue',data:this.FormatDataToChart(this.items,'Revenue').map(e=> e.value)}]
-    //         },
-    //         receipt:{
-    //             label: this.FormatDataToChart(this.items,'Receipt').map(e=> "năm " + e.name),
-    //             data: [{name:'Receipt',data:this.FormatDataToChart(this.items,'Receipt').map(e=> e.value)}]
-    //         },
-    //         payment:{
-    //             label: [],
-    //             data:this.FormatDataToChart(this.items,'Payment')
-    //         },
-    //         paymentAmount:{
-    //             label: [],
-    //             data:this.FormatDataToChart(this.items,'PaymentAmount')
-    //         }
-    //     }
-    // }
+
+    buildRevenueData() {
+        var dataLineChart = []
+        this.rpt.timeGroups.forEach(e => {
+            if (this.rpt.rptGlobal.query.frequency == 0){
+                let Data = this.RevenueData.filter(f => f.GroupBy == e.Hour)[0]?.Revenue;
+                dataLineChart.push(Data);
+            }
+            else if (this.rpt.rptGlobal.query.frequency == 1) {
+                let Data = this.RevenueData.filter(f => f.GroupBy == e.Day && f.Month == e.Month && f.Year == e.Year)[0]?.Revenue;
+                dataLineChart.push(Data);
+            }
+            else if (this.rpt.rptGlobal.query.frequency == 2) {
+                let Data = this.RevenueData.filter(f => f.GroupBy == e.Month && f.Year == e.Year)[0]?.Revenue;
+                dataLineChart.push(Data);
+            }
+            else if (this.rpt.rptGlobal.query.frequency == 3) {
+                let Data = this.RevenueData.filter(f => f.GroupBy == e.Quarter && f.Year == e.Year)[0]?.Revenue;
+                dataLineChart.push(Data);
+            }
+            else if (this.rpt.rptGlobal.query.frequency == 4) {
+                let Data = this.RevenueData.filter(f => f.GroupBy == e.Year)[0]?.Revenue;
+                dataLineChart.push(Data);
+            }
+        });
+        this.labelLineChart = this.rpt.timeGroups.map(m => m.Label),
+        this.RevenueChartData = [
+            {
+                name: 'Revenue',
+                data: dataLineChart,
+            }
+        ];
+    }
+
+    buildReceiptsData() {
+        var dataLineChart = []
+        this.rpt.timeGroups.forEach(e => {
+            if (this.rpt.rptGlobal.query.frequency == 0){
+                let Data = this.ReceiptsData.filter(f => f.GroupBy == e.Hour)[0]?.Receipts;
+                dataLineChart.push(Data);
+            }
+            else if (this.rpt.rptGlobal.query.frequency == 1) {
+                let Data = this.ReceiptsData.filter(f => f.GroupBy == e.Day && f.Month == e.Month && f.Year == e.Year)[0]?.Receipts;
+                dataLineChart.push(Data);
+            }
+            else if (this.rpt.rptGlobal.query.frequency == 2) {
+                let Data = this.ReceiptsData.filter(f => f.GroupBy == e.Month && f.Year == e.Year)[0]?.Receipts;
+                dataLineChart.push(Data);
+            }
+            else if (this.rpt.rptGlobal.query.frequency == 3 ) {
+                let Data = this.ReceiptsData.filter(f => f.GroupBy == e.Quarter && f.Year == e.Year)[0]?.Receipts;
+                dataLineChart.push(Data);
+            }
+            else if (this.rpt.rptGlobal.query.frequency == 4) {
+                let Data = this.ReceiptsData.filter(f => f.GroupBy == e.Year)[0]?.Receipts;
+                dataLineChart.push(Data);
+            }
+        });
+        this.labelLineChart = this.rpt.timeGroups.map(m => m.Label),
+        this.ReceiptsChartData = [
+            {
+                name: 'Receipts',
+                data: dataLineChart,
+            }
+        ];
+    }
+
+    buildPaymentData() {
+        if (this.PaymentData) {
+            this.PaymentChartData = this.PaymentData.map(i => ({ value: i.TotalQuantity, name: i.PaymentName }));
+        }
+    }
+
+    buildPaymentAmountData() {
+        if (this.PaymentAmountData) {
+            this.PaymentAmountChartData = this.PaymentAmountData.map(i => ({ value: i.TotalReceive, name: i.PaymentName }));
+        }
+    }
+
 }
