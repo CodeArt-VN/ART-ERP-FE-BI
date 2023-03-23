@@ -191,7 +191,7 @@ export class FinanceDailyReportPage extends PageBase {
                     i.HasChild = resp.findIndex(d => d.IDParent == i.Id) > -1;
                     flatHeader.forEach(h => {
                         if (i[h]) {
-                            i[h] = lib.formatMoney(i[h], 0, '', '.');
+                            i[h] = lib.formatMoney(i[h], 0, '', ',');
                         }
                         else {
                             i[h] = 0;
@@ -230,12 +230,12 @@ export class FinanceDailyReportPage extends PageBase {
                 this.rawDailyGeneral = resp;
 
                 this.rawDailyGeneral.forEach(i => {
-                    i["Deposit"] = lib.formatMoney(i["Deposit"], 0, '', '.');
-                    i["Liability"] = lib.formatMoney(i["Liability"], 0, '', '.');
-                    i["Receiveble"] = lib.formatMoney(i["Receiveble"], 0, '', '.');
-                    i["Revenue"] = lib.formatMoney(i["Revenue"], 0, '', '.');
-                    i["TotalExpenditure"] = lib.formatMoney(i["TotalExpenditure"], 0, '', '.');
-                    i["TotalRevenue"] = lib.formatMoney(i["TotalRevenue"], 0, '', '.');
+                    i["Deposit"] = lib.formatMoney(i["Deposit"], 0, '', ',');
+                    i["Liability"] = lib.formatMoney(i["Liability"], 0, '', ',');
+                    i["Receiveble"] = lib.formatMoney(i["Receiveble"], 0, '', ',');
+                    i["Revenue"] = lib.formatMoney(i["Revenue"], 0, '', ',');
+                    i["TotalExpenditure"] = lib.formatMoney(i["TotalExpenditure"], 0, '', ',');
+                    i["TotalRevenue"] = lib.formatMoney(i["TotalRevenue"], 0, '', ',');
                 });
 
                 this.dataDailyGeneral = lib.listToTree(this.rawDailyGeneral, 'data');
@@ -312,7 +312,7 @@ export class FinanceDailyReportPage extends PageBase {
                         }
 
                         if (i[h]) {
-                            i[h] = lib.formatMoney(i[h], 0, '', '.');
+                            i[h] = lib.formatMoney(i[h], 0, '', ',');
                         }
                         else {
                             i[h] = 0;
@@ -372,19 +372,19 @@ export class FinanceDailyReportPage extends PageBase {
                             
                             if(h.indexOf("Phải thu") > 0 && h.indexOf("TOTAL") == -1) {
                                 total1 += parseFloat(i[h])
-                                i["TOTAL-Phải thu"] = lib.formatMoney(total1, 0, '', '.');
+                                i["TOTAL-Phải thu"] = lib.formatMoney(total1, 0, '', ',');
                             }
                             if(h.indexOf("Phải trả") > 0 && h.indexOf("TOTAL") == -1) {
                                 total2 += parseFloat(i[h])
-                                i["TOTAL-Phải trả"] = lib.formatMoney(total2, 0, '', '.');
+                                i["TOTAL-Phải trả"] = lib.formatMoney(total2, 0, '', ',');
                             }
                             if(h.indexOf("Cọc thu trước tiệc") > 0 && h.indexOf("TOTAL") == -1) {
                                 total3 += parseFloat(i[h])
-                                i["TOTAL-Cọc thu trước tiệc"] = lib.formatMoney(total3, 0, '', '.');
+                                i["TOTAL-Cọc thu trước tiệc"] = lib.formatMoney(total3, 0, '', ',');
                             }
 
                             if (i[h]) {
-                                i[h] = lib.formatMoney(i[h], 0, '', '.');
+                                i[h] = lib.formatMoney(i[h], 0, '', ',');
                             }
                             else {
                                 i[h] = 0;
@@ -442,15 +442,15 @@ export class FinanceDailyReportPage extends PageBase {
                         flatHeader.forEach(h => {
                             if(h.indexOf("Tiền mặt") > 0 && h.indexOf("TOTAL") == -1) {
                                 total1 += parseFloat(i[h])
-                                i["TOTAL-Tiền mặt"] = lib.formatMoney(total1, 0, '', '.');
+                                i["TOTAL-Tiền mặt"] = lib.formatMoney(total1, 0, '', ',');
                             }
                             if(h.indexOf("Chuyển khoản") > 0 && h.indexOf("TOTAL") == -1) {
                                 total2 += parseFloat(i[h])
-                                i["TOTAL-Chuyển khoản"] = lib.formatMoney(total2, 0, '', '.');
+                                i["TOTAL-Chuyển khoản"] = lib.formatMoney(total2, 0, '', ',');
                             }
 
                             if (i[h]) {
-                                i[h] = lib.formatMoney(i[h], 0, '', '.');
+                                i[h] = lib.formatMoney(i[h], 0, '', ',');
                             }
                             else {
                                 i[h] = 0;
@@ -508,15 +508,15 @@ export class FinanceDailyReportPage extends PageBase {
                         flatHeader.forEach(h => {
                             if(h.indexOf("Tiền mặt") > 0 && h.indexOf("TOTAL") == -1) {
                                 total1 += parseFloat(i[h])
-                                i["TOTAL-Tiền mặt"] = lib.formatMoney(total1, 0, '', '.');
+                                i["TOTAL-Tiền mặt"] = lib.formatMoney(total1, 0, '', ',');
                             }
                             if(h.indexOf("Chuyển khoản") > 0 && h.indexOf("TOTAL") == -1) {
                                 total2 += parseFloat(i[h])
-                                i["TOTAL-Chuyển khoản"] = lib.formatMoney(total2, 0, '', '.');
+                                i["TOTAL-Chuyển khoản"] = lib.formatMoney(total2, 0, '', ',');
                             }
 
                             if (i[h]) {
-                                i[h] = lib.formatMoney(i[h], 0, '', '.');
+                                i[h] = lib.formatMoney(i[h], 0, '', ',');
                             }
                             else {
                                 i[h] = 0;

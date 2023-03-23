@@ -314,7 +314,7 @@
 							<ng-container *ngFor="let p of headerPnL">
 								<ng-container *ngIf="p.Branch">
 									<td class="data-header" [ngStyle]="{'background-color': p.Branch.Color + '2f'}" *ngIf="!p.Branch.IsHidden && (!p.Branch.IsHiddenDetailColumn || p.IsTotal || p.IsAll )">
-										<div (click)="p.Branch.IsHiddenDetailColumn =! p.Branch.IsHiddenDetailColumn" class="value">{{p.Branch.Name}} 
+										<div (click)="p.Branch.IsHiddenDetailColumn =! p.Branch.IsHiddenDetailColumn" class="value">{{p.Name}} 
 											<ion-icon class="min-btn" *ngIf="p.IsTotal" [name]="p.Branch.IsHiddenDetailColumn? 'add-circle-outline':'remove-circle-outline'" ></ion-icon> 
 											
 										</div>
@@ -468,7 +468,7 @@
 							<ng-container *ngFor="let p of headerCashFlow">
 								<ng-container *ngIf="p.Branch">
 									<td class="data-header" [ngStyle]="{'background-color': p.Branch.Color + '2f'}" *ngIf="!p.Branch.IsHidden && (!p.Branch.IsHiddenDetailColumn || p.IsTotal || p.IsAll )">
-										<div (click)="p.Branch.IsHiddenDetailColumn =! p.Branch.IsHiddenDetailColumn" class="value">{{p.Branch.Name}} 
+										<div (click)="p.Branch.IsHiddenDetailColumn =! p.Branch.IsHiddenDetailColumn" class="value">{{p.Name}} 
 											<ion-icon class="min-btn" *ngIf="p.IsTotal" [name]="p.Branch.IsHiddenDetailColumn? 'add-circle-outline':'remove-circle-outline'" ></ion-icon> 
 											
 										</div>
@@ -554,7 +554,7 @@
 							<ng-container *ngFor="let p of headerPnL">
 								<ng-container *ngIf="p.Branch">
 									<td class="data-header" [ngStyle]="{'background-color': p.Branch.Color + '2f'}" *ngIf="!p.Branch.IsHidden && (!p.Branch.IsHiddenDetailColumn || p.IsTotal || p.IsAll )">
-										<div (click)="p.Branch.IsHiddenDetailColumn =! p.Branch.IsHiddenDetailColumn" class="value">{{p.Branch.Name}} 
+										<div (click)="p.Branch.IsHiddenDetailColumn =! p.Branch.IsHiddenDetailColumn" class="value">{{p.Name}} 
 											<ion-icon class="min-btn" *ngIf="p.IsTotal" [name]="p.Branch.IsHiddenDetailColumn? 'add-circle-outline':'remove-circle-outline'" ></ion-icon> 
 											
 										</div>
