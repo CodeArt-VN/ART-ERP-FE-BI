@@ -173,7 +173,7 @@
                                                         2. Hàng hoá, dịch vụ dùng chung cho SXKD chịu thuế và không chịu thuế đủ điều kiện khấu trừ thuế:
                                                     </td>
                                                 </tr>
-                                                <tr *ngFor="let i of b.itemList; let idx = index; ">
+                                                <tr> <!-- *ngFor="let i of b.itemList; let idx = index; " -->
                                                     <td class="cen idx">&#8205;</td> <!--Mock-->
                                                     <td class="cen inv-no">&#8205;</td>
                                                     <td class="cen inv-date">&#8205;</td>
@@ -198,7 +198,7 @@
                                                         3. Hàng hóa, dịch vụ dùng cho dự án đầu tư đủ điều kiện được khấu trừ thuế (*):
                                                     </td>
                                                 </tr>
-                                                <tr *ngFor="let i of b.itemList; let idx = index;">
+                                                <tr> <!-- *ngFor="let i of b.itemList; let idx = index; " -->
                                                     <td class="cen idx">&#8205;</td> <!--Mock-->
                                                     <td class="cen inv-no">&#8205;</td>
                                                     <td class="cen inv-date">&#8205;</td>
@@ -331,9 +331,9 @@
                                             </tr>
                                             <tr>
                                                 <td colspan="6" class="bol title">
-                                                    Báo cáo
-                                                    <span *ngIf="reportQuery.IsCalcShippedOnly">Mua hàng</span> 
-                                                    <span *ngIf="!reportQuery.IsCalcShippedOnly">Mua hàng</span>
+                                                    BÁO CÁO
+                                                    <span *ngIf="reportQuery.IsCalcShippedOnly">MUA HÀNG</span> 
+                                                    <span *ngIf="!reportQuery.IsCalcShippedOnly">MUA HÀNG</span>
                                                 </td>
                                             </tr>
                                         </tbody>

@@ -263,7 +263,7 @@ export class ApInvoicePage extends PageBase {
         let apiPath = {
             getExport: {
                 method: "GET",
-                url: function () { return ApiSetting.apiDomain("SALE/Order/ExportApInvoiceReport/") }
+                url: function () { return ApiSetting.apiDomain("PURCHASE/Order/ExportAPInvoiceReport/") }
             }
         };
 
