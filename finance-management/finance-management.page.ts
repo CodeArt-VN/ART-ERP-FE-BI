@@ -157,7 +157,7 @@ export class FinanceManagementPage extends PageBase {
                     i.HasChild = resp.findIndex(d => d.IDParent == i.Id) > -1;
                     flatHeader.forEach(h => {
                         if (i[h]) {
-                            i[h] = lib.formatMoney(i[h], 0, '', '.');
+                            i[h] = lib.formatMoney(i[h], 0, '', ',');
                         }
                         else {
                             i[h] = 0;
@@ -275,7 +275,7 @@ export class FinanceManagementPage extends PageBase {
                     i.HasChild = resp.findIndex(d => d.IDParent == i.Id) > -1;
                     flatHeaderPnL.forEach(h => {
                         if (i[h]) {
-                            i[h] = lib.formatMoney(i[h], 0, '', '.');
+                            i[h] = lib.formatMoney(i[h], 0, '', ',');
                         }
                         else {
                             i[h] = 0;
