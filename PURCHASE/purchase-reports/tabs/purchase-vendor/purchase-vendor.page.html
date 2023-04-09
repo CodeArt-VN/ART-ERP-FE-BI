@@ -1,0 +1,289 @@
+<ion-content appScrollbarTheme appPrintFix class="A4 left">
+    <app-page-message [itemsLength] = "items.length" [showSpinner]="pageConfig.showSpinner"></app-page-message>
+	
+    <div style="overflow: auto;">
+
+
+        <ng-container *ngIf="!reportQuery.IDOwner">
+            <section class="sheet rpt" *ngFor="let b of warehouses">
+                <table>
+                    <thead>
+                        <tr>
+                            <td>
+                                <div class="page-header-space"></div>
+                            </td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="top-zone">
+                                    <table class="rpt-header" cellpadding="0" cellspacing="0">
+                                        <tbody>
+                                            <tr>
+                                                <td class="head-c1">{{'erp.app.pages.bi.sales-report.tabs.sale-outlet.company-selling' | translate}}:</td>
+                                                <td class="bol">{{b.Name}}</td>
+                                                <td class="num"></td>
+                                                <td class="bol"></td>
+                                                <td class="num">{{'erp.app.pages.bi.sales-report.tabs.sale-outlet.print-date' | translate}}:</td>
+                                                <td class="num bol ngay-hd">{{today}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="6" class="bol title">
+                                                    {{'erp.app.pages.bi.sales-report.tabs.sale-outlet.report' | translate}}
+                                                    <span *ngIf="reportQuery.IsCalcShippedOnly">{{'erp.app.pages.bi.sales-report.tabs.sale-outlet.revenue' | translate}}</span> 
+                                                    <span *ngIf="!reportQuery.IsCalcShippedOnly">{{'erp.app.pages.bi.sales-report.tabs.sale-outlet.orders' | translate}}</span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+
+                                    <table class="rpt-header rpt-nvgh-header" cellpadding="0" cellspacing="0">
+                                        <tbody>
+                                            <tr>
+                                                <td class="head-c1">{{'erp.app.pages.bi.sales-report.tabs.sale-outlet.date-range' | translate}}:</td>
+                                                <td class="bol">
+                                                    {{reportQuery.fromDate}} - {{reportQuery.toDate}}
+                                                    <span *ngIf="reportQuery.IsCalcShippedOnly">{{'erp.app.pages.bi.sales-report.tabs.sale-outlet.expect-receipt-date' | translate}}</span>
+                                                    <span *ngIf="!reportQuery.IsCalcShippedOnly">{{'erp.app.pages.bi.sales-report.tabs.sale-outlet.order-date' | translate}}</span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+
+
+                                    <div class="ds-san-pham">
+                                        <table cellpadding="0" cellspacing="0">
+                                            <tbody>
+                                                <tr class="head">
+                                                    <td rowspan="1" class="cen">{{'erp.app.pages.bi.sales-report.tabs.sale-outlet.stt' | translate}}</td>
+                                                    <td rowspan="1">
+                                                        <div class="ten-sp min">{{'erp.app.pages.bi.sales-report.tabs.sale-outlet.customer' | translate}}</div>
+                                                    </td>
+                                                    <td class="cen">{{'erp.app.pages.bi.sales-report.tabs.sale-outlet.workphone' | translate}}</td>
+                                                    <td class=" num" rowspan="1">{{'erp.app.pages.bi.sales-report.tabs.sale-outlet.total-before-discount' | translate}}</td>
+                                                    <td class=" num" rowspan="1">{{'erp.app.pages.bi.sales-report.tabs.sale-outlet.total-discount' | translate}}</td>
+                                                    <td class=" num" rowspan="1">{{'erp.app.pages.bi.sales-report.tabs.sale-outlet.total-after-discount' | translate}}</td>
+                                                </tr>
+                                            </tbody>
+                                            
+                                            <tr *ngFor="let i of b.itemList; let idx = index; ">
+                                                <td class="cen" >{{idx+1}}</td>
+                                                <td >
+                                                    <div class="ten-sp min"><b *ngIf="i.ContactCode">{{i.ContactCode}}</b><b *ngIf="!i.ContactCode">{{i.IDContact}}</b> - {{i.ContactName}}</div>
+                                                </td>
+                                                <td class="cen">{{i.WorkPhone}}</td>
+                                                <td class="num tien">{{i.TotalBeforeDiscountText}}</td>
+                                                <td class="num tien">{{i.TotalDiscountText}}</td>
+                                                <td class="num tien">{{i.TotalAfterDiscountText}}</td>
+                                            </tr>
+                                            
+                                            <tbody>
+                                                <tr class="head">
+                                                    <td class="num" colspan="3">{{'erp.app.pages.bi.sales-report.tabs.sale-outlet.total' | translate}}</td>
+                                                    <td class="num tien">{{b.TotalBeforeDiscountText}}</td>
+                                                    <td class="num tien">{{b.TotalDiscountText}}</td>
+                                                    <td class="num tien">{{b.TotalAfterDiscountText}}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+
+                                    <div class="no-break-page">
+                                        <table class="chu-ky" cellpadding="0" cellspacing="0">
+                                            <tbody>
+                                                <tr>
+
+                                                    <td>
+                                                        {{'erp.app.pages.bi.sales-report.tabs.sale-outlet.form-creator' | translate}}
+                                                        <div class="line2">
+                                                            {{'erp.app.pages.bi.sales-report.tabs.sale-outlet.signed-full-name' | translate}}
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        {{'erp.app.pages.bi.sales-report.tabs.sale-outlet.chief-accountant' | translate}}
+                                                        <div class="line2">
+                                                            {{'erp.app.pages.bi.sales-report.tabs.sale-outlet.signed-full-name' | translate}}
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        {{'erp.app.pages.bi.sales-report.tabs.sale-outlet.general-manager' | translate}}
+                                                        <div class="line2">
+                                                            {{'erp.app.pages.bi.sales-report.tabs.sale-outlet.signed-full-name' | translate}}
+                                                        </div>
+                                                    </td>
+                                                </tr>
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+
+                    <tfoot>
+                        <tr>
+                            <td>
+                                <div class="page-footer-space"></div>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </section>
+        </ng-container>
+
+
+        <ng-container *ngFor="let b of items">
+            <section class="sheet rpt" *ngFor="let s of b.salemans" >
+                <table>
+                    <thead>
+                        <tr>
+                            <td>
+                                <div class="page-header-space"></div>
+                            </td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="top-zone">
+                                    <table class="rpt-header" cellpadding="0" cellspacing="0">
+                                        <tbody>
+                                            <tr>
+                                                <td class="head-c1">{{'erp.app.pages.bi.sales-report.tabs.sale-outlet.company-selling' | translate}}:</td>
+                                                <td class="bol">{{b.Name}}</td>
+                                                <td class="num"></td>
+                                                <td class="bol"></td>
+                                                <td class="num">{{'erp.app.pages.bi.sales-report.tabs.sale-outlet.print-date' | translate}}:</td>
+                                                <td class="num bol ngay-hd">{{today}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="6" class="bol title">
+                                                    {{'erp.app.pages.bi.sales-report.tabs.sale-outlet.report' | translate}}
+                                                    <span *ngIf="reportQuery.IsCalcShippedOnly">{{'erp.app.pages.bi.sales-report.tabs.sale-outlet.revenue' | translate}}</span> 
+                                                    <span *ngIf="!reportQuery.IsCalcShippedOnly">{{'erp.app.pages.bi.sales-report.tabs.sale-outlet.orders' | translate}}</span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+
+                                    <table class="rpt-header rpt-nvgh-header" cellpadding="0" cellspacing="0">
+                                        <tbody>
+                                            <tr >
+                                                <td class="head-c1">{{'erp.app.pages.bi.sales-report.tabs.sale-outlet.saleman' | translate}}:</td>
+                                                <td class="bol">{{s.FullName}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="head-c1">{{'erp.app.pages.bi.sales-report.tabs.sale-outlet.time-range' | translate}}:</td>
+                                                <td class="bol">
+                                                    {{reportQuery.fromDate}} - {{reportQuery.toDate}}
+                                                    <span *ngIf="reportQuery.IsCalcShippedOnly">{{'erp.app.pages.bi.sales-report.tabs.sale-outlet.expect-receipt-date' | translate}}</span>
+                                                    <span *ngIf="!reportQuery.IsCalcShippedOnly">{{'erp.app.pages.bi.sales-report.tabs.sale-outlet.order-date' | translate}}</span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+
+
+                                    <div class="ds-san-pham">
+                                        <table cellpadding="0" cellspacing="0">
+                                            <tbody>
+                                                <tr class="head">
+                                                    <td rowspan="1" class="cen">{{'erp.app.pages.bi.sales-report.tabs.sale-outlet.stt' | translate}}</td>
+                                                    <td rowspan="1">
+                                                        <div class="ten-sp min">{{'erp.app.pages.bi.sales-report.tabs.sale-outlet.customer' | translate}}</div>
+                                                    </td>
+                                                    <td class="cen">{{'erp.app.pages.bi.sales-report.tabs.sale-outlet.workphone' | translate}}</td>
+                                                    <td class=" num" rowspan="1">{{'erp.app.pages.bi.sales-report.tabs.sale-outlet.total-before-discount' | translate}}</td>
+                                                    <td class=" num" rowspan="1">{{'erp.app.pages.bi.sales-report.tabs.sale-outlet.total-discount' | translate}}</td>
+                                                    <td class=" num" rowspan="1">{{'erp.app.pages.bi.sales-report.tabs.sale-outlet.total-after-discount' | translate}}</td>
+                                                </tr>
+                                            </tbody>
+                                            
+                                            <tr *ngFor="let i of s.itemList; let idx = index; ">
+                                                <td class="cen" >{{idx+1}}</td>
+                                                <td >
+                                                    <div class="ten-sp min"><b *ngIf="i.ContactCode">{{i.ContactCode}}</b><b *ngIf="!i.ContactCode">{{i.IDContact}}</b> - {{i.ContactName}}</div>
+                                                </td>
+                                                <td class="cen">{{i.WorkPhone}}</td>
+                                                <td class="num tien">{{i.TotalBeforeDiscountText}}</td>
+                                                <td class="num tien">{{i.TotalDiscountText}}</td>
+                                                <td class="num tien">{{i.TotalAfterDiscountText}}</td>
+                                            </tr>
+                                            <tbody>
+                                                <tr class="head">
+                                                    <td class="num" colspan="3">{{'erp.app.pages.bi.sales-report.tabs.sale-outlet.total' | translate}}</td>
+                                                    <td class="num tien">{{s.TotalBeforeDiscountText}}</td>
+                                                    <td class="num tien">{{s.TotalDiscountText}}</td>
+                                                    <td class="num tien">{{s.TotalAfterDiscountText}}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+
+                                    <div class="no-break-page">
+
+                                        <!-- <table cellpadding="0" cellspacing="0">
+                                        <tbody>
+                                            <tr>
+                                                <td class="">
+                                                    <div class="line2">
+                                                        Đề nghị các bên vui lòng kiểm tra kỹ chứng từ &amp; hàng hóa trước khi rời kho. <br>
+                                                        Mọi khiếu nại về sau, NPP sẽ không chịu trách nhiệm giải quyết.
+                                                    </div>
+
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table> -->
+
+
+                                        <table class="chu-ky" cellpadding="0" cellspacing="0">
+                                            <tbody>
+                                                <tr>
+
+                                                    <td>
+                                                        {{'erp.app.pages.bi.sales-report.tabs.sale-outlet.form-creator' | translate}}
+                                                        <div class="line2">
+                                                            {{'erp.app.pages.bi.sales-report.tabs.sale-outlet.signed-full-name' | translate}}
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        {{'erp.app.pages.bi.sales-report.tabs.sale-outlet.chief-accountant' | translate}}
+                                                        <div class="line2">
+                                                            {{'erp.app.pages.bi.sales-report.tabs.sale-outlet.signed-full-name' | translate}}
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        {{'erp.app.pages.bi.sales-report.tabs.sale-outlet.general-manager' | translate}}
+                                                        <div class="line2">
+                                                            {{'erp.app.pages.bi.sales-report.tabs.sale-outlet.signed-full-name' | translate}}
+                                                        </div>
+                                                    </td>
+                                                </tr>
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+
+                    <tfoot>
+                        <tr>
+                            <td>
+                                <div class="page-footer-space"></div>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </section>
+        </ng-container>
+
+    </div>
+
+</ion-content>
