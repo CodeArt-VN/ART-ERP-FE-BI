@@ -133,11 +133,11 @@
 											{{i.CurrentStock}}
 										</div>
 			
-										<div class="col-code cell">
+										<div class="col-code bold cell">
 											{{i.ProductID}}
 										</div>
 			
-										<div class="col-name cell">
+										<div class="col-name cell" (click)="nav('item/'+i.ProductID,'forward')">
 											{{i.Product}}
 										</div>
 			
@@ -154,7 +154,7 @@
 										</div>
 			
 										<div class="col-code cell">
-											{{i.VAT}}
+											{{i.VATText}}
 										</div>
 			
 										<div class="col-code bold cell">

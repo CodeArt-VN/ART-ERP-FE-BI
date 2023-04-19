@@ -108,7 +108,13 @@
 							</div>
 
 							<div class="col-code cell" (click)="sortToggle('Code')">
-								Tips
+								Payments
+								<ion-icon class="min-btn" *ngIf="sort.Code" [name]="sort.Code == 'Code'?'arrow-down': 'arrow-up'"></ion-icon>
+								<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.Code" name="search" color="primary"></ion-icon>
+							</div>
+
+							<div class="col-code cell" (click)="sortToggle('Code')">
+								The change
 								<ion-icon class="min-btn" *ngIf="sort.Code" [name]="sort.Code == 'Code'?'arrow-down': 'arrow-up'"></ion-icon>
 								<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.Code" name="search" color="primary"></ion-icon>
 							</div>
@@ -151,6 +157,10 @@
 		
 									<div class="col-code bold cell">
 										{{i.RevenueText}}
+									</div>
+
+									<div class="col-code bold cell">
+										{{i.PaymentsText}}
 									</div>
 		
 									<div class="col-code bold cell">

@@ -120,6 +120,7 @@ export class PosItemPage extends PageBase {
                 i.TakeawayPrice = Math.round(i.TakeawayPrice);
                 i.DeliveryPrice = Math.round(i.DeliveryPrice);
                 i.TotalRevenue = Math.round(i.TotalRevenue);
+                i.VATText = lib.currencyFormat(i.VAT);
                 i.PriceText = lib.currencyFormat(i.Price);
                 i.TakeawayPriceText = lib.currencyFormat(i.TakeawayPrice);
                 i.DeliveryPriceText = lib.currencyFormat(i.DeliveryPrice);

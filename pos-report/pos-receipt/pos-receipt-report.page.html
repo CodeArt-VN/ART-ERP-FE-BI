@@ -38,13 +38,13 @@
 					<ion-grid>
 						<ion-row class="hr-group">
 							<ion-col size="12" size-sm="12" size-md="3" size-xl="3">
-								<ng-container *ngIf="items.length">
+								<ng-container *ngIf="RevenueChartData.length">
 									<app-line-chart [title]="'Revenue'" [data]="RevenueChartData"
 										[label]="labelLineChart" [type]="typeLineChart"></app-line-chart>
 								</ng-container>
 							</ion-col>
 							<ion-col size="12" size-sm="12" size-md="3" size-xl="3">
-								<ng-container *ngIf="items.length">
+								<ng-container *ngIf="ReceiptsChartData.length">
 									<app-line-chart [title]="'Receipts'" [data]="ReceiptsChartData"
 										[label]="labelLineChart" [type]="typeLineChart"></app-line-chart>
 								</ng-container>
@@ -166,11 +166,11 @@
 							</div>
 							
 							<div class="col-name cell">
-								{{i.PaymentTypeText}}
+								{{i.PaymentsText}}
 							</div>
 
 							<div class="col-code cell">
-								{{i.Type}}
+								{{i.PaymentName}}
 							</div>
 
 							<div class="col-name cell">
@@ -190,8 +190,7 @@
 							</div>
 
 							<div class="col-code cell">
-								<!-- {{i.Customer}} -->
-								0
+								{{i.NumberOfGuests}}
 							</div>
 
 							<div class="col-code cell">
