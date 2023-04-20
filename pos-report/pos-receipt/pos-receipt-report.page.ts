@@ -39,6 +39,8 @@ export class POSReceiptReportPage extends PageBase {
 
     reportBranchList = [];
 
+    paymentList = [];
+
     ChartStyle2 = {
         width: '100%',
         'min-height': '300px',
@@ -114,11 +116,11 @@ export class POSReceiptReportPage extends PageBase {
         this.loadData();
     }
 
-    paymentList;
-
     preLoadData(event?: any): void {
-        this.env.getType('incoming-payment').then(data=>{
-            this.paymentList = data;
+        Promise.all([
+            this.env.getType('PaymentType')
+        ]).then((results:any) => {
+            this.paymentList = results[0];
 
             this.buildPieChartsData();
             super.preLoadData(event);
@@ -162,7 +164,8 @@ export class POSReceiptReportPage extends PageBase {
 
                 this.items.forEach(i => {
                     i.CreatedOnText = lib.dateFormat((i.Date || i.CreatedOn), 'yyyy/mm/dd');
-                    i.PaymentTypeText = this.paymentList.find(p => p.Id == i.Type)?.Name;
+                    i.PaymentName = (this.paymentList.find(p => p.Code == i.PaymentType)?.Name || 'Còn nợ');
+                    i.PaymentsText = lib.currencyFormat(i.Payments);
                     i.TotalPriceText = lib.currencyFormat(i.TotalPrice);
                 });
             }
@@ -226,6 +229,14 @@ export class POSReceiptReportPage extends PageBase {
                 i.Month = new Date(i.Date).getMonth() + 1;
                 // i.Quarter = new Date(i.Date).getMonth() + 1;
                 i.Year = new Date(i.Date).getFullYear();
+            });
+
+            this.PaymentData.forEach(i => {
+                i.PaymentName = (this.paymentList.find(p => p.Code == i.PaymentType)?.Name || 'Còn nợ');
+            });
+
+            this.PaymentAmountData.forEach(i => {
+                i.PaymentName = (this.paymentList.find(p => p.Code == i.PaymentType)?.Name || 'Còn nợ');
             });
 
             this.buildRevenueData();

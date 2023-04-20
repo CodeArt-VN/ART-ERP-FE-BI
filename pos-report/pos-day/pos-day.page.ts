@@ -35,6 +35,8 @@ export class PosDayPage extends PageBase {
     ReceiptsChartData;
 
     reportBranchList = [];
+
+    paymentList = [];
     
     reportQuery: any = {};
 
@@ -104,6 +106,16 @@ export class PosDayPage extends PageBase {
         super.saveChange2();
     }
 
+    preLoadData(event?: any): void {
+        Promise.all([
+            this.env.getType('PaymentType')
+        ]).then((results:any) => {
+            this.paymentList = results[0];
+
+            super.preLoadData(event);
+        });
+    }
+
     loadedData(event?: any): void {
 
         let groupby
@@ -153,6 +165,7 @@ export class PosDayPage extends PageBase {
             this.items.forEach(i => {
                 i.Revenue = Math.round(i.Revenue);
                 i.RevenueText = lib.currencyFormat(i.Revenue);
+                i.PaymentsText = lib.currencyFormat(i.Payments);
                 i.TipsText = lib.currencyFormat(i.Tips);
                 i.TaxText = lib.currencyFormat(i.Tax);
                 i.DateText = lib.dateFormat((i.Date || i.StartsAt), 'yyyy/mm/dd');
@@ -177,6 +190,14 @@ export class PosDayPage extends PageBase {
                 i.Month = new Date(i.Date).getMonth() + 1;
                 // i.Quarter = new Date(i.Date).getMonth() + 1;
                 i.Year = new Date(i.Date).getFullYear();
+            });
+
+            this.PaymentData.forEach(i => {
+                i.PaymentName = (this.paymentList.find(p => p.Code == i.PaymentType)?.Name || 'Còn nợ');
+            });
+
+            this.PaymentAmountData.forEach(i => {
+                i.PaymentName = (this.paymentList.find(p => p.Code == i.PaymentType)?.Name || 'Còn nợ');
             });
 
             this.buildRevenueData();

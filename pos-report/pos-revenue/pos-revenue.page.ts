@@ -178,6 +178,8 @@ export class PosRevenuePage extends PageBase {
         this.summaryInfo.TotalCustomer =  this.summaryData.map(x => x.Customers).reduce((a, b) => (+a) + (+b), 0);
 
         this.summaryInfo.TotalRevenueText = lib.currencyFormat(this.summaryInfo.TotalRevenue);
+        this.summaryInfo.AveragePerReceiptText = lib.currencyFormat(this.summaryInfo.TotalRevenue / this.summaryInfo.TotalReceipt);
+        this.summaryInfo.AveragePerCustomerText = lib.currencyFormat(this.summaryInfo.TotalRevenue / this.summaryInfo.TotalCustomer);
         console.log(this.summaryData);
     }
 
