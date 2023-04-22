@@ -33,9 +33,9 @@ export class POSReceiptReportPage extends PageBase {
     PaymentAmountChartData = [];
 
     RevenueData = [];
-    RevenueChartData;
+    RevenueChartData = [];
     ReceiptsData = [];
-    ReceiptsChartData;
+    ReceiptsChartData = [];
 
     reportBranchList = [];
 
@@ -113,7 +113,7 @@ export class POSReceiptReportPage extends PageBase {
         else {
             this.env.selectedBranchAndChildren = "0";
         }
-        this.loadData();
+        this.loadData(null);
     }
 
     preLoadData(event?: any): void {
@@ -125,6 +125,14 @@ export class POSReceiptReportPage extends PageBase {
             this.buildPieChartsData();
             super.preLoadData(event);
         });
+    }
+    
+    loadData(event): void {
+        this.RevenueChartData = [];
+        this.ReceiptsChartData = [];
+        this.PaymentChartData = [];
+        this.PaymentAmountChartData = [];
+        super.loadData(event);
     }
 
     loadedData(event?: any): void {

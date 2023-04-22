@@ -30,9 +30,9 @@ export class PosDayPage extends PageBase {
     PaymentAmountChartData = [];
 
     RevenueData = [];
-    RevenueChartData;
+    RevenueChartData = [];
     ReceiptsData = [];
-    ReceiptsChartData;
+    ReceiptsChartData = [];
 
     reportBranchList = [];
 
@@ -114,6 +114,14 @@ export class PosDayPage extends PageBase {
 
             super.preLoadData(event);
         });
+    }
+
+    loadData(event): void {
+        this.RevenueChartData = [];
+        this.ReceiptsChartData = [];
+        this.PaymentChartData = [];
+        this.PaymentAmountChartData = [];
+        super.loadData(event);
     }
 
     loadedData(event?: any): void {
@@ -320,6 +328,6 @@ export class PosDayPage extends PageBase {
         else {
             this.env.selectedBranchAndChildren = "0";
         }
-        this.loadData();
+        this.loadData(null);
     }
 }
