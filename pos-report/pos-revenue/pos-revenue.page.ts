@@ -42,6 +42,7 @@ export class PosRevenuePage extends PageBase {
         Legend: false,
         // Data:  this.topSellingProduct,
         Type: 'Treemap',
+        Tooltip: 'Percent',
         Style: this.ChartStyle2
     }
 
@@ -119,8 +120,8 @@ export class PosRevenuePage extends PageBase {
                 i.TotalRevenue = Math.round(i.TotalRevenue);
             });
 
-            this.buildRenenueData();
             this.buildSummaryData();
+            this.buildRenenueData();
             super.loadedData(event);
         });
     }
@@ -138,13 +139,12 @@ export class PosRevenuePage extends PageBase {
                     let Id = tempIDItemGroupList[index];
 
                     let tempList = this.revenueData.filter(d => d.IDItemGroup == Id);
-
                     let tempParentValue = tempList.map(x => x.TotalRevenue).reduce((a, b) => (+a) + (+b), 0);
                     let tempChild;
                     let tempParentObject;
 
                     if (this.segmentView == "Item") {
-                        tempChild = tempList.map(i => ({ name: i.Name, value: i.TotalRevenue }));
+                        tempChild = tempList.map(i => ({ name: i.Name, value: i.TotalRevenue, percent: ((i.TotalRevenue / this.summaryInfo.TotalRevenue) * 100).toFixed(2) }));
 
                         tempParentObject = {
                             name: tempList[0].ItemGroup, 
@@ -153,12 +153,12 @@ export class PosRevenuePage extends PageBase {
                         };
                     }
                     else {
-                        tempChild = tempList.map(i => ({ name: i.Name, value: i.TotalRevenue }));
+                        tempChild = tempList.map(i => ({ name: i.Name, value: i.TotalRevenue, percent: ((i.TotalRevenue / this.summaryInfo.TotalRevenue) * 100).toFixed(2)  }));
 
                         tempParentObject = {
                             name: tempList[0].ItemGroup, 
                             value: tempParentValue,
-                            children: [{name: tempList[0].ItemGroup, value: tempParentValue}]
+                            children: [{name: tempList[0].ItemGroup, value: tempParentValue, percent: ((tempParentValue / this.summaryInfo.TotalRevenue) * 100).toFixed(2)  }]
                         };
                     }
 
@@ -177,9 +177,9 @@ export class PosRevenuePage extends PageBase {
         this.summaryInfo.TotalReceipt =  this.summaryData.map(x => x.Receipts).reduce((a, b) => (+a) + (+b), 0);
         this.summaryInfo.TotalCustomer =  this.summaryData.map(x => x.Customers).reduce((a, b) => (+a) + (+b), 0);
 
-        this.summaryInfo.TotalRevenueText = lib.currencyFormat(this.summaryInfo.TotalRevenue);
-        this.summaryInfo.AveragePerReceiptText = lib.currencyFormat(this.summaryInfo.TotalRevenue / this.summaryInfo.TotalReceipt);
-        this.summaryInfo.AveragePerCustomerText = lib.currencyFormat(this.summaryInfo.TotalRevenue / this.summaryInfo.TotalCustomer);
+        this.summaryInfo.TotalRevenueText = lib.formatMoney(this.summaryInfo.TotalRevenue, 0, '.', ',');
+        this.summaryInfo.AveragePerReceiptText = lib.formatMoney((this.summaryInfo.TotalRevenue / this.summaryInfo.TotalReceipt), 0, '.', ',');
+        this.summaryInfo.AveragePerCustomerText = lib.formatMoney((this.summaryInfo.TotalRevenue / this.summaryInfo.TotalCustomer), 0, '.', ',');
         console.log(this.summaryData);
     }
 
