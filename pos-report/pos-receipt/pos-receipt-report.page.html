@@ -84,6 +84,12 @@
 							</div>
 
 							<div class="col-code cell">
+								Table
+								<ion-icon class="min-btn" *ngIf="sort.Code" [name]="sort.Code == 'Code'?'arrow-down': 'arrow-up'"></ion-icon>
+								<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.Code" name="search" color="primary"></ion-icon>
+							</div>
+
+							<div class="col-code cell">
 								Total Price
 								<ion-icon class="min-btn" *ngIf="sort.Name" [name]="sort.Name == 'Name'?'arrow-down': 'arrow-up'"></ion-icon>
 								<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.Name" name="search" color="primary"></ion-icon>
@@ -119,12 +125,6 @@
 								<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.Code" name="search" color="primary"></ion-icon>
 							</div>
 
-							<div class="col-code cell">
-								Table
-								<ion-icon class="min-btn" *ngIf="sort.Code" [name]="sort.Code == 'Code'?'arrow-down': 'arrow-up'"></ion-icon>
-								<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.Code" name="search" color="primary"></ion-icon>
-							</div>
-
 							<div class="col-name cell">
 								Customer
 								<ion-icon class="min-btn" *ngIf="sort.Code" [name]="sort.Code == 'Code'?'arrow-down': 'arrow-up'"></ion-icon>
@@ -155,6 +155,13 @@
 
 							<div class="col-code cell">
 								{{i.ReceiptID}}
+								<a [href]="'#/'+'pos-order/'+i.ReceiptID" (click)="nav('pos-order/'+i.ReceiptID,'forward')">
+									<ion-icon name="open-outline"></ion-icon>
+								</a>
+							</div>
+
+							<div class="col-code cell">
+								{{i.Table}}
 							</div>
 
 							<div class="col-code cell">
@@ -179,10 +186,6 @@
 
 							<div class="col-name cell">
 								{{i.CreatedBy}}
-							</div>
-
-							<div class="col-code cell">
-								{{i.Table}}
 							</div>
 
 							<div class="col-name cell">
