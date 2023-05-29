@@ -141,29 +141,9 @@
                                                 <span class="bold">Other payment</span>
                                             </div>
                                             <table>
-                                                <tr>
-                                                    <td class="title">Vietcombank</td>
-                                                    <td class="detail">{{ReportResult.VietcombankText}}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="title">MBBank</td>
-                                                    <td class="detail">{{ReportResult.MBBankText}}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="title">S & M</td>
-                                                    <td class="detail">{{ReportResult.SandMText}}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="title">Cash</td>
-                                                    <td class="detail">{{ReportResult.CashText}}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="title">Card</td>
-                                                    <td class="detail">{{ReportResult.CardText}}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="title">Transfer</td>
-                                                    <td class="detail">{{ReportResult.TransferText}}</td>
+                                                <tr *ngFor="let i of this.ReportResult.PaymentResults">
+                                                    <td class="title">{{i.TypeText}} {{i.SubType ? ' | ' + i.SubType : ''}}</td>
+                                                    <td class="detail">{{i.TotalReceiveText}}</td>
                                                 </tr>
                                                 <tr>
                                                     <td class="title">BOD</td>
@@ -172,6 +152,10 @@
                                                 <tr>
                                                     <td class="title">BOM</td>
                                                     <td class="detail">{{ReportResult.BOMText}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="title">S & M</td>
+                                                    <td class="detail">{{ReportResult.SandMText}}</td>
                                                 </tr>
                                                 <tr>
                                                     <td class="title">Refunded / cancelled amount</td>

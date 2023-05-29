@@ -113,14 +113,20 @@
 								<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.Code" name="search" color="primary"></ion-icon>
 							</div>
 
-							<div class="col-name cell">
-								Created By
+							<div class="col-code cell">
+								Payment Status
 								<ion-icon class="min-btn" *ngIf="sort.Code" [name]="sort.Code == 'Code'?'arrow-down': 'arrow-up'"></ion-icon>
 								<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.Code" name="search" color="primary"></ion-icon>
 							</div>
 
 							<div class="col-name cell">
 								Payment By
+								<ion-icon class="min-btn" *ngIf="sort.Code" [name]="sort.Code == 'Code'?'arrow-down': 'arrow-up'"></ion-icon>
+								<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.Code" name="search" color="primary"></ion-icon>
+							</div>
+
+							<div class="col-name cell">
+								Created By
 								<ion-icon class="min-btn" *ngIf="sort.Code" [name]="sort.Code == 'Code'?'arrow-down': 'arrow-up'"></ion-icon>
 								<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.Code" name="search" color="primary"></ion-icon>
 							</div>
@@ -172,16 +178,28 @@
 								{{i.Status}}
 							</div>
 							
-							<div class="col-name cell">
-								{{i.PaymentsText}}
+							<div class="col-name cell payments">
+								<ng-container *ngFor="let ip of i.Payments">
+									<span>{{ip.AmountText}}</span>
+								</ng-container>
 							</div>
 
-							<div class="col-code cell">
-								{{i.PaymentName}}
+							<div class="col-code cell payments">
+								<ng-container *ngFor="let ip of i.Payments">
+									<span>{{ip.TypeText}} {{ip.SubType ? ' | ' + ip.SubType : ''}} {{ip.IsRefundTransaction ? ' | Refund' : ''}}</span>
+								</ng-container>
 							</div>
 
-							<div class="col-name cell">
-								{{i.CreatedBy}}
+							<div class="col-code cell payments">
+								<ng-container *ngFor="let ip of i.Payments">
+									<span>{{ip.PaymentStatus}}</span>
+								</ng-container>
+							</div>
+
+							<div class="col-name cell payments">
+								<ng-container *ngFor="let ip of i.Payments">
+									<span>{{ip.PaymentBy}}</span>
+								</ng-container>
 							</div>
 
 							<div class="col-name cell">

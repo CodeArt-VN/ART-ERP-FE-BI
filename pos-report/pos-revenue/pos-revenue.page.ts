@@ -127,13 +127,13 @@ export class PosRevenuePage extends PageBase {
     }
 
     buildRenenueData() {
+        this.revenueData = [];
         Object.assign(this.revenueData, this.items);
 
         if (this.revenueData.length) {
             this.revenueChartData = [];
 
             let tempIDItemGroupList = [...new Set(this.revenueData.map(r => r.IDItemGroup))];
-
             if (tempIDItemGroupList.length) {
                 for (let index = 0; index < tempIDItemGroupList.length; index++) {
                     let Id = tempIDItemGroupList[index];
@@ -153,7 +153,7 @@ export class PosRevenuePage extends PageBase {
                         };
                     }
                     else {
-                        tempChild = tempList.map(i => ({ name: i.Name, value: i.TotalRevenue, percent: ((i.TotalRevenue / this.summaryInfo.TotalRevenue) * 100).toFixed(2)  }));
+                        tempChild = tempList.map(i => ({ name: i.ItemGroup, value: i.TotalRevenue, percent: ((i.TotalRevenue / this.summaryInfo.TotalRevenue) * 100).toFixed(2)  }));
 
                         tempParentObject = {
                             name: tempList[0].ItemGroup, 

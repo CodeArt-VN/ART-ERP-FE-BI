@@ -121,8 +121,6 @@ export class POSReceiptReportPage extends PageBase {
             this.env.getType('PaymentType')
         ]).then((results:any) => {
             this.paymentList = results[0];
-
-            this.buildPieChartsData();
             super.preLoadData(event);
         });
     }
@@ -172,12 +170,14 @@ export class POSReceiptReportPage extends PageBase {
 
                 this.items.forEach(i => {
                     i.CreatedOnText = lib.dateFormat((i.Date || i.CreatedOn), 'yyyy/mm/dd');
-                    i.PaymentName = (this.paymentList.find(p => p.Code == i.PaymentType)?.Name || 'Còn nợ');
-                    i.PaymentsText = lib.currencyFormat(i.Payments);
+                    i.Payments.forEach(ip => {
+                        ip.TypeText = (this.paymentList.find(p => p.Code == ip.Type)?.Name || 'Còn nợ');
+                        ip.AmountText = lib.currencyFormat(ip.Amount);
+                    });
                     i.TotalPriceText = lib.currencyFormat(i.TotalPrice);
                 });
             }
-
+            this.buildPieChartsData();
             super.loadedData(event); 
         });
     }
@@ -327,13 +327,13 @@ export class POSReceiptReportPage extends PageBase {
 
     buildPaymentData() {
         if (this.PaymentData) {
-            this.PaymentChartData = this.PaymentData.map(i => ({ value: i.TotalQuantity, name: i.PaymentName }));
+            this.PaymentChartData = this.PaymentData.map(i => ({ value: i.TotalQuantity, name: i.PaymentName + ( i.SubType ? ' | ' + i.SubType : '' )}));
         }
     }
 
     buildPaymentAmountData() {
         if (this.PaymentAmountData) {
-            this.PaymentAmountChartData = this.PaymentAmountData.map(i => ({ value: i.TotalReceive, name: i.PaymentName }));
+            this.PaymentAmountChartData = this.PaymentAmountData.map(i => ({ value: i.TotalReceive, name: i.PaymentName + ( i.SubType ? ' | ' + i.SubType : '' )}));
         }
     }
 

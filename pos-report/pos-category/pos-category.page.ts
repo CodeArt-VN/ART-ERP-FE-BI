@@ -21,6 +21,7 @@ export class PosCategoryPage extends PageBase {
     reportQuery: any = {};
 
     categoryResults = [];
+    sumCategoryResults = [];
 
     categoryData = [];
     categoryLabel = [];
@@ -52,35 +53,64 @@ export class PosCategoryPage extends PageBase {
         this.segmentView = ev.detail.value;
     }
 
-    async saveChange() {
-        super.saveChange2();
-    }
-
     loadedData(event?: any): void {
-
+        let groupby
+        // this.segmentView = report;
+        if (this.rpt.rptGlobal.query.frequency == 0) {
+            groupby = "Hour"
+        } 
+        if (this.rpt.rptGlobal.query.frequency == 1) {
+            groupby = "Day"
+        } 
+        else if (this.rpt.rptGlobal.query.frequency == 2) {
+            groupby = "Month"
+        }
+        else if (this.rpt.rptGlobal.query.frequency == 3) {
+            groupby = "Quarter"
+        }
+        else if (this.rpt.rptGlobal.query.frequency == 4) {
+            groupby = "Year"
+        }
+        
         this.reportQuery = {
             fromDate: this.rpt.rptGlobal.query.fromDate,
             toDate: this.rpt.rptGlobal.query.toDate,
             IDBranch: this.env.selectedBranchAndChildren,
-            // GroupBy: ''
+            GroupBy: groupby,
+            isCalcReceiptPayment: true
         }; 
 
-        let apiPath = {
-            method: "GET",
-            url: function () { return ApiSetting.apiDomain("POS/Report/Category") }
-        };
-
         Promise.all([
-            this.commonService.connect(apiPath.method, apiPath.url(), this.reportQuery).toPromise()
+            this.commonService.connect('GET', 'POS/Report/Category', this.reportQuery).toPromise()
         ]).then(values => { 
-            this.items = values[0];
-
+            this.items = values[0]['Sum'];
+            this.categoryResults = values[0]['Data'];
             this.items.sort((a,b) => b.OrderedAmount - a.OrderedAmount);
             this.items = [...this.items];
 
             this.items.forEach(i => {
-                i.TotalRevenue = Math.round(i.TotalRevenue);
+                i.TotalBeforeDiscount = Math.round(i.TotalBeforeDiscount);
+                i.Day = new Date(i.Date).getDate();
+                i.Month = new Date(i.Date).getMonth() + 1;
+                // i.Quarter = new Date(i.Date).getMonth() + 1;
+                i.DateText = lib.dateFormat((i.Date), 'yyyy/mm/dd');
+                i.Year = new Date(i.Date).getFullYear();
+                i.BeverageText = lib.currencyFormat(i.Beverage);
+                i.FoodText = lib.currencyFormat(i.Food);
+                i.SumTotalDiscountText = lib.currencyFormat(i.SumTotalDiscount);
+                i.SumTotalAfterDiscountText = lib.currencyFormat(i.SumTotalAfterDiscount);
+                i.SumTotalSVCText = lib.currencyFormat(i.SumTotalSVC);
             });
+
+            this.categoryResults.forEach(i => {
+                i.TotalBeforeDiscount = Math.round(i.TotalBeforeDiscount);
+                i.Day = new Date(i.Date).getDate();
+                i.Month = new Date(i.Date).getMonth() + 1;
+                // i.Quarter = new Date(i.Date).getMonth() + 1;
+                i.Year = new Date(i.Date).getFullYear();
+            });
+
+            Object.assign(this.sumCategoryResults, this.items);
 
             this.buildCategoryData();
             
@@ -90,16 +120,45 @@ export class PosCategoryPage extends PageBase {
 
     buildCategoryData() {
         this.categoryData = [];
-        Object.assign(this.categoryResults, this.items);
 
         if (this.categoryResults.length) {
 
-            this.categoryResults.sort((a,b) => a.TotalRevenue - b.TotalRevenue);
+            const ItemGroupList = [...new Map(this.categoryResults.map((item: any) => [item['ItemGroup'], item.ItemGroup])).values()];
+            for (let index = 0; index < ItemGroupList.length; index++) {
+                let group = ItemGroupList[index];
+                let tempGroupData = this.categoryResults.filter(d => d.ItemGroup == group );
+                var dataStackedChart = []
+                this.rpt.timeGroups.forEach(e => {
+                    if (this.rpt.rptGlobal.query.frequency == 0){
+                        let Data = tempGroupData.filter(f => f.GroupBy == e.Hour)[0]?.TotalBeforeDiscount;
+                        dataStackedChart.push(Data);
+                    }
+                    else if (this.rpt.rptGlobal.query.frequency == 1) {
+                        let Data = tempGroupData.filter(f => f.GroupBy == e.Day && f.Month == e.Month && f.Year == e.Year)[0]?.TotalBeforeDiscount;
+                        dataStackedChart.push(Data);
+                    }
+                    else if (this.rpt.rptGlobal.query.frequency == 2) {
+                        let Data = tempGroupData.filter(f => f.GroupBy == e.Month && f.Year == e.Year)[0]?.TotalBeforeDiscount;
+                        dataStackedChart.push(Data);
+                    }
+                    else if (this.rpt.rptGlobal.query.frequency == 3) {
+                        let Data = tempGroupData.filter(f => f.GroupBy == e.Quarter && f.Year == e.Year)[0]?.TotalBeforeDiscount;
+                        dataStackedChart.push(Data);
+                    }
+                    else if (this.rpt.rptGlobal.query.frequency == 4) {
+                        let Data = tempGroupData.filter(f => f.GroupBy == e.Year)[0]?.TotalBeforeDiscount;
+                        dataStackedChart.push(Data);
+                    }
+                });
 
-            this.categoryLabel = this.categoryResults.map(i => i.ItemGroup );
-            let tempRevenueData = this.categoryResults.map(i => i.TotalRevenue );
-
-            this.categoryData = [{name: 'Revenue', data: tempRevenueData}]
+                this.categoryData.push(
+                    {
+                        name: group,
+                        data: dataStackedChart
+                    }
+                );
+            }
+            this.categoryLabel = this.rpt.timeGroups.map(m => m.Label);
         }
     }
     

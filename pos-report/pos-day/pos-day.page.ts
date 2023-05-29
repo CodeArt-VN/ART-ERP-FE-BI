@@ -290,13 +290,13 @@ export class PosDayPage extends PageBase {
 
     buildPaymentData() {
         if (this.PaymentData) {
-            this.PaymentChartData = this.PaymentData.map(i => ({ value: i.TotalQuantity, name: i.PaymentName }));
+            this.PaymentChartData = this.PaymentData.map(i => ({ value: i.TotalQuantity, name: i.PaymentName + ( i.SubType ? ' | ' + i.SubType : '' )}));
         }
     }
 
     buildPaymentAmountData() {
         if (this.PaymentAmountData) {
-            this.PaymentAmountChartData = this.PaymentAmountData.map(i => ({ value: i.TotalReceive, name: i.PaymentName }));
+            this.PaymentAmountChartData = this.PaymentAmountData.map(i => ({ value: i.TotalReceive, name: i.PaymentName + ( i.SubType ? ' | ' + i.SubType : '' )}));
         }
     }
 

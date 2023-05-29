@@ -11,3 +11,13 @@ section.table {
     width: 250px;
     max-width: 250px;
 }
+
+.payments {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    span {
+        padding: 8px 0;
+    }
+}

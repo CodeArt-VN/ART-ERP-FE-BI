@@ -16,6 +16,7 @@ import { CommonService } from 'src/app/services/core/common.service';
 export class SaleSalemanPage extends PageBase {
     today = '';
     reportQuery: any = {};
+    paymentList = [];
 
     printData = {
         printDate: null,
@@ -56,6 +57,15 @@ export class SaleSalemanPage extends PageBase {
     ngOnDestroy() {
         this.pageConfig?.subscribeReport?.unsubscribe();
         super.ngOnDestroy();
+    }
+
+    preLoadData(event?: any): void {
+        Promise.all([
+            this.env.getType('PaymentType')
+        ]).then((results:any) => {
+            this.paymentList = results[0];
+            super.preLoadData(event);
+        });
     }
 
     loadData(event) {
@@ -155,12 +165,12 @@ export class SaleSalemanPage extends PageBase {
 		this.items = resp['Data'];
 		let result = resp['Data'][0];
 
-		this.ReportResult.Vietcombank = resp['PaymentAmounts'].filter(x => x.SubType == 'VCB').map(x => x.TotalReceive).reduce((a, b) => (+a) + (+b), 0);
-		this.ReportResult.MBBank = resp['PaymentAmounts'].filter(x => x.SubType == 'MB').map(x => x.TotalReceive).reduce((a, b) => (+a) + (+b), 0);
+        this.ReportResult.PaymentResults =  resp['PaymentAmounts'];
 
-		this.ReportResult.Cash = resp['PaymentAmounts'].filter(x => x.PaymentType == 'Cash').map(x => x.TotalReceive).reduce((a, b) => (+a) + (+b), 0);
-		this.ReportResult.Card = resp['PaymentAmounts'].filter(x => x.PaymentType == 'Card').map(x => x.TotalReceive).reduce((a, b) => (+a) + (+b), 0);
-		this.ReportResult.Transfer = resp['PaymentAmounts'].filter(x => x.PaymentType == 'Transfer').map(x => x.TotalReceive).reduce((a, b) => (+a) + (+b), 0);
+        this.ReportResult.PaymentResults.forEach(i => {
+            i.TypeText = (this.paymentList.find(p => p.Code == i.PaymentType)?.Name || 'Còn nợ');
+            i.TotalReceiveText = lib.currencyFormat(i.TotalReceive);
+        });
 
 		this.ReportResult.StartedAtText =  lib.dateFormat((this.reportQuery.fromDateTime).replace("T", " "), 'dd/mm/yy hh:MM');
 		this.ReportResult.EndedAtText =  lib.dateFormat((this.reportQuery.toDateTime).replace("T", " "), 'dd/mm/yy hh:MM');
