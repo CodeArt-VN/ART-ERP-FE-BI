@@ -50,7 +50,7 @@ export class PosDashboardPage extends PageBase {
         public commonService: CommonService,
     ) {
         super();
-        this.reportBranchList = this.env.branchList.filter(b => b.IDType == '111');
+        this.reportBranchList = this.env.branchList.filter(b => b.Type == 'Company');
     }
 
     loadedData(event?: any): void {

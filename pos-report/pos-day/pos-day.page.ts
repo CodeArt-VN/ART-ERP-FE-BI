@@ -94,7 +94,7 @@ export class PosDayPage extends PageBase {
     ) {
         super();
         this.pageConfig.isDetailPage = true;
-        this.reportBranchList = this.env.branchList.filter(b => b.IDType == '111');
+        this.reportBranchList = this.env.branchList.filter(b => b.Type == 'Company');
     }
 
     segmentView = 's1';

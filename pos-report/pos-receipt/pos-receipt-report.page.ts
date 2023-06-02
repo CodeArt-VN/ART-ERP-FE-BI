@@ -82,7 +82,7 @@ export class POSReceiptReportPage extends PageBase {
         public rpt: ReportService,
     ) {
         super();
-        this.reportBranchList = this.env.branchList.filter(b => b.IDType == '111');
+        this.reportBranchList = this.env.branchList.filter(b => b.Type == 'Company');
     }
     changeDateFilter(type) {
         this.rpt.dateQuery(type).then(_ => {

@@ -62,7 +62,7 @@ export class FinanceDailyReportPage extends PageBase {
             "IsHidden": false,
             "IsHiddenDetailColumn": true,
         }
-        this.reportBranchList = this.env.branchList.filter(b => b.IDType == '111');
+        this.reportBranchList = this.env.branchList.filter(b => b.Type == 'Company');
         for (let index = 0; index < this.reportBranchList.length; index++) {
             let val = this.reportBranchList[index];
             Object.assign(val, template);
