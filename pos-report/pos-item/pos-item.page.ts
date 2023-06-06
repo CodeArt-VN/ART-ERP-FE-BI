@@ -137,6 +137,13 @@ export class PosItemPage extends PageBase {
         });
     }
 
+    exportProductReport() {
+        this.commonService.connect("GET", "POS/Report/ExportProductReport/", this.reportQuery).toPromise().then((response: any) => {
+            this.downloadURLContent(ApiSetting.mainService.base + response);
+        }).catch(err => {
+            console.log(err);
+        });
+    }
 
     buildTopSellingProducts() {
         if (this.topSellingProduct.length) {

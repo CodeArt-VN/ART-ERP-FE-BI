@@ -7,6 +7,10 @@
 		</ion-buttons>
 
 		<ion-buttons slot="end">
+			<ion-button (click)="exportProductReport()" title="Tải xuống">
+				<ion-icon slot="icon-only" name="cloud-download-outline"></ion-icon>
+			</ion-button>
+			
 			<ion-button (click)="refresh()" title="{{'erp.app.pages.bi.dashboard.refresh' | translate}}">
 				<ion-icon slot="icon-only" name="reload-outline"></ion-icon>
 			</ion-button>
