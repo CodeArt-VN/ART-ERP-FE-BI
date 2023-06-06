@@ -33,7 +33,7 @@
 			<div style="height: 320px;" class="chart-contain">
 				<ng-container *ngIf="lostReasonData.length && lostReasonData.length">
 					<app-radar-chart [title]="'Lost Reason'" [data]="lostReasonData" [dataLabel]="lostReasonDataLabel" [type]="'Basic Radar'"></app-radar-chart>
-			  </ng-container>	
+			  	</ng-container>
 			</div>
 		</div>
 
@@ -71,12 +71,10 @@
 					<div class="number">{{pageData.NumberOfEvents}}</div>
 					<div class="title">{{'erp.app.pages.bi.dashboard.numbers-of-events' | translate}}</div>
 				</div>
-				<div class="chart-contain">
-					<!-- <ion-spinner *ngIf="charts.SoLuongTiec.IsLoading" class="chart-loading" name="dots"></ion-spinner> -->
-					<!-- <canvas id="soLuongTiecCanvas" #soLuongTiecCanvas></canvas> TO -->
-					<ng-container *ngIf="items.length">
-						  <app-line-chart [title]="" [data]="SoLuongTiecData" [label]="SoLuongTiecLabel" [type]="'SmoothedLine'"></app-line-chart>
-					</ng-container>					
+				<div class="chart-contain soluongtiec">
+					<ng-container *ngIf="SoLuongTiecLabel.length && SoLuongTiecData.length">
+						<app-line-chart [title]="" [label]="SoLuongTiecLabel" [data]="SoLuongTiecData" [type]="'SmoothedLine'"></app-line-chart>
+					</ng-container>
 				</div>
 
 			</div>
@@ -146,6 +144,7 @@
 		</div> -->
 
 		<div class="row-2">
+			<!-- Thông tin theo ngày -->
 			<div class="title">{{'erp.app.pages.bi.dashboard.day-info' | translate}}</div>
 			<div class="calendar-heatmap-holder">
 
@@ -220,8 +219,8 @@
 			<div style="height: 225px; min-width: 40%; background-color: transparent;" class="chart-box">
 				<div class="title">{{'erp.app.pages.bi.dashboard.total-target' | translate}}</div>
 				<div class="chart-contain">
-					<ng-container *ngIf="items.length">
-						<app-bar-chart [Title]="" [Label]="doanhThuChiTieuChartLabel" [Data]="doanhThuChiTieuChartData" ></app-bar-chart>
+					<ng-container *ngIf="doanhThuChiTieuChartLabel.length && doanhThuChiTieuChartData.length">
+						<app-bar-chart [Title]="" [Label]="doanhThuChiTieuChartLabel" [Data]="doanhThuChiTieuChartData"></app-bar-chart>
 					</ng-container>
 				</div>
 			</div>
@@ -229,12 +228,13 @@
 			<div style="height: 225px; min-width: 40%; background-color: transparent;" class="chart-box">
 				<div class="title">{{'erp.app.pages.bi.dashboard.cost-target' | translate}}</div>
 				<div class="chart-contain">
-					<ng-container *ngIf="items.length">
-						<app-bar-chart [Title]="" [Label]="chiPhiChiTieuChartLabel" [Data]="chiPhiChiTieuChartData" ></app-bar-chart>
+					<ng-container *ngIf="chiPhiChiTieuChartLabel.length && chiPhiChiTieuChartData.length">
+						<app-bar-chart [Title]="" [Label]="chiPhiChiTieuChartLabel" [Data]="chiPhiChiTieuChartData"></app-bar-chart>
 					</ng-container>
 				</div>
 			</div>
 
+			<!-- Tổng hợp tình trạng Inquiry -->
 			<div class="chart-box">
 				<div class="title">{{'erp.app.pages.bi.dashboard.sumup-inquiry-lost' | translate}}</div>
 				<div style="height: 210px;" class="chart-contain">
@@ -244,28 +244,32 @@
 				</div>
 			</div>
 
+			<!-- Doanh thu theo loại KH -->
 			<div class="chart-box">
 				<div class="title">{{'erp.app.pages.bi.dashboard.total-per-customer-type' | translate}}</div>
 				<div class="chart-contain">
-					<ng-container *ngIf="saleByServiceData.length && saleByServiceLabel.length">
+					<ng-container *ngIf="saleByServiceLabel.length && saleByServiceData.length">
 						<app-bar-chart [Title]="" [Label]="saleByServiceLabel" [Data]="saleByServiceData" [Type]="'Horizontal Bar'" ></app-bar-chart>
 					</ng-container>
 				</div>
 			</div>
 
+			<!-- Inquiry theo nguồn thông tin -->
 			<div class="chart-box">
 				<div class="title">{{'erp.app.pages.bi.dashboard.inquiry-by-resource' | translate}}</div>
 				<div class="chart-contain">
-					<ng-container *ngIf="items.length">
+					<ng-container *ngIf="inquiryBySourceLabel.length && inquiryBySourceData.length">
 						<app-bar-chart [Title]="" [Label]="inquiryBySourceLabel" [Data]="inquiryBySourceData" [Type]="'Horizontal Bar'" ></app-bar-chart>
 					</ng-container>
 				</div>
 			</div>
+
+			<!-- Top khách hàng theo doanh thu thuần -->
 			<div style="width: 100%; height: 400px; " class="chart-box">
 				<div class="title">{{'erp.app.pages.bi.dashboard.top-customer' | translate}}</div>
 				<div class="chart-contain">
-					<ng-container *ngIf="items.length">
-						<app-bar-chart [Title]="" [Label]="top10CustomerLabel" [Data]="top10CustomerData" [Type]="'Horizontal Bar'" ></app-bar-chart>
+					<ng-container *ngIf="top10CustomerLabel.length && top10CustomerData.length">
+						<app-bar-chart [Title]="" [Label]="top10CustomerLabel" [Data]="top10CustomerData" [Type]="'Horizontal Bar'" [Style]="top10CustomerStyle" ></app-bar-chart>
 					</ng-container>
 				</div>
 			</div>
@@ -280,7 +284,7 @@
 			<div class="chart-box" style="min-width: 40%; height: 300px;">
 				<div class="title">{{'erp.app.pages.bi.dashboard.pnl' | translate}}</div>
 				<div class="chart-contain">
-					<ng-container *ngIf="items.length">
+					<ng-container *ngIf="PnLLabel.length && PnLData.length">
 						<app-bar-chart [Title]="" [Label]="PnLLabel" [Data]="PnLData" ></app-bar-chart>
 					</ng-container>
 				</div>
@@ -288,7 +292,7 @@
 			<div class="chart-box" style="min-width: 40%; height: 300px;">
 				<div class="title">{{'erp.app.pages.bi.dashboard.cash-flow' | translate}}</div>
 				<div class="chart-contain">
-					<ng-container *ngIf="items.length">
+					<ng-container *ngIf="cashFlowLabel.length && cashFlowData.length">
 						<app-bar-chart [Title]="" [Label]="cashFlowLabel" [Data]="cashFlowData" ></app-bar-chart>
 					</ng-container>
 				</div>

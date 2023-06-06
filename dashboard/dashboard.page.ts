@@ -1,13 +1,13 @@
-import { Component, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ViewChild } from '@angular/core';
 import { ActionSheetController, NavController, Platform } from '@ionic/angular';
 import { EnvService } from 'src/app/services/core/env.service';
 import { PageBase } from 'src/app/page-base';
 import { ReportService } from 'src/app/services/report.service';
 import { lib } from 'src/app/services/static/global-functions';
 
-import { CustomService } from 'src/app/services/custom.service';
-import { Observable } from 'rxjs';
 import { CRM_ContactProvider, SALE_OrderProvider } from 'src/app/services/static/services.service';
+import { CommonService } from 'src/app/services/core/common.service';
+import { CustomService } from 'src/app/services/custom.service';
 
 @Component({
     selector: 'app-dashboard',
@@ -61,28 +61,30 @@ export class DashboardPage extends PageBase {
     cashFlowData = [];
     charts;
 
+    top10CustomerStyle = {
+        width: '100%',
+        'min-height': '400px',
+    };
+
+    reportQuery;
+    reportBranchList = []
+    colorList = ['#84ff00', '#772727', '#00ffae', '#ff4200', '#ffe400', '#2b9a00', '#ff00ae', '#c000ff', '#FF5733', '#5DADE2', '#2874A6', '#922B21']
+
     constructor(
-        private pageService: CustomService,
+        public pageProvider: CustomService,
         public saleOrderProvider: SALE_OrderProvider,
         public contactProvider: CRM_ContactProvider,
         public actionSheetController: ActionSheetController,
         public env: EnvService,
         public navCtrl: NavController,
-        private platform: Platform,
         public rpt: ReportService,
+        public commonService: CommonService,
+        public cdr: ChangeDetectorRef,
     ) {
         super();
-        this.charts = {
-            SoLuongTiec: { IsLoading: true, IsNoData: false, Chart: null },
-            DoanhThuChiTieu: { IsLoading: true, IsNoData: false, Chart: null },
-            ChiPhiChiTieu: { IsLoading: true, IsNoData: false, Chart: null },
-            SaleByService: { IsLoading: true, IsNoData: false, Chart: null },
-            InquiryBySource: { IsLoading: true, IsNoData: false, Chart: null },
-            LostReason: { IsLoading: true, IsNoData: false, Chart: null },
-            Funnel: { IsLoading: true, IsNoData: false, Chart: null },
-            Top10Customer: { IsLoading: true, IsNoData: false, Chart: null },
-            PNL: { IsLoading: true, IsNoData: false, Chart: null },
-            CashFlow: { IsLoading: true, IsNoData: false, Chart: null },
+        this.reportBranchList = this.env.branchList.filter(b => b.IDType == '111');
+        for (let index = 0; index < this.reportBranchList.length; index++) {
+            this.reportBranchList[index].color = this.colorList[index];
         };
 
         this.pageConfig.subscribeEvent = this.env.getEvents().subscribe((data) => {
@@ -94,16 +96,17 @@ export class DashboardPage extends PageBase {
             }
         });
 
-        this.rpt.rptGlobal.query.frequency = 2;
-        this.changeDateFilter('m');
+        this.rpt.rptGlobal.query.frequency = 1;
+        this.changeDateFilter('dw');
         this.changeBranchBtn();
     }
 
     loadedData(event = null) {
+        // super.loadedData(event);
         this.query.OrderDateFrom = this.rpt.rptGlobal.query.fromDate;
         this.query.OrderDateTo = this.rpt.rptGlobal.query.toDate + ' 23:59:59';
         this.query.IDBranch = this.rpt.rptGlobal.query.branch;
-        this.query.Take = 5000;
+
         this.ListOfDateRange = [];
 
         let beginDate = new Date(this.rpt.rptGlobal.query.fromDate);
@@ -116,12 +119,14 @@ export class DashboardPage extends PageBase {
             rundate.setDate(rundate.getDate() + 1);
         };
 
-
         Promise.all([
-            this.saleOrderProvider.read(this.query)
+            // this.saleOrderProvider.read(this.query),
+            this.commonService.connect("GET", "BI/Report/Dashboard", this.query).toPromise()
         ]).then(values => {
-            this.ListOfAllEvents = values[0]['data'];
-            this.items=this.ListOfAllEvents
+            // this.ListOfAllEvents = values[0]['data'];
+            this.ListOfAllEvents = values[0];
+            console.log(this.ListOfAllEvents);
+            this.items = this.ListOfAllEvents;
             this.numberOfEvents = this.ListOfAllEvents.length;
 
             const uniqueDate = [...new Set(this.ListOfAllEvents.map(item => lib.dateFormat(item.OrderDate, 'yyyy-mm-dd')))];
@@ -159,7 +164,6 @@ export class DashboardPage extends PageBase {
                         this.numberOfWeekdayEvents = 0;
                         this.numberOfOccupancyRate = 0;
                     }
-                    super.loadedData(event);
                     this.updateChart();
                 };
                 counter++;
@@ -183,8 +187,6 @@ export class DashboardPage extends PageBase {
                 this.charts.CashFlow.IsLoading = false;
 
                 this.env.showTranslateMessage('Không có dữ liệu trong khoảng thời gian được chọn!','warning')
-
-                super.loadedData(event);
             }
             
         });
@@ -212,6 +214,11 @@ export class DashboardPage extends PageBase {
 
 
     refresh() {
+        this.clearAllChartData();
+        this.preLoadData(null);
+    }
+
+    clearAllChartData() {
         this.lostReasonDataLabel = [];
         this.lostReasonData = [];
     
@@ -241,9 +248,6 @@ export class DashboardPage extends PageBase {
         
         this.cashFlowLabel = [];
         this.cashFlowData = [];
-
-
-        this.preLoadData(null);
     }
 
     getDatesInRange(startDate, endDate) {
@@ -260,17 +264,6 @@ export class DashboardPage extends PageBase {
     }
 
     changeDateFilter(type) {
-        this.charts.SoLuongTiec.IsLoading = true;
-        this.charts.DoanhThuChiTieu.IsLoading = true;
-        this.charts.ChiPhiChiTieu.IsLoading = true;
-        this.charts.SaleByService.IsLoading = true;
-        this.charts.InquiryBySource.IsLoading = true;
-        this.charts.LostReason.IsLoading = true;  
-        this.charts.Funnel.IsLoading = true;  
-        this.charts.Top10Customer.IsLoading = true;
-        this.charts.PNL.IsLoading = true;  
-        this.charts.CashFlow.IsLoading = true;
-
         this.rpt.dateQuery(type).then(_ => {
             this.preLoadData(null);
         }).catch(err => { let a = err });
@@ -288,39 +281,20 @@ export class DashboardPage extends PageBase {
     }
 
     updateChart() {
-        for (var key in this.charts) {
-            let c = this.charts[key].Chart;
-            c?.destroy();
-        }
-
+        this.clearAllChartData();
+        this.cdr.detectChanges();
         this.buildCharts();
     }
 
     toogleBranchDataset(b) {
-        b.IsHidden = !b.IsHidden;
-        for (var key in this.charts) {
-            let c = this.charts[key].Chart;
-
-            c?.data.datasets.forEach(function (ds) {
-                if (ds.IDBranch == b.Id) {
-                    ds.hidden = b.IsHidden;
-                }
-            });
-            c?.update();
-        }
-        this.buildTopSum();
-        this.buildCalendarHeatmapChart();
+        b.IsHidden =! b.IsHidden;
+        this.updateChart();
     }
 
     buildCharts() {
-       
         this.buildTopSum();
-        // this.buildSoLuongTiecChart(this.soLuongTiecCanvas).subscribe(c => {
-        //     this.charts.SoLuongTiec.Chart = c;
-        //     this.charts.SoLuongTiec.IsLoading = false;
-        // });
-        this.buildSoLuongTiecChart();
         this.buildCalendarHeatmapChart();
+        this.buildSoLuongTiecChart();
         this.buildSumUpInquiryLostChart();
         this.buildDoanhThuChiTieuChart();
         this.buildChiPhiChiTieuChart();
@@ -341,14 +315,14 @@ export class DashboardPage extends PageBase {
         this.pageData.NumberOfGuests = 0;
         this.pageData.DoanhThu = 0;
         this.ListOfAllEvents;
-        let datasets = this.rpt.buildDataset();
+        let datasets = this.buildDataset();
         let sumAll = 0;
         let sumAllDoanhThu = 0;
         let sumAllGuest = 0;
         for (let i = 0; i < datasets.length; i++) {
             let ds = datasets[i];
 
-            ds.Data = this.ListOfAllEvents.filter(branch => branch.IDBranch == ds.IDBranch);
+            ds.Data = this.ListOfAllEvents.filter(branch => branch.IDBranch == ds.IDBranch && !ds.IsHidden);
             if (!ds.hidden && ds.IDBranch != 0) {
                 this.pageData.DoanhThu += ds.Data.map(m => m.TotalAfterTax).reduce((a, b) => a + b, 0);
                 if (this.env.selectedBranch == 16) {
@@ -376,31 +350,29 @@ export class DashboardPage extends PageBase {
         this.pageData.NumberOfGuests = Math.round(this.pageData.NumberOfGuests / 1000);
     }
 
-    buildSoLuongTiecChart(){
-            let dataLineCharts = [];            
-            let tmp = {Data:[]}
-            for (let i = 0; i < this.rpt.rptGlobal.branch.length; i++) {
-                let data=[];
-                const b = this.rpt.rptGlobal.branch[i];
-                tmp.Data = this.ListOfAllEvents.filter(branch => branch.IDBranch == b.Id&&!b.IsHidden);               
-                
-                if (tmp.Data.length){
-                    tmp.Data.forEach(e => {
-                        e.Date = lib.dateFormat(e.OrderDate, 'yyyy-mm-dd');                       
-                        data = this.calcSumGroupData(tmp, 'OrderQuantity');
-                    });
-                    let dataLinechart = {
-                        name:b.Name,
-                        data:data
-                    }
-                    dataLineCharts.push(dataLinechart);
-                }              
-                
-            }           
-
-            this.SoLuongTiecLabel = this.rpt.timeGroups.map(m => m.Label);
-            this.SoLuongTiecData = dataLineCharts
-
+    buildSoLuongTiecChart() {
+        let dataLineCharts = [];
+        let tmp = {Data: []};
+        for (let i = 0; i < this.reportBranchList.length; i++) {
+            let data = [];
+            const b = this.reportBranchList[i];
+            tmp.Data = this.ListOfAllEvents.filter(branch => branch.IDBranch == b.Id && !b.IsHidden);               
+            
+            if (tmp.Data.length) {
+                tmp.Data.forEach(e => {
+                    e.Date = lib.dateFormat(e.OrderDate, 'yyyy-mm-dd');                       
+                    data = this.calcSumGroupData(tmp, 'OrderQuantity');
+                });
+                let dataLinechart = {
+                    name: b.Name,
+                    data: data,
+                    color: b.Color
+                };
+                dataLineCharts.push(dataLinechart);
+            }
+        }
+        this.SoLuongTiecLabel = this.rpt.timeGroups.map(m => m.Label);
+        this.SoLuongTiecData = dataLineCharts;
     }
 
     calcSumGroupData(ds, sumby) {
@@ -456,11 +428,11 @@ export class DashboardPage extends PageBase {
 
     buildDoanhThuChiTieuChart() {
         let dataBarCharts = [];
-        let tmp ={Data:[]}
-        for (let i = 0; i < this.rpt.rptGlobal.branch.length; i++) {
-            let data=[]
-            const b = this.rpt.rptGlobal.branch[i];
-            tmp.Data =this.items.filter(branch => branch.IDBranch == b.Id&&!b.IsHidden);
+        let tmp = { Data: [] };
+        for (let i = 0; i < this.reportBranchList.length; i++) {
+            let data = [];
+            const b = this.reportBranchList[i];
+            tmp.Data = this.ListOfAllEvents.filter(branch => branch.IDBranch == b.Id && !b.IsHidden);
 
             if (tmp.Data.length) {
                 tmp.Data.forEach(e => {
@@ -468,66 +440,63 @@ export class DashboardPage extends PageBase {
                     data = this.calcSumGroupData(tmp, 'TotalAfterTax');
                 });
                 let dataBarChart = {
-                    name:b.Name + ' - Doanh thu',
-                    data:data
-                }
+                    name: b.Name + ' - Doanh thu',
+                    data: data,
+                    color: b.Color
+                };
                 dataBarCharts.push(dataBarChart);
             }
-           
         }
-
         this.doanhThuChiTieuChartLabel = this.rpt.timeGroups.map(m => m.Label);
         this.doanhThuChiTieuChartData = dataBarCharts;
     }
 
     buildChiPhiChiTieuChart() {
         let dataBarCharts = [];
-        let tmp ={Data:[]}
-        for (let i = 0; i < this.rpt.rptGlobal.branch.length; i++) {
-            let data=[]
-            const b = this.rpt.rptGlobal.branch[i];
-             tmp.Data =this.items.filter(branch => branch.IDBranch == b.Id&&!b.IsHidden);
-           
-            if (tmp.Data.length){
+        let tmp = { Data: [] };
+
+        for (let i = 0; i < this.reportBranchList.length; i++) {
+            let data = [];
+            const b = this.reportBranchList[i];
+            tmp.Data = this.ListOfAllEvents.filter(branch => branch.IDBranch == b.Id && !b.IsHidden);
+
+            if (tmp.Data.length) {
                 tmp.Data.forEach(e => {
                     e.Date = lib.dateFormat(e.OrderDate, 'yyyy-mm-dd');                   
                     data = this.calcSumGroupData(tmp, 'TotalAfterTax');
                 });
-                
                 let dataBarChart = {
-                    name:b.Name + ' - Chi phí',
-                    data:data
-                }
+                    name: b.Name + ' - Chi phí',
+                    data: data,
+                    color: b.Color
+                };
                 dataBarCharts.push(dataBarChart);
             }
         }
-        this.chiPhiChiTieuChartLabel =this.rpt.timeGroups.map(m => m.Label);
-        this.chiPhiChiTieuChartData=dataBarCharts
+        this.chiPhiChiTieuChartLabel = this.rpt.timeGroups.map(m => m.Label);
+        this.chiPhiChiTieuChartData = dataBarCharts;
     }
 
     buildInquiryBySourceChart() {
         let dataBarCharts = [];
-        let tmp ={Data:[]}
-        for (let i = 0; i < this.rpt.rptGlobal.branch.length; i++) {
-            let data=[]
-            const b = this.rpt.rptGlobal.branch[i];
-             tmp.Data =this.items.filter(branch => branch.IDBranch == b.Id&&!b.IsHidden);
-           
-            
+        let tmp = { Data: [] };
+        for (let i = 0; i < this.reportBranchList.length; i++) {
+            let data = [];
+            const b = this.reportBranchList[i];
+            tmp.Data = this.ListOfAllEvents.filter(branch => branch.IDBranch == b.Id && !b.IsHidden);
+
             if (tmp.Data.length){
                 tmp.Data.forEach(e => {
                     e.Date = lib.dateFormat(e.OrderDate, 'yyyy-mm-dd');                   
                     data = [this.rpt.randomScalingFactor(), this.rpt.randomScalingFactor(), this.rpt.randomScalingFactor()]
                 });
-                
                 let dataBarChart = {
-                    name:b.Name ,
-                    data:data
+                    name: b.Name ,
+                    data: data,
+                    color: b.Color
                 }
                 dataBarCharts.push(dataBarChart);
             }
-           
-            
         }
         this.inquiryBySourceLabel =['Marketing', 'Sale Call', 'Walk-in'];
       
@@ -536,29 +505,28 @@ export class DashboardPage extends PageBase {
 
     buildSaleByServiceChart() {
         let dataBarCharts = [];
-        let tmp ={Data:[]}
-        for (let i = 0; i < this.rpt.rptGlobal.branch.length; i++) {
-            let data=[]
-            const b = this.rpt.rptGlobal.branch[i];
-             tmp.Data =this.items.filter(branch => branch.IDBranch == b.Id&&!b.IsHidden);
-           
-            
+        let tmp = { Data: [] };
+        for (let i = 0; i < this.reportBranchList.length; i++) {
+            let data = [];
+            const b = this.reportBranchList[i];
+            tmp.Data = this.ListOfAllEvents.filter(branch => branch.IDBranch == b.Id && !b.IsHidden);
+
             if (tmp.Data.length){
                 tmp.Data.forEach(e => {
                     e.Date = lib.dateFormat(e.OrderDate, 'yyyy-mm-dd');                   
-                    data = [this.calcSumGroupData(tmp, 'Corporate').reduce((a, b) => a + b, 0),this.calcSumGroupData(tmp, 'Personal').reduce((a, b) => a + b, 0)];
+                    data = [this.calcSumGroupData(tmp, 'Corporate').reduce((a, b) => a + b, null),this.calcSumGroupData(tmp, 'Personal').reduce((a, b) => a + b, null)];
                 });
                 
                 let dataBarChart = {
-                    name:b.Name ,
-                    data:data
+                    name: b.Name,
+                    data: data,
+                    color: b.Color
                 }
                 dataBarCharts.push(dataBarChart);
             }
         }
-
         this.saleByServiceLabel = ['CORP', 'PERS'];
-        this.saleByServiceData=dataBarCharts;
+        this.saleByServiceData = dataBarCharts;
     }
 
     buildLostReasonChart() {
@@ -573,10 +541,10 @@ export class DashboardPage extends PageBase {
 
         let dataRadarCharts = [];
         let tmp ={Data:[]}
-        for (let i = 0; i < this.rpt.rptGlobal.branch.length; i++) {
+        for (let i = 0; i < this.reportBranchList.length; i++) {
             let value=[]
-            const b = this.rpt.rptGlobal.branch[i];
-            tmp.Data = this.items.filter(branch => branch.IDBranch == b.Id && !b.IsHidden);
+            const b = this.reportBranchList[i];
+            tmp.Data = this.ListOfAllEvents.filter(branch => branch.IDBranch == b.Id && !b.IsHidden);
              
               
             if (tmp.Data.length){
@@ -592,7 +560,8 @@ export class DashboardPage extends PageBase {
                 });
                  let dataRadarChart = {
                     name: b.Name,
-                    value: value
+                    value: value,
+                    color: b.Color
                 }
                 dataRadarCharts.push(dataRadarChart);
             }
@@ -650,6 +619,7 @@ export class DashboardPage extends PageBase {
             const customer = ListTopCustomer[index];
 
             TopCustomerEvents = this.ListOfAllEvents.filter(branch => branch.IDContact == customer.Id);
+            debugger
 
             for (let tce = 0; tce < TopCustomerEvents.length; tce++) {
                 const ele = TopCustomerEvents[tce];
@@ -657,10 +627,10 @@ export class DashboardPage extends PageBase {
                 let value = IDContactHolder.find(d => d.Id == ele.IDContact);
                 if (!value) {
                     IDContactHolder.push({Id: ele.IDContact});
-                    const index = this.rpt.rptGlobal.branch.map(m => m.Id).indexOf(ele.IDBranch, 0);
+                    const index = this.reportBranchList.map(m => m.Id).indexOf(ele.IDBranch, 0);
                     indexForListData.push(index);
 
-                    let datasets = this.rpt.buildDataset();
+                    let datasets = this.buildDataset();
                     for (let i = 0; i < datasets.length; i++) {
                         const ds = datasets[i];
                         ds.Data = TopCustomerEvents.filter(eve => eve.IDBranch == ds.IDBranch);
@@ -688,7 +658,7 @@ export class DashboardPage extends PageBase {
                     }
                 }
             }
-            ListTopCustomerName.push(TopCustomerEvents[0].CustomerName);
+            ListTopCustomerName.push(TopCustomerEvents[0]._Customer.Name);
         }
         let a = 0;
         let targetArray;
@@ -699,8 +669,8 @@ export class DashboardPage extends PageBase {
                 targetArray;
             }
             else {
-                let arrayTemplate = targetArray ? targetArray : tempListHold.slice(0,this.rpt.rptGlobal.branch.length);
-                let newArray = tempListHold.slice(a,a+this.rpt.rptGlobal.branch.length);
+                let arrayTemplate = targetArray ? targetArray : tempListHold.slice(0,this.reportBranchList.length);
+                let newArray = tempListHold.slice(a,a+this.reportBranchList.length);
                 let arrayTemplate2 = arrayTemplate[element];
                 let newArray2 = newArray[element];
                 var sum;
@@ -712,24 +682,25 @@ export class DashboardPage extends PageBase {
                 }
                 arrayTemplate[element] = sum;
                 targetArray = arrayTemplate;
-                a = a + this.rpt.rptGlobal.branch.length;
+                a = a + this.reportBranchList.length;
             }
         }
-        for (let m = 0; m < this.rpt.rptGlobal.branch.length; m++) {
+        for (let m = 0; m < this.reportBranchList.length; m++) {
            
                 let dataBarChart = {
-                    name:this.rpt.rptGlobal.branch[m].Name,
-                    data:targetArray[m],
+                    name: this.reportBranchList[m].Name,
+                    data: targetArray[m],
+                    color: this.reportBranchList[m].Color
                 }
                 dataBarCharts.push(dataBarChart);
         };
-        this.top10CustomerLabel=ListTopCustomerName;
+        this.top10CustomerLabel = ListTopCustomerName;
         this.top10CustomerData = dataBarCharts;
     }
 
     buildCalendarHeatmapChart() {
         let data: any = {};
-        let datasets = this.rpt.buildDataset();
+        let datasets = this.buildDataset();
 
         this.calendarHeatmapData = {};
 
@@ -801,8 +772,8 @@ export class DashboardPage extends PageBase {
             for (let i = 0; i < datasets.length; i++) {
                 const ds = datasets[i];
 
-                datasets[i].Data = this.ListOfAllEvents.filter(branch => branch.IDBranch == ds.IDBranch);
-                ds.Data = this.ListOfAllEvents.filter(branch => branch.IDBranch == ds.IDBranch);
+                datasets[i].Data = this.ListOfAllEvents.filter(branch => branch.IDBranch == ds.IDBranch && !ds.IsHidden);
+                ds.Data = this.ListOfAllEvents.filter(branch => branch.IDBranch == ds.IDBranch && !ds.IsHidden);
 
                 let rdate = new Date(beginDate);
                 while (rdate <= endDate) {
@@ -857,6 +828,7 @@ export class DashboardPage extends PageBase {
                     opacity = '0';
                 }
 
+                this.colorList;
                 let dx = { name: ds._b.Name, value: d.Order, percent: percent, opacity: opacity, total: d.Total, color: ds._b.Color};
                 ds.data[j] = dx;
             }
@@ -1087,6 +1059,26 @@ export class DashboardPage extends PageBase {
             data: data.datasets[0].data,
         }
         dataBarChart.push(d);
-        this.cashFlowData=dataBarChart
+        this.cashFlowData = dataBarChart;
+    }
+
+    buildDataset() {
+        let datasets = [];
+        for (let i = 0; i < this.reportBranchList.length; i++) {
+            const b = this.reportBranchList[i];
+            let dataset = {
+                _b: b,
+                hidden: b.IsHidden,
+                label: b.Name,
+                borderColor: lib.colorLightenDarken((b.Color || ''), 30),
+                hoverBackgroundColor: ()=>lib.getCssVariableValue('--ion-color-primary') + 'e6',
+                color: b.Color,
+                IDBranch: b.Id,
+                Data: [], //raw data
+                data: [] //calc data
+            };
+            datasets.push(dataset);
+        }
+        return datasets;
     }
 }
