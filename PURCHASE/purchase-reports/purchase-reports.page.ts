@@ -25,7 +25,7 @@ export class PurchaseReportsPage extends PageBase {
         toDate: '',
         buyer: null,
         vendor: null,
-        isCalcShippedOnly: true,
+        isCalcShippedOnly: false,
     }
 
     constructor(
