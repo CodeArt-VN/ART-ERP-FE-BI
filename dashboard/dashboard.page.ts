@@ -619,7 +619,6 @@ export class DashboardPage extends PageBase {
             const customer = ListTopCustomer[index];
 
             TopCustomerEvents = this.ListOfAllEvents.filter(branch => branch.IDContact == customer.Id);
-            debugger
 
             for (let tce = 0; tce < TopCustomerEvents.length; tce++) {
                 const ele = TopCustomerEvents[tce];
@@ -690,7 +689,7 @@ export class DashboardPage extends PageBase {
                 let dataBarChart = {
                     name: this.reportBranchList[m].Name,
                     data: targetArray[m],
-                    color: this.reportBranchList[m].Color
+                    color: this.reportBranchList[m].Color,
                 }
                 dataBarCharts.push(dataBarChart);
         };
