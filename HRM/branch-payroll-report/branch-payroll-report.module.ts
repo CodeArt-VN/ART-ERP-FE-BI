@@ -5,7 +5,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BranchPayrollReportPage } from './branch-payroll-report.page';
 import { ShareModule } from 'src/app/share.module';
-import { NgSelectModule } from '@ng-select/ng-select';
 
 @NgModule({
   imports: [
@@ -13,7 +12,6 @@ import { NgSelectModule } from '@ng-select/ng-select';
     CommonModule,
     FormsModule,
     ShareModule,
-    NgSelectModule,
     RouterModule.forChild([{ path: '', component: BranchPayrollReportPage }])
   ],
   declarations: [BranchPayrollReportPage]

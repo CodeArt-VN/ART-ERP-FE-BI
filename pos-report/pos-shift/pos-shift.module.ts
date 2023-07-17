@@ -7,13 +7,11 @@ import { ShareModule } from 'src/app/share.module';
 // import { RouterModule } from '@angular/router';
 import { ShareChartsModule } from 'src/app/components/charts/share-charts.module';
 import { PosShiftPageRoutingModule } from './pos-shift-routing.module';
-import { NgSelectModule } from '@ng-select/ng-select';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
-    NgSelectModule,
     IonicModule,
     ShareModule,
     ShareChartsModule,

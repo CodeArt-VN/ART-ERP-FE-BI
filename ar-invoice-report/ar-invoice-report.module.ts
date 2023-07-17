@@ -8,16 +8,12 @@ import { ARInvoiceReportPageRoutingModule } from './ar-invoice-report-routing.mo
 
 import { ARInvoiceReportPage } from './ar-invoice-report.page';
 import { ShareModule } from 'src/app/share.module';
-import { NgSelectModule } from '@ng-select/ng-select';
-import { NgOptionHighlightModule } from '@ng-select/ng-option-highlight';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    NgSelectModule,
-    NgOptionHighlightModule,
     ShareModule,
     ARInvoiceReportPageRoutingModule
   ],
