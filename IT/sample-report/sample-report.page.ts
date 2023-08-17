@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { NavController, ModalController, AlertController, LoadingController, PopoverController } from '@ionic/angular';
 import { EnvService } from 'src/app/services/core/env.service';
 import { PageBase } from 'src/app/page-base';
-import { BRA_BranchProvider, WMS_ZoneProvider } from 'src/app/services/static/services.service';
 import { Location } from '@angular/common';
 import * as echarts from 'echarts';
 import { lib } from 'src/app/services/static/global-functions';
@@ -46,7 +45,7 @@ export class SampleReportPage extends PageBase {
     reportConfig: any = {
         timeFrame: { From: '-7D', To: 0 },
         compareTo: '-1W',
-        performedBy: {Schema: 'SaleOrder'},
+        schema: { Id: 1, Code: 'SALE_Order', Name: 'Sale orders' },
         transform: {
             type: 'filter',
             config: {
@@ -58,14 +57,18 @@ export class SampleReportPage extends PageBase {
                 ]
             }
         },
-        interval: {type: 'Day'},
+        interval: { property: 'OrderDate', type: 'Day' },
         compareBy: [
             { property: 'IDBranch' },
             { property: 'Title' },
         ],
+        //isGroupByCompareProperties: true, //=> chưa dùng đến
         measureBy: [
-            { property: 'Id', method: 'count'},
-            { property: 'Discount', method: 'sum', title: 'Sum of discount'},
+            {
+                property: 'Id',
+                method: 'count'
+            },
+            { property: 'Discount', method: 'sum', title: 'Sum of discount' },
         ]
     }
 
@@ -73,7 +76,6 @@ export class SampleReportPage extends PageBase {
 
     constructor(
         public pageProvider: ReportService,
-        public branchProvider: BRA_BranchProvider,
         public modalController: ModalController,
         public popoverCtrl: PopoverController,
         public alertCtrl: AlertController,
@@ -98,26 +100,18 @@ export class SampleReportPage extends PageBase {
         let gs = this.pageProvider.groupByArray(this.items, 'Title');
         console.log(gs);
 
-        let gb = this.pageProvider.groupBy(this.items, g=>g)
-        
+        let gb = this.pageProvider.groupBy(this.items, g => g)
 
-        let ts = this.items.map((m)=>  {
-            let i:any = {};
+
+        let ts = this.items.map((m) => {
+            let i: any = {};
             this.reportConfig.compareBy.forEach(c => {
                 i[c.property] = m[c.property];
             });
             return i;
         })
 
-
         console.log(ts);
-        
-
-
-
-
-        
-        
         super.loadedData(event);
     }
 
