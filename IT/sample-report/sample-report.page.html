@@ -22,38 +22,14 @@
 				</div>
 
 				<div class="statistic-row">
-					<div class="card-multirow" [ngClass]="{selected: viewDimension == 'Count'}" (click)="buildDataset('Count')">
-						<div class="card-header">Count</div>
+					<div class="card-multirow" *ngFor="let m of reportConfig.MeasureBy" [ngClass]="{selected: viewDimension == (m.Title || m.Property)}" (click)="buildDataset((m.Title || m.Property))">
+						<div class="card-header">{{(m.Title || m.Property)}}</div>
 						<div class="card-value">{{1595 | number: '1.0-0' }}</div>
 						<ion-text color="success" class="card-compare-percent">
 							24%
 							<ion-icon name="caret-up"></ion-icon>
 						</ion-text>
-						<div class="card-chart-preview">
-
-						</div>
-					</div>
-					<div class="card-multirow " [ngClass]="{selected: viewDimension == 'Total'}" (click)="buildDataset('Total')">
-						<div class="card-header">Total</div>
-						<div class="card-value">152055</div>
-						<ion-text color="warning" class="card-compare-percent">
-							0%
-							<ion-icon name="caret-up"></ion-icon>
-						</ion-text>
-						<div class="card-chart-preview">
-
-						</div>
-					</div>
-					<div class="card-multirow" [ngClass]="{selected: viewDimension == 'Discount'}" (click)="buildDataset('Discount')">
-						<div class="card-header">Discount</div>
-						<div class="card-value">152055</div>
-						<ion-text color="danger" class="card-compare-percent">
-							24%
-							<ion-icon name="caret-down"></ion-icon>
-						</ion-text>
-						<div class="card-chart-preview">
-
-						</div>
+						<div class="card-chart-preview"></div>
 					</div>
 				</div>
 
@@ -65,38 +41,15 @@
 		<section class="table responsive box-shadow">
 			<header class="bold">
 				<div class="col-checkbox cell"></div>
-				<div class="col-id cell" (click)="sortToggle('Id')">
-					{{'Id' | translate}}
-					<ion-icon class="min-btn" *ngIf="sort.Id" [name]="sort.Id == 'Id'?'arrow-down': 'arrow-up'"></ion-icon>
-					<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.Id" name="search" color="primary"></ion-icon>
-				</div>
-				<div class="col-name cell" (click)="sortToggle('Title')">
-					{{'Title' | translate}}
-					<small class="taxid">{{'erp.app.pages.accountant.ar-invoice.taxid' | translate}}</small>
-					<ion-icon class="min-btn" *ngIf="sort.Title" [name]="sort.Title == 'Title'?'arrow-down': 'arrow-up'"></ion-icon>
-					<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.Title" name="search" color="primary"></ion-icon>
+				<div class="col-id cell">#</div>
+				<div class="col-name cell" *ngFor="let c of reportConfig.CompareBy">
+					{{c.Property | translate}}
 				</div>
 
-				<div class="col-number cell" [ngClass]="{selected: viewDimension == 'Count'}" (click)="sortToggle('Count')">
-					{{'Count' | translate}}
-					<ion-icon class="min-btn" *ngIf="sort.Count" [name]="sort.Count == 'Count'?'arrow-down': 'arrow-up'"></ion-icon>
-					<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.Count" name="search" color="primary"></ion-icon>
-				</div>
-
-				<div class="col-money cell" [ngClass]="{selected: viewDimension == 'Total'}" (click)="sortToggle('Total')">
-					{{'Total' | translate}}
-					<ion-icon class="min-btn" *ngIf="sort.Total" [name]="sort.Total == 'Total'?'arrow-down': 'arrow-up'"></ion-icon>
-					<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.Total" name="search" color="primary"></ion-icon>
-				</div>
-
-				<div class="col-money cell" [ngClass]="{selected: viewDimension == 'Discount'}" (click)="sortToggle('Discount')">
-					{{'Discount' | translate}}
-					<ion-icon class="min-btn" *ngIf="sort.Discount" [name]="sort.Discount == 'Discount'?'arrow-down': 'arrow-up'"></ion-icon>
-					<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.Discount" name="search" color="primary"></ion-icon>
+				<div class="col-number cell" *ngFor="let m of reportConfig.MeasureBy" [ngClass]="{selected: viewDimension == (m.Title || m.Property)}">
+					{{(m.Title || m.Property) | translate}}
 				</div>
 				<div class="col-remark cell"></div>
-
-				
 			</header>
 			<div class="table-body">
 				<app-page-message [itemsLength]="items.length" [showSpinner]="pageConfig.showSpinner"></app-page-message>
@@ -106,24 +59,21 @@
 							<div class="col-checkbox cell">
 								<input (click)="changeSelection(i, $event)" class="c-checkbox" [(ngModel)]="i.checked" type="checkbox">
 							</div>
-							<div (click)="nav('sale-order/'+i.Id,'forward')" class="col-id cell">
-								<a [routerLink]="['sale-order/'+i.Id]">{{i.Id}}</a>
+							<div class="col-id cell">
+								<a>{{j+1}}</a>
 							</div>
-
-							<div class="col-name cell">
-								{{i.Title}}
+							<div class="col-name cell" *ngFor="let c of reportConfig.CompareBy">
+								{{i[c.Property]}}
 							</div>
-							
-							<div class="col-number cell" [ngClass]="{selected: viewDimension == 'Count'}"><span>{{i.Count | number: '1.0-0'}}</span></div>
-							<div class="col-money cell" [ngClass]="{selected: viewDimension == 'Total'}"><span>{{i.Total | number: '1.0-0'}}</span></div>
-							<div class="col-money cell" [ngClass]="{selected: viewDimension == 'Discount'}"><span>{{i.Discount | number: '1.0-0'}}</span></div>
-							
+							<div class="col-number cell" *ngFor="let m of reportConfig.MeasureBy" [ngClass]="{selected: viewDimension == (m.Title || m.Property)}">
+								<span>{{i[(m.Title || m.Property)] | number: '1.0-0'}}</span>
+							</div>
 							<div class="col-remark cell"></div>
 						</div>
 					</ng-container>
 				</ion-virtual-scroll>
 			</div>
-			
+
 		</section>
 	</div>
 

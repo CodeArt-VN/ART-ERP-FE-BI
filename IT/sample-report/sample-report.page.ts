@@ -6,6 +6,7 @@ import { Location } from '@angular/common';
 import * as echarts from 'echarts';
 import { lib } from 'src/app/services/static/global-functions';
 import { ReportService } from 'src/app/services/report.service';
+import { ReportConfig } from 'src/app/models/options-interface';
 
 @Component({
     selector: 'app-sample-report',
@@ -16,7 +17,7 @@ export class SampleReportPage extends PageBase {
     /** Chart element Id */
     elId: string = '';
 
-    /** switch between dimensions */
+    /** switch between Dimensions */
     viewDimension = 'Count';
 
     /** Toggle show full chart options */
@@ -26,7 +27,7 @@ export class SampleReportPage extends PageBase {
     myChart = null;
 
     /** Chart options */
-    option: echarts.EChartsOption = {
+    chartOption: echarts.EChartsOption = {
         tooltip: { trigger: 'item' },
         legend: { show: false, right: 16, orient: 'vertical', textStyle: { color: lib.getCssVariableValue('--ion-color-dark') } },
         series: [
@@ -37,38 +38,38 @@ export class SampleReportPage extends PageBase {
                 avoidLabelOverlap: false,
                 itemStyle: { borderRadius: 6, borderColor: 'transparent', borderWidth: 2 },
                 label: { show: true, formatter: '{b}: {@' + this.viewDimension + '} ({d}%)' },
-
             }
         ]
     }
 
-    reportConfig: any = {
-        timeFrame: { From: '-7D', To: 0 },
-        compareTo: '-1W',
-        schema: { Id: 1, Code: 'SALE_Order', Name: 'Sale orders' },
-        transform: {
-            type: 'filter',
-            config: {
-                and: [
-                    { dimension: 'IDBranch', operator: '=', value: 1 },
-                    { dimension: 'Type', operator: '=', value: 'POS' },
-                    { dimension: 'OrderDate', operator: '>=', value: 'calcFromTimeFrame' },
-                    { dimension: 'OrderDate', operator: '<=', value: 'calcToTimeFrame' }
+    reportConfig: ReportConfig = {
+        ReprotInfo: { Id: 1, Code: 'SampleReport', Type: 'pie' },
+        TimeFrame: { From: { Type: '-7D' }, To: { Type: '-1D' } },
+        CompareTo: { Type: '-1W', Value: null },
+        Schema: { Id: 1, Code: 'SALE_Order', Name: 'Sale orders' },
+        Transform: {
+            Filter: {
+                Dimension: 'logical', Operator: 'AND',
+                Logicals: [
+                    { Dimension: 'IDBranch', Operator: 'IN', Value: this.env.selectedBranchAndChildren },
+                    { Dimension: 'OrderDate', Operator: '>=', Value: '2023-08-19' },
+                    { Dimension: 'OrderDate', Operator: '<=', Value: new Date() },
+                    { Dimension: 'logical', Operator: 'OR', Logicals: [
+                        { Dimension: 'Type', Operator: '=', Value: 'POSOrder' },
+                        { Dimension: 'Type', Operator: '=', Value: 'FMCG' },
+                    ] },
                 ]
-            }
+            },
         },
-        interval: { property: 'OrderDate', type: 'Day' },
-        compareBy: [
-            { property: 'IDBranch' },
-            { property: 'Title' },
+        Interval: { Property: 'OrderDate', Type: 'Year' },
+        CompareBy: [
+            //{ Property: 'IDBranch' },
+            { Property: 'Status' },
         ],
         //isGroupByCompareProperties: true, //=> chưa dùng đến
-        measureBy: [
-            {
-                property: 'Id',
-                method: 'count'
-            },
-            { property: 'Discount', method: 'sum', title: 'Sum of discount' },
+        MeasureBy: [
+            { Property: 'Id', Method: 'count', Title: 'Count' },
+            { Property: 'CalcTotal', Method: 'sum', Title: 'CalcTotal' },
         ]
     }
 
@@ -86,33 +87,23 @@ export class SampleReportPage extends PageBase {
     ) {
         super();
         this.elId = lib.generateCode();
+
     }
 
     loadData(event?: any): void {
-        this.items = [
-            { Id: 1, Title: 'New', Count: 37, Total: 23000000, Discount: 9800000 },
-            { Id: 2, Title: 'Approved', Count: 23, Total: 45600000, Discount: 6700000 },
-            { Id: 3, Title: 'Shipping', Count: 56, Total: 8700000, Discount: 2500000 },
-            { Id: 4, Title: 'Done', Count: 87, Total: 89000000, Discount: 1500000 },
-            { Id: 5, Title: 'Done', Count: 87, Total: 89000000, Discount: 1500000 },
-        ];
+        this.pageProvider.getReportDataset(this.reportConfig).subscribe(ds => {
+            this.items = ds.data;
+            this.buildDataset();
+            super.loadedData(event);
+        });
+    }
 
-        let gs = this.pageProvider.groupByArray(this.items, 'Title');
-        console.log(gs);
-
-        let gb = this.pageProvider.groupBy(this.items, g => g)
-
-
-        let ts = this.items.map((m) => {
-            let i: any = {};
-            this.reportConfig.compareBy.forEach(c => {
-                i[c.property] = m[c.property];
-            });
-            return i;
-        })
-
-        console.log(ts);
-        super.loadedData(event);
+    refresh(event?: any): void {
+        this.pageProvider.getReportDataset(this.reportConfig, true).subscribe(ds => {
+            this.items = ds.data;
+            this.buildDataset();
+            super.loadedData(event);
+        });
     }
 
     ionViewDidEnter(): void {
@@ -147,8 +138,8 @@ export class SampleReportPage extends PageBase {
             this.viewDimension = dimention;
         }
 
-        this.option.dataset = {
-            dimensions: ['Title', this.viewDimension],
+        this.chartOption.dataset = {
+            dimensions: [this.reportConfig.CompareBy[0].Property, this.viewDimension],
             source: this.items
         };
         this.loadChart();
@@ -157,15 +148,15 @@ export class SampleReportPage extends PageBase {
     loadChart() {
         // Set show full chart options
         if (this.showFullChart) {
-            this.option.legend = { show: true }
-            this.option.series[0].label = { show: true, formatter: '{b}: {@' + this.viewDimension + '} ({d}%)' };
+            this.chartOption.legend = { show: true }
+            this.chartOption.series[0].label = { show: true, formatter: '{b}: {@' + this.viewDimension + '} ({d}%)' };
         }
         else {
-            this.option.legend = { show: false }
-            this.option.series[0].label.show = false;
+            this.chartOption.legend = { show: false }
+            this.chartOption.series[0].label.show = false;
         }
 
-        this.myChart.setOption(this.option);
+        this.myChart?.setOption(this.chartOption);
     }
 
 
