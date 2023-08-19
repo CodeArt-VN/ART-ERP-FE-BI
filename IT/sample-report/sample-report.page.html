@@ -23,18 +23,12 @@
 						<ion-icon slot="icon-only" name="resize"></ion-icon>
 					</ion-button>
 				</div>
-
-				<div class="statistic-row">
-					<div class="card-multirow" *ngFor="let m of reportConfig.MeasureBy" [ngClass]="{selected: viewDimension == (m.Title || m.Property)}" (click)="buildDataset((m.Title || m.Property))">
-						<div class="card-header">{{(m.Title || m.Property)}}</div>
-						<div class="card-value">{{1595 | number: '1.0-0' }}</div>
-						<ion-text color="success" class="card-compare-percent">
-							24%
-							<ion-icon name="caret-up"></ion-icon>
-						</ion-text>
-						<div class="card-chart-preview"></div>
-					</div>
-				</div>
+				<app-tabs-card 
+					*ngIf="showFullChart"
+					[tabs]="reportConfig.MeasureBy" 
+					[type]="viewDimension"
+					(onChange)="buildDataset($event)"
+				></app-tabs-card>
 
 				<div style="height: 100%; width: 100%;" class="box" id="{{elId}}"></div>
 			</div>
