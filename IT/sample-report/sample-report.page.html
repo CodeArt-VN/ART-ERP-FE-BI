@@ -16,6 +16,9 @@
 		<app-page-title [icon]="pageConfig.pageIcon" [title]="pageConfig.pageTitle" [remark]="pageConfig.pageRemark">
 			<div rightContent class="mini-chart" [ngClass]="{'box-shadow': showFullChart}">
 				<div class="mini-chart-control">
+					<ion-button *ngIf="showFullChart" fill="clear" size="small" (click)="toggleChartFilter(true)">
+						<ion-icon name="filter-outline"></ion-icon>
+					</ion-button>
 					<ion-button fill="clear" size="small" (click)="toggleMiniChart()">
 						<ion-icon slot="icon-only" name="resize"></ion-icon>
 					</ion-button>
@@ -75,3 +78,8 @@
 		<ion-infinite-scroll-content loadingSpinner="dots"></ion-infinite-scroll-content>
 	</ion-infinite-scroll>
 </ion-content>
+
+<app-chart-filter
+	[isOpen]="showFilterChart"
+	(onCancel)="toggleChartFilter(false)"
+></app-chart-filter>

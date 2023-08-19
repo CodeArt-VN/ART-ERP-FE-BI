@@ -22,6 +22,8 @@ export class SampleReportPage extends PageBase {
 
     /** Toggle show full chart options */
     showFullChart = false;
+    
+    showFilterChart = false;
 
     /** Chart object */
     myChart = null;
@@ -131,6 +133,10 @@ export class SampleReportPage extends PageBase {
         chartDom.parentElement.classList.toggle("show-full");
 
         this.loadChart();
+    }
+
+    toggleChartFilter(status: boolean) {
+        this.showFilterChart = status
     }
 
     buildDataset(dimention = null) {
