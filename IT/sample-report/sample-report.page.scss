@@ -104,5 +104,18 @@
 	.cell.selected{
 		background-color: rgba(var(--ion-color-primary-rgb, 0, 0, 0), 0.1);
 	}
+
+	.col-name{
+		position: sticky;
+		left: 0;
+	
+		background: var(--table-header-background);
+    	box-shadow: 1px 0px 6px rgba(0,0,0,.1);
+	}
+
+	.col-number {
+		max-width: 200px;
+		min-width: 200px;
+	}
 }
 

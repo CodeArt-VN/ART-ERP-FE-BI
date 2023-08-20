@@ -12,7 +12,7 @@
 		</div>
 	</ion-fab>
 
-	<div class="ion-padding">
+	<div class="ion-padding" style="position: sticky; left: 0;">
 		<app-page-title [icon]="pageConfig.pageIcon" [title]="pageConfig.pageTitle" [remark]="pageConfig.pageRemark">
 			<div rightContent class="mini-chart" [ngClass]="{'box-shadow': showFullChart}">
 				<div class="mini-chart-control">
@@ -22,7 +22,8 @@
 				</div>
 
 				<div class="statistic-row">
-					<div class="card-multirow" *ngFor="let m of reportConfig.MeasureBy" [ngClass]="{selected: viewDimension == (m.Title || m.Property)}" (click)="buildDataset((m.Title || m.Property))">
+					<app-card-multi-row [title]="m.Title || m.Property" value="12345" percent="0" *ngFor="let m of reportConfig.MeasureBy" [selected]="viewDimension == (m.Title || m.Property)" (onChange)="buildDataset((m.Title || m.Property))"></app-card-multi-row>
+					<!-- <div class="card-multirow" *ngFor="let m of reportConfig.MeasureBy" [ngClass]="{selected: viewDimension == (m.Title || m.Property)}" (click)="buildDataset((m.Title || m.Property))">
 						<div class="card-header">{{(m.Title || m.Property)}}</div>
 						<div class="card-value">{{1595 | number: '1.0-0' }}</div>
 						<ion-text color="success" class="card-compare-percent">
@@ -30,52 +31,53 @@
 							<ion-icon name="caret-up"></ion-icon>
 						</ion-text>
 						<div class="card-chart-preview"></div>
-					</div>
+					</div> -->
 				</div>
 
 				<div style="height: 100%; width: 100%;" class="box" id="{{elId}}"></div>
 			</div>
 
 		</app-page-title>
+	</div>
 
-		<section class="table responsive box-shadow">
-			<header class="bold">
-				<div class="col-checkbox cell"></div>
-				<div class="col-id cell">#</div>
-				<div class="col-name cell" *ngFor="let c of reportConfig.CompareBy">
-					{{c.Property | translate}}
-				</div>
-
-				<div class="col-number cell" *ngFor="let m of reportConfig.MeasureBy" [ngClass]="{selected: viewDimension == (m.Title || m.Property)}">
-					{{(m.Title || m.Property) | translate}}
-				</div>
-				<div class="col-remark cell"></div>
-			</header>
-			<div class="table-body">
-				<app-page-message [itemsLength]="items.length" [showSpinner]="pageConfig.showSpinner"></app-page-message>
-				<ion-virtual-scroll [items]="items" approxItemHeight="27px" *ngIf="items.length && pageConfig.showSpinner==false">
-					<ng-container *virtualItem="let i; let itemBounds = bounds; let j = index;">
-						<div class="row" [ngClass]="{odd: j % 2 != 0}" [ngClass]="{selected: i.checked}">
-							<div class="col-checkbox cell">
-								<input (click)="changeSelection(i, $event)" class="c-checkbox" [(ngModel)]="i.checked" type="checkbox">
-							</div>
-							<div class="col-id cell">
-								<a>{{j+1}}</a>
-							</div>
-							<div class="col-name cell" *ngFor="let c of reportConfig.CompareBy">
-								{{i[c.Property]}}
-							</div>
-							<div class="col-number cell" *ngFor="let m of reportConfig.MeasureBy" [ngClass]="{selected: viewDimension == (m.Title || m.Property)}">
-								<span>{{i[(m.Title || m.Property)] | number: '1.0-0'}}</span>
-							</div>
-							<div class="col-remark cell"></div>
-						</div>
-					</ng-container>
-				</ion-virtual-scroll>
+	<section class="table box-shadow" style="margin: 16px;" [ngStyle]="{'min-width': 'calc(120px + '+reportConfig.CompareBy.length+'*350px + '+reportConfig.MeasureBy.length+'*200px)'}">
+		<header class="bold">
+			<div class="col-checkbox cell"></div>
+			<div class="col-id cell">#</div>
+			<div class="col-name cell" *ngFor="let c of reportConfig.CompareBy">
+				{{c.Property | translate}}
 			</div>
 
-		</section>
-	</div>
+			<div class="col-number cell" *ngFor="let m of reportConfig.MeasureBy" [ngClass]="{selected: viewDimension == (m.Title || m.Property)}">
+				{{(m.Title || m.Property) | translate}}
+			</div>
+			<div class="col-remark cell"></div>
+		</header>
+		<div class="table-body">
+			<app-page-message [itemsLength]="items.length" [showSpinner]="pageConfig.showSpinner"></app-page-message>
+			<ion-virtual-scroll [items]="items" approxItemHeight="27px" *ngIf="items.length && pageConfig.showSpinner==false">
+				<ng-container *virtualItem="let i; let itemBounds = bounds; let j = index;">
+					<div class="row" [ngClass]="{odd: j % 2 != 0}" [ngClass]="{selected: i.checked}">
+						<div class="col-checkbox cell">
+							<input (click)="changeSelection(i, $event)" class="c-checkbox" [(ngModel)]="i.checked" type="checkbox">
+						</div>
+						<div class="col-id cell">
+							<a>{{j+1}}</a>
+						</div>
+						<div class="col-name cell" *ngFor="let c of reportConfig.CompareBy">
+							{{i[c.Property]}}
+						</div>
+						<div class="col-number cell" *ngFor="let m of reportConfig.MeasureBy" [ngClass]="{selected: viewDimension == (m.Title || m.Property)}">
+							<span>{{i[(m.Title || m.Property)] | number: '1.0-0'}}</span>
+						</div>
+						<div class="col-remark cell"></div>
+					</div>
+				</ng-container>
+			</ion-virtual-scroll>
+		</div>
+
+	</section>
+	
 
 	<ion-infinite-scroll color="primary" threshold="20%" (ionInfinite)="loadData($event)" [disabled]="!pageConfig.infiniteScroll || pageConfig.isEndOfData">
 		<ion-infinite-scroll-content loadingSpinner="dots"></ion-infinite-scroll-content>

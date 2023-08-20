@@ -43,7 +43,7 @@ export class SampleReportPage extends PageBase {
     }
 
     reportConfig: ReportConfig = {
-        ReprotInfo: { Id: 1, Code: 'SampleReport', Type: 'pie' },
+        ReprotInfo: { Id: 1, Code: 'SampleReport', Name: 'POS SO Status', Type: 'pie' },
         TimeFrame: { From: { Type: '-7D' }, To: { Type: '-1D' } },
         CompareTo: { Type: '-1W', Value: null },
         Schema: { Id: 1, Code: 'SALE_Order', Name: 'Sale orders' },
@@ -69,6 +69,15 @@ export class SampleReportPage extends PageBase {
         //isGroupByCompareProperties: true, //=> chưa dùng đến
         MeasureBy: [
             { Property: 'Id', Method: 'count', Title: 'Count' },
+            
+            { Property: 'TotalBeforeDiscount', Method: 'sum', Title: 'BeforeDiscount' },
+            { Property: 'TotalDiscount', Method: 'sum', Title: 'TotalDiscount' },
+            { Property: 'TotalAfterDiscount', Method: 'sum', Title: 'AfterDiscount' },
+            { Property: 'Tax', Method: 'sum', Title: 'Tax' },
+            { Property: 'TotalAfterTax', Method: 'sum', Title: 'TotalAfterTax' },
+            { Property: 'Received', Method: 'sum', Title: 'Received' },
+            { Property: 'Debt', Method: 'sum', Title: 'Debt' },
+            { Property: 'CalcTotalAdditions', Method: 'sum', Title: 'Additions' },
             { Property: 'CalcTotal', Method: 'sum', Title: 'CalcTotal' },
         ]
     }
