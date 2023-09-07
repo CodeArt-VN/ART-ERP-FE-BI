@@ -9,11 +9,11 @@ import { ReportService } from 'src/app/services/report.service';
 import { ReportConfig } from 'src/app/models/options-interface';
 
 @Component({
-    selector: 'app-sample-report',
-    templateUrl: 'sample-report.page.html',
-    styleUrls: ['sample-report.page.scss']
+    selector: 'app-bill-status-report',
+    templateUrl: 'bill-status-report.page.html',
+    styleUrls: ['bill-status-report.page.scss']
 })
-export class SampleReportPage extends PageBase {
+export class BillStatusReportPage extends PageBase {
     /** Chart element Id */
     elId: string = '';
 
@@ -21,7 +21,7 @@ export class SampleReportPage extends PageBase {
     viewDimension = 'Count';
 
     /** Toggle show full chart options */
-    showFullChart = false;
+    showFullChart = true;
 
     /** Chart object */
     myChart = null;
@@ -31,19 +31,16 @@ export class SampleReportPage extends PageBase {
         tooltip: { trigger: 'item' },
         series: [
             {
-                name: 'Sale order status',
+                name: 'Bill status reports',
                 type: 'pie',
-                radius: ['40%', '60%'],
-                avoidLabelOverlap: false,
-                itemStyle: { borderRadius: 6, borderColor: 'transparent', borderWidth: 2 },
-                label: { show: true, formatter: '{b}: {@' + this.viewDimension + '} ({d}%)' },
+                
             }
         ]
     }
 
     reportConfig: ReportConfig = {
-        ReprotInfo: { Id: 1, Code: 'SampleReport', Name: 'POS SO Status', Type: 'pie' },
-        TimeFrame: { Dimension: 'OrderDate', From: { Type: 'Relative', IsPastDate: true, Period: 'Hour', Amount: 7 }, To: { Type: 'Relative', IsPastDate: true, Period: 'Day', Amount: 0 } },
+        ReprotInfo: { Id: 1, Code: 'BillStatusReport', Name: 'POS SO Status', Type: 'pie' },
+        TimeFrame: { Dimension: 'OrderDate', From: { Type: 'Relative', IsPastDate: true, Period: 'Day', Amount: 0 }, To: { Type: 'Relative', IsPastDate: true, Period: 'Day', Amount: 0 } },
         CompareTo: { Type: 'Relative', IsPastDate: true, Period: 'Week', Amount: 1 },
         Schema: { Id: 1, Code: 'SALE_Order', Name: 'Sale orders' },
         Transform: {
@@ -85,9 +82,6 @@ export class SampleReportPage extends PageBase {
         ]
     }
 
-
-
-
     constructor(
         public pageProvider: ReportService,
         public modalController: ModalController,
@@ -99,14 +93,33 @@ export class SampleReportPage extends PageBase {
         public location: Location,
     ) {
         super();
+        this.pageConfig.isShowFeature = true;
         this.elId = lib.generateCode();
         this.subscriptions.push(
             this.pageProvider.regReportTrackingData(this.reportConfig).subscribe(ds => {
-                this.items = ds.data;//[...this.items, ...ds.data];
-                console.log(this.items);
+                this.items = ds.data;
+                this.calcRows();
+                
+                
                 this.buildDataset();
                 super.loadedData();
             }));
+    }
+
+    calcRows(){
+        this.reportConfig.MeasureBy.forEach((m)=>{
+            m.Value = this.items.map(x => x[(m.Title || m.Property)]).reduce((a, b) => (+a) + (+b), 0);
+        });
+    }
+
+    onRunReport(config){
+        
+        this.pageProvider.getReportData(config, true);
+    }
+
+    onSave(config){
+        this.reportConfig = config;
+        this.onRunReport(config);
     }
 
     loadData(event?: any): void {
@@ -155,19 +168,16 @@ export class SampleReportPage extends PageBase {
     loadChart() {
         // Set show full chart options
         if (this.showFullChart) {
-            this.chartOption.toolbox = {
-                show: true,
-                feature: {
-                    magicType: { show: true, type: ['line', 'bar'] },
-                    restore: { show: true },
-                }
-            };
-            this.chartOption.legend = { show: true, padding: [16, 16, 16, 16], textStyle: { color: lib.getCssVariableValue('--ion-color-dark') } },
-                this.chartOption.series[0].label = { show: true, formatter: '{b}: {@' + this.viewDimension + '} ({d}%)' };
+            this.chartOption.legend = { show: true, padding: [16, 16, 16, 16], textStyle: { color: lib.getCssVariableValue('--ion-color-dark') } };
+            this.chartOption.series[0].label = { show: true, formatter: '{b}: {@' + this.viewDimension + '} ({d}%)' };
+            this.chartOption.series[0].radius = ['40%', '60%'];
+            this.chartOption.series[0].itemStyle = { borderRadius: 10, borderColor: 'transparent', borderWidth: 2 };
         }
         else {
-            this.chartOption.legend = { show: false }
-            this.chartOption.series[0].label.show = false;
+            this.chartOption.legend = { show: false };
+            this.chartOption.series[0].label = { show: false };
+            this.chartOption.series[0].radius = ['50%', '80%'];
+            this.chartOption.series[0].itemStyle = { borderRadius: 2, borderColor: 'transparent', borderWidth: 1 };
         }
 
         this.myChart?.setOption(this.chartOption);

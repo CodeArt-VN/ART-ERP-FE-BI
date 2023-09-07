@@ -42,7 +42,7 @@
 									<app-bar-chart [Title]="'Top Selling Products'" [Label]="topSellingProductLabel" [Data]="topSellingProductData"></app-bar-chart>
 									<!-- <app-pie-chart [ChartInfo]="Chart1" [ChartData]="topSellingProduct"></app-pie-chart> -->
 								</ng-container>
-								
+
 							</ion-col>
 							<ion-col size="12" size-sm="12" size-md="6" size-xl="6">
 								<ng-container *ngIf="items.length">
@@ -84,18 +84,6 @@
 								<ion-icon class="min-btn" *ngIf="sort.Code" [name]="sort.Code == 'Code'?'arrow-down': 'arrow-up'"></ion-icon>
 								<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.Code" name="search" color="primary"></ion-icon>
 							</div>
-							
-							<!-- <div class="col-code cell" (click)="sortToggle('Code')">
-								Takeaway Price
-								<ion-icon class="min-btn" *ngIf="sort.Code" [name]="sort.Code == 'Code'?'arrow-down': 'arrow-up'"></ion-icon>
-								<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.Code" name="search" color="primary"></ion-icon>
-							</div>
-
-							<div class="col-code cell" (click)="sortToggle('Code')">
-								Delivery Price
-								<ion-icon class="min-btn" *ngIf="sort.Code" [name]="sort.Code == 'Code'?'arrow-down': 'arrow-up'"></ion-icon>
-								<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.Code" name="search" color="primary"></ion-icon>
-							</div> -->
 
 							<div class="col-code cell" (click)="sortToggle('Code')">
 								VAT
@@ -121,57 +109,43 @@
 								<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.Code" name="search" color="primary"></ion-icon>
 							</div>
 						</header>
-						<ion-virtual-scroll [items]="items" approxItemHeight="27px">
-							<ng-container *virtualItem="let i; let itemBounds = bounds; let idx = index;">
-									<div class="row" [ngClass]="{selected: i.checked}">
-			
-										<div class="col-code cell">
-											{{i.OrderedAmount}}
-										</div>
-			
-										<div class="col-code cell">
-											{{i.CurrentStock}}
-										</div>
-			
-										<div class="col-code bold cell">
-											{{i.ProductID}}
-										</div>
-			
-										<div class="col-name cell" (click)="nav('item/'+i.ProductID,'forward')">
-											{{i.Product}}
-										</div>
-			
-										<div class="col-code cell">
-											{{i.PriceText}}
-										</div>
-			
-										<!-- <div class="col-code cell">
-											{{i.TakeawayPriceText}}
-										</div>
-			
-										<div class="col-code cell">
-											{{i.DeliveryPriceText}}
-										</div> -->
-			
-										<div class="col-code cell">
-											{{i.VATPercent}} %
-										</div>
-			
-										<div class="col-code bold cell">
-											{{i.TotalRevenueText}}
-										</div>
-			
-										<div class="col-code cell">
-											{{i.Cost}}
-										</div>
-			
-										<div class="col-code cell">
-											{{i.Profit}}
-										</div>
-									</div>
-							</ng-container>
-						</ion-virtual-scroll>
+						<div *ngFor="let i of items; let j = index;" class="row" [ngClass]="{selected: i.checked}">
 
+							<div class="col-code cell">
+								{{i.OrderedAmount}}
+							</div>
+
+							<div class="col-code cell">
+								{{i.CurrentStock}}
+							</div>
+
+							<div class="col-code bold cell">
+								{{i.ProductID}}
+							</div>
+
+							<div class="col-name cell" (click)="nav('item/'+i.ProductID,'forward')">
+								{{i.Product}}
+							</div>
+
+							<div class="col-code cell">
+								{{i.PriceText}}
+							</div>
+							<div class="col-code cell">
+								{{i.VATPercent}} %
+							</div>
+
+							<div class="col-code bold cell">
+								{{i.TotalRevenueText}}
+							</div>
+
+							<div class="col-code cell">
+								{{i.Cost}}
+							</div>
+
+							<div class="col-code cell">
+								{{i.Profit}}
+							</div>
+						</div>
 					</section>
 				</div>
 			</div>

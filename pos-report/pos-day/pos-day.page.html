@@ -94,7 +94,7 @@
 								<ion-icon class="min-btn" *ngIf="sort.Code" [name]="sort.Code == 'Code'?'arrow-down': 'arrow-up'"></ion-icon>
 								<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.Code" name="search" color="primary"></ion-icon>
 							</div>
-							
+
 							<div class="col-code cell" (click)="sortToggle('Code')">
 								Customers
 								<ion-icon class="min-btn" *ngIf="sort.Code" [name]="sort.Code == 'Code'?'arrow-down': 'arrow-up'"></ion-icon>
@@ -125,58 +125,47 @@
 								<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.Code" name="search" color="primary"></ion-icon>
 							</div>
 						</header>
-	
+
 						<app-page-message [itemsLength]="items.length" [showSpinner]="pageConfig.showSpinner"></app-page-message>
-						<ion-virtual-scroll [items]="items" approxItemHeight="27px">
-							<ng-container *virtualItem="let i; let itemBounds = bounds; let idx = index;">
-								<div class="row" [ngClass]="{selected: i.checked}">
-			
-									<div class="col-code cell">
-										{{i.DateText}}
-									</div>
-<!-- 		
-									<div class="col-code cell">
-										{{i.GroupBy}}
-									</div> -->
-		
-									<div class="col-code cell">
-										{{i.StartsAtText}}
-									</div>
-		
-									<div class="col-name cell">
-										{{i.EndsAtText}}
-									</div>
-		
-									<div class="col-code cell">
-										{{i.Receipts}}
-									</div>
-		
-									<div class="col-code cell">
-										{{i.Customers}}
-									</div>
-		
-									<div class="col-code bold cell">
-										{{i.RevenueText}}
-									</div>
 
-									<div class="col-code bold cell">
-										{{i.PaymentsText}}
-									</div>
-		
-									<div class="col-code bold cell">
-										{{i.TipsText}}
-									</div>
-		
-									<div class="col-code bold cell">
-										{{i.TaxText}}
-									</div>
-								</div>
-							</ng-container>
-						</ion-virtual-scroll>
+						<div *ngFor="let i of items; let j = index;" class="row" [ngClass]="{selected: i.checked}">
 
-						
+							<div class="col-code cell">
+								{{i.DateText}}
+							</div>
 
-	
+							<div class="col-code cell">
+								{{i.StartsAtText}}
+							</div>
+
+							<div class="col-name cell">
+								{{i.EndsAtText}}
+							</div>
+
+							<div class="col-code cell">
+								{{i.Receipts}}
+							</div>
+
+							<div class="col-code cell">
+								{{i.Customers}}
+							</div>
+
+							<div class="col-code bold cell">
+								{{i.RevenueText}}
+							</div>
+
+							<div class="col-code bold cell">
+								{{i.PaymentsText}}
+							</div>
+
+							<div class="col-code bold cell">
+								{{i.TipsText}}
+							</div>
+
+							<div class="col-code bold cell">
+								{{i.TaxText}}
+							</div>
+						</div>
 					</section>
 				</div>
 

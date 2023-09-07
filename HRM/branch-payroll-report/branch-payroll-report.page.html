@@ -27,7 +27,7 @@
 	</ion-fab>
 	<section class="table" [ngStyle]="{'min-width': 'calc(350px + '+columns.length+'*200px)'}">
 		<header class="bold">
-			<div class="col-name cell" (click)="toggleRowAll()">
+			<div class="col-name col-sticky cell" (click)="toggleRowAll()">
 				<ion-icon class="min-btn" [name]="!isAllRowOpened? 'add-circle-outline':'remove-circle-outline'"></ion-icon>
 				{{'erp.app.pages.ost.branch.name' | translate}}
 				<ion-icon *ngIf="sort.Name" [name]="sort.Name == 'Name'?'arrow-down': 'arrow-up'"></ion-icon>
@@ -59,10 +59,10 @@
 		<!-- <app-page-message [itemsLength]="itemsState.length" [showSpinner]="pageConfig.showSpinner"></app-page-message> -->
 		<ng-container *ngFor="let i of itemsState; let j = index;">
 			<div class="row" *ngIf="i.show" [ngClass]="{odd: j % 2 != 0}" [ngClass]="{selected: i.checked}">
-				<div [ngClass]="i.HasChild? ('bold ') : ('')" class="col-name cell">
+				<div [ngClass]="i.HasChild? ('bold ') : ('')" class="col-name col-sticky cell">
 					<ng-container *ngFor="let w of i.levels; let k = index;"><span class="spacing" *ngIf="k>0"></span></ng-container>
 					<ion-icon (click)="toggleRow(itemsState, i, true);" class="min-btn clickable" [name]="i.HasChild? (!i.showdetail? 'chevron-forward-outline':'chevron-down-outline') : ''"></ion-icon>
-					<ion-icon class="min-btn" [color]="i.IsHeadOfDepartment?'primary':''" [name]="i.Icon"></ion-icon>
+					<!-- <ion-icon class="min-btn" [color]="i.IsHeadOfDepartment?'primary':''" [name]="i.Icon"></ion-icon> -->
 
 					<span>
 						{{i.Name}}

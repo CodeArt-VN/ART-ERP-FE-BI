@@ -1,5 +1,5 @@
 <ion-header>
-	<ion-toolbar >
+	<ion-toolbar>
 		<ion-buttons slot="start" class="ion-hide-sm-down_">
 			<ion-button color="dark" class="ion-hide-sm-down">
 				{{'erp.app.pages.bi.sales-report-mobile.page-title' | translate}}
@@ -15,7 +15,7 @@
 				<ion-label color="medium"> </ion-label>
 			</ion-button>
 		</ion-buttons>
-	<!-- </ion-toolbar>
+		<!-- </ion-toolbar>
 	<ion-toolbar style="--padding-start: 4px;" color="primary"> -->
 		<ion-segment color="primary" scrollable="true" (ionChange)="segmentChanged($event)" [value]="segmentView.Page">
 			<ion-segment-button value="s1">
@@ -127,48 +127,42 @@
 
 		<section class="table s1" *ngIf="segmentView.Page == 's1'" style="max-width: 1024px;margin: -16px auto;min-height: calc(100vh - 64px);">
 			<app-page-message [itemsLength]="this.items.length" [showSpinner]="pageConfig.showSpinner"></app-page-message>
-			<ion-virtual-scroll [items]="items" approxItemHeight="27px" [headerFn]="myHeaderFn">
-				<div class="row header" *virtualHeader="let header">
-					<div class="col-id cell">#{{header.IDSaleOrder}}</div>
-					<div class="col-name cell">
-						{{header.ContactName}} ({{header.ContactCode}})
-					</div>
-					<div class="col-OrderDate cell">
-						{{header.OrderDate}}
-					</div>
-					<div class="col-money cell">
-						{{header.OriginalTotalAfterDiscountText}}
-					</div>
+			<!-- <div class="row header" *virtualHeader="let header">
+				<div class="col-id cell">#{{header.IDSaleOrder}}</div>
+				<div class="col-name cell">
+					{{header.ContactName}} ({{header.ContactCode}})
 				</div>
+				<div class="col-OrderDate cell">
+					{{header.OrderDate}}
+				</div>
+				<div class="col-money cell">
+					{{header.OriginalTotalAfterDiscountText}}
+				</div>
+			</div> -->
 
-				<ng-container *virtualItem="let i; let itemBounds = bounds; let j = index;">
-					<div class="row">
-						<div class="col-code cell">{{i.ItemCode}}</div>
-						<div class="col-name cell">
-							<b>{{i.ItemCode}}&nbsp;</b>{{i.ItemName}}
-						</div>
-						<div class="col-number cell">
-							<ion-text color="success" *ngIf="i.ShippedQuantity==i.Quantity">{{i.ShippedQuantity}}/{{i.Quantity}} <small>{{i.UoM}}</small></ion-text>
-							<ion-text color="danger" *ngIf="i.ShippedQuantity!=i.Quantity">
-								<b>{{i.ShippedQuantity}}</b>/{{i.Quantity}} <small>{{i.UoM}}</small>
-							</ion-text>
-							
-						</div>
-						<div class="col-money cell">
-							<small *ngIf="i.IsPromotionItem">{{'erp.app.pages.bi.sales-report-mobile.promotion' | translate}}</small>
-							<span *ngIf="!i.IsPromotionItem"> <span *ngIf="i.ShippedQuantity!=i.Quantity && i.TotalAfterDiscount">{{i.TotalAfterDiscountText}}/</span>{{i.OriginalTotalAfterDiscountText}}</span>
-						</div>
-					</div>
-				</ng-container>
-			</ion-virtual-scroll>
+
+			<div *ngFor="let i of items; let j = index;" class="row">
+				<div class="col-code cell">{{i.ItemCode}}</div>
+				<div class="col-name cell">
+					<b>{{i.ItemCode}}&nbsp;</b>{{i.ItemName}}
+				</div>
+				<div class="col-number cell">
+					<ion-text color="success" *ngIf="i.ShippedQuantity==i.Quantity">{{i.ShippedQuantity}}/{{i.Quantity}} <small>{{i.UoM}}</small></ion-text>
+					<ion-text color="danger" *ngIf="i.ShippedQuantity!=i.Quantity">
+						<b>{{i.ShippedQuantity}}</b>/{{i.Quantity}} <small>{{i.UoM}}</small>
+					</ion-text>
+
+				</div>
+				<div class="col-money cell">
+					<small *ngIf="i.IsPromotionItem">{{'erp.app.pages.bi.sales-report-mobile.promotion' | translate}}</small>
+					<span *ngIf="!i.IsPromotionItem"> <span *ngIf="i.ShippedQuantity!=i.Quantity && i.TotalAfterDiscount">{{i.TotalAfterDiscountText}}/</span>{{i.OriginalTotalAfterDiscountText}}</span>
+				</div>
+			</div>
+
 		</section>
 
 		<div class="row-full shadow table-contain-main" *ngIf="segmentView.Page == 's2'">
-			<!-- <div *ngIf="segmentView.Page == 's1'" style="min-height: calc(100vh - 88px - 52px);">
-				<app-page-message [itemsLength]="this.items.length" [showSpinner]="pageConfig.showSpinner"></app-page-message>
 
-				
-			</div> -->
 			<div style="min-height: calc(100vh - 88px - 52px);">
 				<app-page-message [itemsLength]="items.length" [showSpinner]="pageConfig.showSpinner"></app-page-message>
 				<div class="Table-Container" *ngFor="let b of items">
@@ -311,21 +305,6 @@
 					</div>
 				</div>
 			</div>
-
-
 		</div>
 	</div>
 </ion-content>
-
-
-
-
-
-
-<!-- <div class="summary-bar">
-				<ion-card class='card1-2'>
-					<div id="div-bar">
-						<canvas style="cursor: pointer;" id="barCanvas" #barCanvas width="400" height="200"></canvas>
-					</div>
-				</ion-card>
-			</div> -->

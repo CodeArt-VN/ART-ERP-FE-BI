@@ -16,9 +16,8 @@
                 <ion-col size="1">modifiedOn</ion-col>
                 <ion-col size="0.5">Action</ion-col>
             </ion-row>
-            <ion-virtual-scroll [items]="items" approxItemHeight="27px">
-			<ng-container *virtualItem="let item; let itemBounds = bounds; let j = index;">
-            <ion-row  class="row-content" >
+            
+            <ion-row *ngFor="let i of items; let j = index;"  class="row-content" >
                 <ion-col size="2">{{item.CreatedOn}}</ion-col>
                 <ion-col size="1">{{item.ReceiptID}}</ion-col>
                 <ion-col size="1">{{item.TotalPrice}}</ion-col>
@@ -33,9 +32,6 @@
                 <ion-col size="1">{{item.modifiedOn}}</ion-col>
                 <ion-col size="0.5"><ion-button><ion-icon name="print"></ion-icon></ion-button></ion-col>
             </ion-row>
-            </ng-container>
-
-            </ion-virtual-scroll>
         </ion-grid>
     </div>
 </div>
