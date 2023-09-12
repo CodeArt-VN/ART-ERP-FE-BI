@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SampleDashboardPage } from './sample-dashboard.page';
 import { ShareModule } from 'src/app/share.module';
+import { GridsterComponent, GridsterItemComponent } from 'angular-gridster2';
 
 @NgModule({
   imports: [
@@ -12,7 +13,10 @@ import { ShareModule } from 'src/app/share.module';
     CommonModule,
     FormsModule,
     ShareModule,
-    RouterModule.forChild([{ path: '', component: SampleDashboardPage }])
+    RouterModule.forChild([{ path: '', component: SampleDashboardPage }]),
+
+    GridsterComponent,
+    GridsterItemComponent
   ],
   declarations: [SampleDashboardPage]
 })
