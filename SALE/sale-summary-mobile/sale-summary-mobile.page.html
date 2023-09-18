@@ -74,13 +74,10 @@
 				</div>
 			</div>
 		</div> -->
-		<div class="row-1" [hidden]="!(items.length && segmentView.Page == 's2')">
+		<div class="row-1" *ngIf="(items.length && segmentView.Page == 's2')">
 			<div class="col-1">
 				<div class="c-box">
-					<!-- <canvas style="cursor: pointer; margin: 20px auto;" id="pieCanvas" #pieCanvas></canvas> -->
-					<ng-container *ngIf="totalPieChartData.length">
-						<app-pie-chart [ChartInfo]="totalPieChart" [ChartData]="totalPieChartData"></app-pie-chart>
-					</ng-container>
+					<app-pie-chart [chartOption]="pieChartOption" [dataset]="pieChartDataset"></app-pie-chart>
 				</div>
 			</div>
 			<div class="col-2">
@@ -126,38 +123,42 @@
 		</div>
 
 		<section class="table s1" *ngIf="segmentView.Page == 's1'" style="max-width: 1024px;margin: -16px auto;min-height: calc(100vh - 64px);">
-			<app-page-message [itemsLength]="this.items.length" [showSpinner]="pageConfig.showSpinner"></app-page-message>
-			<!-- <div class="row header" *virtualHeader="let header">
-				<div class="col-id cell">#{{header.IDSaleOrder}}</div>
-				<div class="col-name cell">
-					{{header.ContactName}} ({{header.ContactCode}})
+			<app-page-message [itemsLength]="items.length" [showSpinner]="pageConfig.showSpinner"></app-page-message>
+			
+			<ng-container *ngFor="let i of items; let j = index;">
+
+				<div *ngIf="myHeaderFn(i, j, items); let header" class="row header">
+					<div class="col-id cell">#{{header.IDSaleOrder}}</div>
+					<div class="col-name cell">
+						{{header.ContactName}} ({{header.ContactCode}})
+					</div>
+					<div class="col-OrderDate cell">
+						{{header.OrderDate}}
+					</div>
+					<div class="col-money cell">
+						{{header.OriginalTotalAfterDiscountText}}
+					</div>
 				</div>
-				<div class="col-OrderDate cell">
-					{{header.OrderDate}}
-				</div>
-				<div class="col-money cell">
-					{{header.OriginalTotalAfterDiscountText}}
-				</div>
-			</div> -->
 
 
-			<div *ngFor="let i of items; let j = index;" class="row">
-				<div class="col-code cell">{{i.ItemCode}}</div>
-				<div class="col-name cell">
-					<b>{{i.ItemCode}}&nbsp;</b>{{i.ItemName}}
-				</div>
-				<div class="col-number cell">
-					<ion-text color="success" *ngIf="i.ShippedQuantity==i.Quantity">{{i.ShippedQuantity}}/{{i.Quantity}} <small>{{i.UoM}}</small></ion-text>
-					<ion-text color="danger" *ngIf="i.ShippedQuantity!=i.Quantity">
-						<b>{{i.ShippedQuantity}}</b>/{{i.Quantity}} <small>{{i.UoM}}</small>
-					</ion-text>
+				<div  class="row">
+					<div class="col-code cell">{{i.ItemCode}}</div>
+					<div class="col-name cell">
+						<b>{{i.ItemCode}}&nbsp;</b>{{i.ItemName}}
+					</div>
+					<div class="col-number cell">
+						<ion-text color="success" *ngIf="i.ShippedQuantity==i.Quantity">{{i.ShippedQuantity}}/{{i.Quantity}} <small>{{i.UoM}}</small></ion-text>
+						<ion-text color="danger" *ngIf="i.ShippedQuantity!=i.Quantity">
+							<b>{{i.ShippedQuantity}}</b>/{{i.Quantity}} <small>{{i.UoM}}</small>
+						</ion-text>
 
+					</div>
+					<div class="col-money cell">
+						<small *ngIf="i.IsPromotionItem">{{'erp.app.pages.bi.sales-report-mobile.promotion' | translate}}</small>
+						<span *ngIf="!i.IsPromotionItem"> <span *ngIf="i.ShippedQuantity!=i.Quantity && i.TotalAfterDiscount">{{i.TotalAfterDiscountText}}/</span>{{i.OriginalTotalAfterDiscountText}}</span>
+					</div>
 				</div>
-				<div class="col-money cell">
-					<small *ngIf="i.IsPromotionItem">{{'erp.app.pages.bi.sales-report-mobile.promotion' | translate}}</small>
-					<span *ngIf="!i.IsPromotionItem"> <span *ngIf="i.ShippedQuantity!=i.Quantity && i.TotalAfterDiscount">{{i.TotalAfterDiscountText}}/</span>{{i.OriginalTotalAfterDiscountText}}</span>
-				</div>
-			</div>
+			</ng-container>
 
 		</section>
 

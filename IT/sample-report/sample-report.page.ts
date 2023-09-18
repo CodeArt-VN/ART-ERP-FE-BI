@@ -101,7 +101,7 @@ export class SampleReportPage extends PageBase {
         super();
         this.elId = lib.generateCode();
         this.subscriptions.push(
-            this.pageProvider.regReportTrackingData(this.reportConfig).subscribe(ds => {
+            this.pageProvider.regReportTrackingData(1).subscribe(ds => {
                 this.items = ds.data;//[...this.items, ...ds.data];
                 console.log(this.items);
                 this.buildDataset();
@@ -110,7 +110,7 @@ export class SampleReportPage extends PageBase {
     }
 
     loadData(event?: any): void {
-        this.pageProvider.getReportData(this.reportConfig, true);
+        this.pageProvider.getReportData(1, true);
     }
 
     ionViewDidEnter(): void {

@@ -14,29 +14,7 @@ import { ReportConfig } from 'src/app/models/options-interface';
     styleUrls: ['bill-status-report.page.scss']
 })
 export class BillStatusReportPage extends PageBase {
-    /** Chart element Id */
-    elId: string = '';
-
-    /** switch between Dimensions */
-    viewDimension = 'Count';
-
-    /** Toggle show full chart options */
-    showFullChart = true;
-
-    /** Chart object */
-    myChart = null;
-
-    /** Chart options */
-    chartOption: echarts.EChartsOption = {
-        tooltip: { trigger: 'item' },
-        series: [
-            {
-                name: 'Bill status reports',
-                type: 'pie',
-                
-            }
-        ]
-    }
+    viewDimension = '';
 
     reportConfig: ReportConfig = {
         ReprotInfo: { Id: 1, Code: 'BillStatusReport', Name: 'POS SO Status', Type: 'pie' },
@@ -94,98 +72,44 @@ export class BillStatusReportPage extends PageBase {
     ) {
         super();
         this.pageConfig.isShowFeature = true;
-        this.elId = lib.generateCode();
         this.subscriptions.push(
-            this.pageProvider.regReportTrackingData(this.reportConfig).subscribe(ds => {
+            this.pageProvider.regReportTrackingData(1).subscribe(ds => {
                 this.items = ds.data;
-                this.calcRows();
-                
-                
-                this.buildDataset();
                 super.loadedData();
             }));
     }
 
-    calcRows(){
-        this.reportConfig.MeasureBy.forEach((m)=>{
-            m.Value = this.items.map(x => x[(m.Title || m.Property)]).reduce((a, b) => (+a) + (+b), 0);
-        });
-    }
-
-    onRunReport(config){
-        
-        this.pageProvider.getReportData(config, true);
-    }
-
-    onSave(config){
-        this.reportConfig = config;
-        this.onRunReport(config);
-    }
-
     loadData(event?: any): void {
-        this.pageProvider.getReportData(this.reportConfig, true);
+        this.pageProvider.getReportData(1);
     }
 
-    ionViewDidEnter(): void {
-        let that = this;
-        var chartDom = document.getElementById(this.elId);
-        this.myChart = echarts.init(chartDom);
-        this.myChart.on('click', function (params) {
-            console.log(params.name);
-            that.query.Title = params.name;
-            that.query.InvoiceDate = lib.dateFormat(new Date());
-            that.refresh();
-        });
-
-        this.buildDataset();
-        new ResizeObserver(() => this.myChart.resize()).observe(chartDom);
+    runTestData: any = null;
+    onRunReport(config) {
+        this.pageProvider.runTestReport(config).subscribe((resp: any) => {
+            this.runTestData = {
+                ...{
+                    dataFetchDate: resp.LastModifiedDate,
+                    data: resp.Data
+                }
+            };
+            this.items = resp['Data'];
+        }, error => { console.log(error); });
     }
 
-
-    /**
-     * Toggle chart full option view / mini chart view
-     */
-    toggleMiniChart() {
-        this.showFullChart = !this.showFullChart;
-        var chartDom = document.getElementById(this.elId);
-        chartDom.parentElement.classList.toggle("show-full");
-
-        this.loadChart();
+    onSave(config) {
+        this.pageProvider.saveReportConfig(config);
+        this.pageProvider.getDatasetFromServer(1);
     }
 
-    buildDataset(dimention = null) {
-        if (dimention) {
-            this.viewDimension = dimention;
-        }
+    
 
-        this.chartOption.dataset = {
-            dimensions: [this.reportConfig.CompareBy[0].Property, this.viewDimension],
-            source: this.items
-        };
-        this.loadChart();
+    onViewDimensionChange(dimension){
+        this.viewDimension = dimension;
     }
 
-    loadChart() {
-        // Set show full chart options
-        if (this.showFullChart) {
-            this.chartOption.legend = { show: true, padding: [16, 16, 16, 16], textStyle: { color: lib.getCssVariableValue('--ion-color-dark') } };
-            this.chartOption.series[0].label = { show: true, formatter: '{b}: {@' + this.viewDimension + '} ({d}%)' };
-            this.chartOption.series[0].radius = ['40%', '60%'];
-            this.chartOption.series[0].itemStyle = { borderRadius: 10, borderColor: 'transparent', borderWidth: 2 };
-        }
-        else {
-            this.chartOption.legend = { show: false };
-            this.chartOption.series[0].label = { show: false };
-            this.chartOption.series[0].radius = ['50%', '80%'];
-            this.chartOption.series[0].itemStyle = { borderRadius: 2, borderColor: 'transparent', borderWidth: 1 };
-        }
-
-        this.myChart?.setOption(this.chartOption);
-    }
 
     onActive(e) {
         console.log(this.selectedItems);
-
         console.log(e);
     }
 

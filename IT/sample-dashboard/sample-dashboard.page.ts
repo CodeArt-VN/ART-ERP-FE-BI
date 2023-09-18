@@ -2,8 +2,10 @@ import { Location } from '@angular/common';
 import { Component } from '@angular/core';
 import { AlertController, LoadingController, ModalController, NavController, PopoverController } from '@ionic/angular';
 import { CompactType, DisplayGrid, Draggable, GridType, GridsterConfig, GridsterItem, PushDirections, Resizable } from 'angular-gridster2';
+import { ReportConfig } from 'src/app/models/options-interface';
 import { PageBase } from 'src/app/page-base';
 import { EnvService } from 'src/app/services/core/env.service';
+import { ReportService } from 'src/app/services/report.service';
 import { BRA_BranchProvider, WMS_ZoneProvider } from 'src/app/services/static/services.service';
 
 interface Safe extends GridsterConfig {
@@ -20,11 +22,13 @@ interface Safe extends GridsterConfig {
 })
 export class SampleDashboardPage extends PageBase {
     options: Safe;
-    dashboard: Array<GridsterItem>;
+    items: Array<GridsterItem>;
+    isAddReportModalOpen = false;
 
 
     constructor(
-        public pageProvider: WMS_ZoneProvider,
+        public rpt: ReportService,
+
         public branchProvider: BRA_BranchProvider,
         public modalController: ModalController,
         public popoverCtrl: PopoverController,
@@ -35,128 +39,107 @@ export class SampleDashboardPage extends PageBase {
         public location: Location,
     ) {
         super();
+        this.pageConfig.isDesignMode = false;
+
+        
     }
 
-
-
-    ngOnInit() {
+    preLoadData(event?: any): void {
         this.options = {
-            gridType: GridType.Fit,
-            compactType: CompactType.None,
-            margin: 10,
-            outerMargin: true,
-            outerMarginTop: null,
-            outerMarginRight: null,
-            outerMarginBottom: null,
-            outerMarginLeft: null,
-            useTransformPositioning: true,
+            itemChangeCallback: SampleDashboardPage.itemChange,
+            //initCallback: SampleDashboardPage.initCallback,
+
+            displayGrid: DisplayGrid.None,
+            margin: 16,
             mobileBreakpoint: 640,
-            useBodyForBreakpoint: false,
-            minCols: 1,
-            maxCols: 100,
+            gridType: GridType.VerticalFixed,
+            fixedRowHeight: 340,
+            keepFixedHeightInMobile: true,
+            setGridSize: true,
+
+            //enableBoundaryControl: true,
+            draggable: { enabled: false },
+            resizable: { enabled: false },
+            pushItems: false,
+            pushDirections: { north: true, east: true, south: true, west: true },
+            swap: true,
+
+            minCols: 6,
+            maxCols: 6,
             minRows: 1,
             maxRows: 100,
-            maxItemCols: 100,
-            minItemCols: 1,
-            maxItemRows: 100,
-            minItemRows: 1,
-            maxItemArea: 2500,
-            minItemArea: 1,
-            defaultItemCols: 1,
-            defaultItemRows: 1,
-            fixedColWidth: 105,
-            fixedRowHeight: 105,
-            keepFixedHeightInMobile: false,
-            keepFixedWidthInMobile: false,
-            scrollSensitivity: 10,
-            scrollSpeed: 20,
-            enableEmptyCellClick: false,
-            enableEmptyCellContextMenu: false,
-            enableEmptyCellDrop: false,
-            enableEmptyCellDrag: false,
-            enableOccupiedCellDrop: false,
-            emptyCellDragMaxCols: 50,
-            emptyCellDragMaxRows: 50,
-            ignoreMarginInRow: false,
-            draggable: {
-                enabled: true
-            },
-            resizable: {
-                enabled: true
-            },
-            swap: false,
-            pushItems: true,
-            disablePushOnDrag: false,
-            disablePushOnResize: false,
-            pushDirections: { north: true, east: true, south: true, west: true },
-            pushResizeItems: false,
-            displayGrid: DisplayGrid.Always,
-            disableWindowResize: false,
-            disableWarnings: false,
-            scrollToNewItems: false
         };
 
-        this.dashboard = [
-            { cols: 2, rows: 1, y: 0, x: 0 },
-            { cols: 2, rows: 2, y: 0, x: 2, hasContent: true },
-            { cols: 1, rows: 1, y: 0, x: 4 },
-            { cols: 1, rows: 1, y: 2, x: 5 },
-            { cols: 1, rows: 1, y: 1, x: 0 },
-            { cols: 1, rows: 1, y: 1, x: 0 },
-            {
-                cols: 2,
-                rows: 2,
-                y: 3,
-                x: 5,
-                minItemRows: 2,
-                minItemCols: 2,
-                label: 'Min rows & cols = 2'
-            },
-            {
-                cols: 2,
-                rows: 2,
-                y: 2,
-                x: 0,
-                maxItemRows: 2,
-                maxItemCols: 2,
-                label: 'Max rows & cols = 2'
-            },
-            {
-                cols: 2,
-                rows: 1,
-                y: 2,
-                x: 2,
-                dragEnabled: true,
-                resizeEnabled: true,
-                label: 'Drag&Resize Enabled'
-            },
-            {
-                cols: 1,
-                rows: 1,
-                y: 2,
-                x: 4,
-                dragEnabled: false,
-                resizeEnabled: false,
-                label: 'Drag&Resize Disabled'
-            },
-            { cols: 1, rows: 1, y: 2, x: 6 }
+        this.items = [
+            { cols: 2, rows: 1, y: 0, x: 0, IDReport: 2, Id: 1 },
+            { cols: 4, rows: 1, y: 0, x: 2, IDReport: 1, Id: 2 },
+
+            // { cols: 2, rows: 2, y: 2, x: 0, minItemRows: 2, minItemCols: 2, maxItemRows: 3, maxItemCols: 4, label: 'Min rows & cols = 2', Id: 1 },
         ];
+
+        super.loadedData(event);
     }
 
-    changedOptions(): void {
+    ionViewDidEnter() {
+        super.ionViewDidEnter();
+
+        //Resize grid when parent dom resize
+		var chartDom = document.getElementById('dashboard');
+		new ResizeObserver(() => this.options?.api.resize()).observe(chartDom);
+	}
+
+    /**
+     * On change dashboard
+     * @param item Report item
+     * @param itemComponent The component
+     */
+    static itemChange(item, itemComponent) {
+        console.info('itemChanged', item, itemComponent);
+    }
+
+    static itemResize(item, itemComponent) {
+        console.info('itemResized', item, itemComponent);
+    }
+
+    static initCallback(ev) {
+        console.log(ev);
+    }
+
+    /**
+     * Toggle drag and resize mode to edit dashboard
+     */
+    toggleDesign(): void {
         if (this.options.api && this.options.api.optionsChanged) {
+
+            this.options.draggable.enabled = !this.options.draggable.enabled;
+            this.options.resizable.enabled = !this.options.resizable.enabled;
+            
+            this.options.displayGrid = this.options.resizable.enabled? DisplayGrid.Always: DisplayGrid.None;
+            
+            
             this.options.api.optionsChanged();
         }
     }
 
-    removeItem($event: MouseEvent | TouchEvent, item): void {
-        $event.preventDefault();
-        $event.stopPropagation();
-        this.dashboard.splice(this.dashboard.indexOf(item), 1);
+    /**
+     * Remove report from dashboard
+     * @param item report item
+     */
+    removeItem(item): void {
+        // $event.preventDefault();
+        // $event.stopPropagation();
+        this.items.splice(this.items.indexOf(item), 1);
     }
 
-    addItem(): void {
-        this.dashboard.push({ x: 0, y: 0, cols: 1, rows: 1 });
+    /**
+     * Add report to dashboard
+     */
+    addItem(report: ReportConfig): void {
+        this.isAddReportModalOpen = false;
+        this.items.push({ x: null, y: null, cols: 2, rows: 1, IDReport: report.ReprotInfo.Id, Id: 0 });
     }
 
+    gotoReport(ev){
+        this.nav('bill-status-report');
+    }
 }

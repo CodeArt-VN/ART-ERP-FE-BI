@@ -49,12 +49,12 @@
 							</ion-col>
 							<ion-col size="12" size-sm="12" size-md="3" size-xl="3">
 								<ng-container *ngIf="PaymentChartData.length">
-									<app-pie-chart [ChartInfo]="Chart1" [ChartData]="PaymentChartData"></app-pie-chart>
+									<app-pie-chart-old [ChartInfo]="Chart1" [ChartData]="PaymentChartData"></app-pie-chart-old>
 								</ng-container>
 							</ion-col>
 							<ion-col size="12" size-sm="12" size-md="3" size-xl="3">
 								<ng-container *ngIf="PaymentAmountChartData.length">
-									<app-pie-chart [ChartInfo]="Chart2" [ChartData]="PaymentAmountChartData"></app-pie-chart>
+									<app-pie-chart-old [ChartInfo]="Chart2" [ChartData]="PaymentAmountChartData"></app-pie-chart-old>
 								</ng-container>
 							</ion-col>
 						</ion-row>

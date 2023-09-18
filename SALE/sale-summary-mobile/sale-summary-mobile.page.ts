@@ -22,14 +22,20 @@ export class SaleSummaryMobilePage extends PageBase {
 		ShowSpinner: true
 	}
 
-	totalPieChartData = [];
-	totalPieChartLabel = [];
+	pieChartDataset = {source: []};
 
-	ChartStyle2 = {
-        width: '100%',
-        'min-height': '300px',
-    }
-	
+	colorArray = ['#FF3333', '#FF9933', '#FFFF33', '#99FF33', '#33FF33', '#33FF99', '#33FFFF', '#3399FF', '#3333FF', '#9933FF', '#FF33FF', '#FF3399', '#FF9999', '#FFCC99', '#FFFF99', '#CCFF99', '#99FF99', '#99FFCC', '#99FFFF', '#99CCFF', '#9999FF', '#CC99FF', '#FF99FF', '#FF99CC', '#CC0000', '#CC6600', '#CCCC00', '#66CC00', '#00CC00', '#00CC66', '#00CCCC', '#006600', '#0000CC', '#6600CC', '#CC00CC', '#CC0066', '#FF9999', '#FFCC99', '#FFFF99', '#CCFF99', '#99FF99', '#99FFCC', '#99FFFF', '#99CCFF', '#9999FF', '#CC99FF', '#FF99FF', '#FF99CC', '#FF3333', '#FF9933', '#FFFF33', '#99FF33', '#33FF33', '#33FF99', '#33FFFF', '#3399FF', '#3333FF', '#9933FF', '#FF33FF', '#FF3399', '#CC0000', '#CC6600', '#CCCC00', '#66CC00', '#00CC00', '#00CC66', '#00CCCC', '#006600', '#0000CC', '#6600CC', '#CC00CC', '#CC0066', '#FF9999', '#FFCC99', '#FFFF99', '#CCFF99', '#99FF99', '#99FFCC', '#99FFFF', '#99CCFF', '#9999FF', '#CC99FF', '#FF99FF', '#FF99CC', '#FF3333', '#FF9933', '#FFFF33', '#99FF33', '#33FF33', '#33FF99', '#33FFFF', '#3399FF', '#3333FF', '#9933FF', '#FF33FF', '#FF3399', '#CC0000', '#CC6600', '#CCCC00', '#66CC00', '#00CC00', '#00CC66', '#00CCCC', '#006600', '#0000CC', '#6600CC', '#CC00CC', '#CC0066', '#FF9999', '#FFCC99', '#FFFF99', '#CCFF99', '#99FF99', '#99FFCC', '#99FFFF', '#99CCFF', '#9999FF', '#CC99FF', '#FF99FF', '#FF99CC', '#FF3333', '#FF9933', '#FFFF33', '#99FF33', '#33FF33', '#33FF99', '#33FFFF', '#3399FF', '#3333FF', '#9933FF', '#FF33FF', '#FF3399', '#CC0000', '#CC6600', '#CCCC00', '#66CC00', '#00CC00', '#00CC66', '#00CCCC', '#006600', '#0000CC', '#6600CC', '#CC00CC', '#CC0066',];
+	pieChartOption: echarts.EChartsOption = {
+		color: this.colorArray,
+		legend: { show: false },
+		series: [{
+			type: 'pie', name: '',
+			encode: {
+				itemName: 'name', value: 'value'
+			},
+			label: { show: false }
+		}]
+	}
 
 
 	reportQuery: any = {
@@ -62,9 +68,11 @@ export class SaleSummaryMobilePage extends PageBase {
 	) {
 		super();
 		let queryDate = new Date();
-		// queryDate.setDate(queryDate.getDate() - 1);
-		this.reportQuery.fromDate = lib.dateFormat(queryDate, 'yyyy-mm-dd');
 		this.reportQuery.toDate = lib.dateFormat(queryDate, 'yyyy-mm-dd');
+		//queryDate.setDate(queryDate.getDate() - 10);
+		//this.reportQuery.IDOwner = 176;
+		this.reportQuery.fromDate = lib.dateFormat(queryDate, 'yyyy-mm-dd');
+
 
 	}
 
@@ -83,17 +91,18 @@ export class SaleSummaryMobilePage extends PageBase {
 
 	}
 
-	reload(ev:any) {
-		this.totalPieChartData = [];
+	reload(ev: any) {
+		this.pieChartDataset.source = [];
+		this.pieChartDataset = { ...this.pieChartDataset };
 		this.preLoadData(ev);
 	}
 
-    translateResult;
+	translateResult;
 	currentPopover = null;
 	async presentPopover(ev: any) {
-        this.translate.get('erp.app.pages.bi.sales-report-mobile.date-range-label').subscribe((message: string) => {
-            this.translateResult = message;
-        });
+		this.translate.get('erp.app.pages.bi.sales-report-mobile.date-range-label').subscribe((message: string) => {
+			this.translateResult = message;
+		});
 		let popover = await this.popoverCtrl.create({
 			component: PopoverPage,
 			componentProps: {
@@ -150,7 +159,7 @@ export class SaleSummaryMobilePage extends PageBase {
 					this.env.showMessage(err.message, 'danger');
 				}
 				else {
-					this.env.showTranslateMessage('erp.app.pages.approval.request.message.can-not-get-data','danger');
+					this.env.showTranslateMessage('erp.app.pages.approval.request.message.can-not-get-data', 'danger');
 				}
 				this.submitAttempt = false;
 				this.refresh();
@@ -250,8 +259,6 @@ export class SaleSummaryMobilePage extends PageBase {
 					it.TotalDiscountText = lib.currencyFormatFriendly(it.TotalDiscount);
 					it.TotalAfterDiscountText = lib.currencyFormatFriendly(it.TotalAfterDiscount);
 					it.TotalAfterTaxText = lib.currencyFormatFriendly(it.TotalAfterTax);
-
-
 				});
 
 			});
@@ -273,7 +280,7 @@ export class SaleSummaryMobilePage extends PageBase {
 					this.env.showMessage(err.message, 'danger');
 				}
 				else {
-					this.env.showTranslateMessage('erp.app.pages.sale.sale-order-mobile.can-not-get-data','danger');
+					this.env.showTranslateMessage('erp.app.pages.sale.sale-order-mobile.can-not-get-data', 'danger');
 				}
 				this.submitAttempt = false;
 				this.refresh();
@@ -284,8 +291,8 @@ export class SaleSummaryMobilePage extends PageBase {
 		this.items = resp;
 		this.items.forEach(i => {
 			i.OriginalTotalAfterDiscountText = lib.currencyFormat(i.OriginalTotalAfterDiscount);
-			i.TotalAfterDiscountText = lib.formatMoney(i.TotalAfterDiscount,0);
-			i.TotalAfterTaxText = lib.formatMoney(i.TotalAfterTax,0);
+			i.TotalAfterDiscountText = lib.formatMoney(i.TotalAfterDiscount, 0);
+			i.TotalAfterTaxText = lib.formatMoney(i.TotalAfterTax, 0);
 		});
 	}
 
@@ -312,30 +319,23 @@ export class SaleSummaryMobilePage extends PageBase {
 			}
 		}
 
-		var data = {
-			labels: labelsArray,
-			display: 'auto',
-			datasets: [{
-				label: 'Doanh thu',
-				data: dataArray,
-				backgroundColor: this.colorArray,
-			}],
-			hoverOffset: 50,
-		};
 
+		this.pieChartDataset.source = [];
 		for (let idx = 0; idx < dataArray.length; idx++) {
-			let tempData = {value: dataArray[idx],name: labelsArray[idx]};
-			this.totalPieChartData.push(tempData);
+			let tempData = { value: dataArray[idx], name: labelsArray[idx] };
+			this.pieChartDataset.source.push(tempData);
 		}
+
+		this.pieChartDataset = { ...this.pieChartDataset };
 	}
 
 	myHeaderFn(record, recordIndex, records) {
 
 		if (recordIndex == 0 || record.IDSaleOrder != records[recordIndex - 1].IDSaleOrder) {
-			let sum = lib.sumInArray(records.filter(d=>d.IDSaleOrder == record.IDSaleOrder),'OriginalTotalAfterDiscount');
+			let sum = lib.sumInArray(records.filter(d => d.IDSaleOrder == record.IDSaleOrder), 'OriginalTotalAfterDiscount');
 			return {
-				ContactCode : record.ContactCode,
-				ContactName : record.ContactName,
+				ContactCode: record.ContactCode,
+				ContactName: record.ContactName,
 				OrderDate: lib.dateFormat(record.OrderDate),
 				IDSaleOrder: record.IDSaleOrder,
 				OriginalTotalAfterDiscount: sum,
@@ -362,22 +362,10 @@ export class SaleSummaryMobilePage extends PageBase {
 
 	//colorArray = ['#FF9999', '#FFCC99', '#FFFF99', '#CCFF99', '#99FF99', '#99FFCC', '#99FFFF', '#99CCFF', '#9999FF', '#CC99FF', '#FF99FF', '#FF99CC', '#FF3333', '#FF9933', '#FFFF33', '#99FF33', '#33FF33', '#33FF99', '#33FFFF', '#3399FF', '#3333FF', '#9933FF', '#FF33FF', '#FF3399', '#CC0000', '#CC6600', '#CCCC00', '#66CC00', '#00CC00', '#00CC66', '#00CCCC', '#006600', '#0000CC', '#6600CC', '#CC00CC', '#CC0066', '#FF9999', '#FFCC99', '#FFFF99', '#CCFF99', '#99FF99', '#99FFCC', '#99FFFF', '#99CCFF', '#9999FF', '#CC99FF', '#FF99FF', '#FF99CC', '#FF3333', '#FF9933', '#FFFF33', '#99FF33', '#33FF33', '#33FF99', '#33FFFF', '#3399FF', '#3333FF', '#9933FF', '#FF33FF', '#FF3399', '#CC0000', '#CC6600', '#CCCC00', '#66CC00', '#00CC00', '#00CC66', '#00CCCC', '#006600', '#0000CC', '#6600CC', '#CC00CC', '#CC0066', '#FF9999', '#FFCC99', '#FFFF99', '#CCFF99', '#99FF99', '#99FFCC', '#99FFFF', '#99CCFF', '#9999FF', '#CC99FF', '#FF99FF', '#FF99CC', '#FF3333', '#FF9933', '#FFFF33', '#99FF33', '#33FF33', '#33FF99', '#33FFFF', '#3399FF', '#3333FF', '#9933FF', '#FF33FF', '#FF3399', '#CC0000', '#CC6600', '#CCCC00', '#66CC00', '#00CC00', '#00CC66', '#00CCCC', '#006600', '#0000CC', '#6600CC', '#CC00CC', '#CC0066', '#FF9999', '#FFCC99', '#FFFF99', '#CCFF99', '#99FF99', '#99FFCC', '#99FFFF', '#99CCFF', '#9999FF', '#CC99FF', '#FF99FF', '#FF99CC', '#FF3333', '#FF9933', '#FFFF33', '#99FF33', '#33FF33', '#33FF99', '#33FFFF', '#3399FF', '#3333FF', '#9933FF', '#FF33FF', '#FF3399', '#CC0000', '#CC6600', '#CCCC00', '#66CC00', '#00CC00', '#00CC66', '#00CCCC', '#006600', '#0000CC', '#6600CC', '#CC00CC', '#CC0066',]
 
-	colorArray = ['#FF3333', '#FF9933', '#FFFF33', '#99FF33', '#33FF33', '#33FF99', '#33FFFF', '#3399FF', '#3333FF', '#9933FF', '#FF33FF', '#FF3399', '#FF9999', '#FFCC99', '#FFFF99', '#CCFF99', '#99FF99', '#99FFCC', '#99FFFF', '#99CCFF', '#9999FF', '#CC99FF', '#FF99FF', '#FF99CC', '#CC0000', '#CC6600', '#CCCC00', '#66CC00', '#00CC00', '#00CC66', '#00CCCC', '#006600', '#0000CC', '#6600CC', '#CC00CC', '#CC0066', '#FF9999', '#FFCC99', '#FFFF99', '#CCFF99', '#99FF99', '#99FFCC', '#99FFFF', '#99CCFF', '#9999FF', '#CC99FF', '#FF99FF', '#FF99CC', '#FF3333', '#FF9933', '#FFFF33', '#99FF33', '#33FF33', '#33FF99', '#33FFFF', '#3399FF', '#3333FF', '#9933FF', '#FF33FF', '#FF3399', '#CC0000', '#CC6600', '#CCCC00', '#66CC00', '#00CC00', '#00CC66', '#00CCCC', '#006600', '#0000CC', '#6600CC', '#CC00CC', '#CC0066', '#FF9999', '#FFCC99', '#FFFF99', '#CCFF99', '#99FF99', '#99FFCC', '#99FFFF', '#99CCFF', '#9999FF', '#CC99FF', '#FF99FF', '#FF99CC', '#FF3333', '#FF9933', '#FFFF33', '#99FF33', '#33FF33', '#33FF99', '#33FFFF', '#3399FF', '#3333FF', '#9933FF', '#FF33FF', '#FF3399', '#CC0000', '#CC6600', '#CCCC00', '#66CC00', '#00CC00', '#00CC66', '#00CCCC', '#006600', '#0000CC', '#6600CC', '#CC00CC', '#CC0066', '#FF9999', '#FFCC99', '#FFFF99', '#CCFF99', '#99FF99', '#99FFCC', '#99FFFF', '#99CCFF', '#9999FF', '#CC99FF', '#FF99FF', '#FF99CC', '#FF3333', '#FF9933', '#FFFF33', '#99FF33', '#33FF33', '#33FF99', '#33FFFF', '#3399FF', '#3333FF', '#9933FF', '#FF33FF', '#FF3399', '#CC0000', '#CC6600', '#CCCC00', '#66CC00', '#00CC00', '#00CC66', '#00CCCC', '#006600', '#0000CC', '#6600CC', '#CC00CC', '#CC0066',];
 
 
-	totalPieChart = {
-        Id: 'totalPieChart',
-        Title: '',
-        Subtext: '',
-        SeriesName: '',
 
-        Legend: false,
-		ItemLabel: false,
-		ColorTemplate: this.colorArray,
-        Data: this.totalPieChartData,
-        Type: 'Pie',
-        Style: this.ChartStyle2
-    }
+
 
 }
 
