@@ -9,7 +9,8 @@ export const BIRoutes: Routes = [
 
 	//IT reports
 	{ path: 'sample-dashboard', loadChildren: () => import('./IT/sample-dashboard/sample-dashboard.module').then(m => m.SampleDashboardPageModule), canActivate: [AuthGuard] },
-	{ path: 'sample-report', loadChildren: () => import('./IT/sample-report/sample-report.module').then(m => m.SampleReportPageModule), canActivate: [AuthGuard] },
+	{ path: 'sample-report', loadChildren: () => import('./IT/dynamic-report/dynamic-report.module').then(m => m.DynamicReportPageModule), canActivate: [AuthGuard] },
+	//{ path: 'sample-report', loadChildren: () => import('./IT/sample-report/sample-report.module').then(m => m.SampleReportPageModule), canActivate: [AuthGuard] },
 
 
 	//HRM reports

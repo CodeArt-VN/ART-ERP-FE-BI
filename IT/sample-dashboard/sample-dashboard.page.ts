@@ -2,7 +2,7 @@ import { Location } from '@angular/common';
 import { Component } from '@angular/core';
 import { AlertController, LoadingController, ModalController, NavController, PopoverController } from '@ionic/angular';
 import { CompactType, DisplayGrid, Draggable, GridType, GridsterConfig, GridsterItem, PushDirections, Resizable } from 'angular-gridster2';
-import { ReportConfig } from 'src/app/models/options-interface';
+import { BIReport, ReportDataConfig } from 'src/app/models/options-interface';
 import { PageBase } from 'src/app/page-base';
 import { EnvService } from 'src/app/services/core/env.service';
 import { ReportService } from 'src/app/services/report.service';
@@ -53,7 +53,7 @@ export class SampleDashboardPage extends PageBase {
             margin: 16,
             mobileBreakpoint: 640,
             gridType: GridType.VerticalFixed,
-            fixedRowHeight: 340,
+            fixedRowHeight: 162,
             keepFixedHeightInMobile: true,
             setGridSize: true,
 
@@ -71,8 +71,8 @@ export class SampleDashboardPage extends PageBase {
         };
 
         this.items = [
-            { cols: 2, rows: 1, y: 0, x: 0, IDReport: 2, Id: 1 },
-            { cols: 4, rows: 1, y: 0, x: 2, IDReport: 1, Id: 2 },
+            { cols: 2, rows: 2, y: 0, x: 0, IDReport: 2, Id: 1 },
+            { cols: 4, rows: 2, y: 0, x: 2, IDReport: 1, Id: 2 },
 
             // { cols: 2, rows: 2, y: 2, x: 0, minItemRows: 2, minItemCols: 2, maxItemRows: 3, maxItemCols: 4, label: 'Min rows & cols = 2', Id: 1 },
         ];
@@ -134,9 +134,9 @@ export class SampleDashboardPage extends PageBase {
     /**
      * Add report to dashboard
      */
-    addItem(report: ReportConfig): void {
+    addItem(report: BIReport): void {
         this.isAddReportModalOpen = false;
-        this.items.push({ x: null, y: null, cols: 2, rows: 1, IDReport: report.ReprotInfo.Id, Id: 0 });
+        this.items.push({ x: null, y: null, cols: 2, rows: 1, IDReport: report.Id, Id: 0 });
     }
 
     gotoReport(ev){

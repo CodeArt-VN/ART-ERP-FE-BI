@@ -13,10 +13,12 @@ gridster {
     gridster-item {
         background-color: transparent;
         overflow: visible;
-        // box-shadow: 0 7px 14px 0 rgba(85,110,145,0), 0 1px 3px 0 rgba(0,0,0,.1), 0 5px 10px 0 rgba(0,0,0,.08), inset 0 -1px 0 0 rgba(0,0,0,.2);
+        
+        
         &:hover {
-            ::ng-deep .gridster-item-resizable-handler.handle-e,
-            ::ng-deep .gridster-item-resizable-handler.handle-w {
+            ::ng-deep .gridster-item-resizable-handler.handle-e
+            //,::ng-deep .gridster-item-resizable-handler.handle-w 
+            {
                 visibility: visible;
             }
 
@@ -25,9 +27,10 @@ gridster {
             }
         }
         ::ng-deep .gridster-item-resizable-handler.handle-e,
-        ::ng-deep .gridster-item-resizable-handler.handle-w,
-        ::ng-deep .gridster-item-resizable-handler.handle-s,
-        ::ng-deep .gridster-item-resizable-handler.handle-n {
+        //::ng-deep .gridster-item-resizable-handler.handle-w,
+        ::ng-deep .gridster-item-resizable-handler.handle-s
+        //::ng-deep .gridster-item-resizable-handler.handle-n 
+        {
             position: absolute;
 
             top: 50%;
@@ -72,8 +75,9 @@ gridster {
             }
         }
 
-        ::ng-deep .gridster-item-resizable-handler.handle-s,
-        ::ng-deep .gridster-item-resizable-handler.handle-n {
+        ::ng-deep .gridster-item-resizable-handler.handle-s
+        // ,::ng-deep .gridster-item-resizable-handler.handle-n 
+        {
             rotate: 90deg;
             left: 50%;
             margin-left: -8px;
@@ -85,25 +89,28 @@ gridster {
             margin: -32px -8px 0px 0px;
         }
 
-        ::ng-deep .gridster-item-resizable-handler.handle-w {
-            right: auto;
-            left: 0;
-            margin: -32px 0px 0px -8px;
-        }
+        // ::ng-deep .gridster-item-resizable-handler.handle-w {
+        //     right: auto;
+        //     left: 0;
+        //     margin: -32px 0px 0px -8px;
+        // }
 
         ::ng-deep .gridster-item-resizable-handler.handle-s{
             top: auto;
             bottom: -32px;
         }
-        ::ng-deep .gridster-item-resizable-handler.handle-n{
-            top: -32px;
-        }
+        // ::ng-deep .gridster-item-resizable-handler.handle-n{
+        //     top: -32px;
+        // }
+        
 
         &.gridster-item-resizing,
         &.gridster-item-moving {
             z-index: 20;
             box-shadow: none;// 0 0 5px 5px var(--ion-color-primary);
         }
+
+        
     }
 
     ::ng-deep gridster-preview {

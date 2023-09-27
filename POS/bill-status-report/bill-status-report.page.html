@@ -23,9 +23,9 @@
 		<app-data-table style="width: fit-content;min-width: calc(100% - 32px);" [rows]="items" [trackBy]="'Count'" [(selectedRows)]="selectedItems" [showSpinner]="pageConfig.showSpinner" class="box-shadow ion-margin-horizontal" (activate)="onActive($event)">
 			<datatable-column [checkbox]="true" name=""></datatable-column>
 			<datatable-column class="col-id" name="#"></datatable-column>
-			<datatable-column class="col-name" [sticky]="true" name="{{c.Property}}" [property]="c.Property" *ngFor="let c of reportConfig.CompareBy"></datatable-column>
-			<datatable-column class="col-date" name="Interval" [property]="reportConfig.Interval.Title"></datatable-column>
-			<datatable-column class="col-money" [class]="viewDimension == (m.Title || m.Property) ? 'selected':'' " name="{{(m.Title || m.Property)}}" [property]="m.Title || m.Property" *ngFor="let m of reportConfig.MeasureBy">
+			<datatable-column class="col-name" [sticky]="true" name="{{c.Property}}" [property]="c.Property" *ngFor="let c of reportConfig.DataConfig.CompareBy"></datatable-column>
+			<datatable-column class="col-date" name="Interval" [property]="reportConfig.DataConfig.Interval.Title"></datatable-column>
+			<datatable-column class="col-money" [class]="viewDimension == (m.Title || m.Property) ? 'selected':'' " name="{{(m.Title || m.Property)}}" [property]="m.Title || m.Property" *ngFor="let m of reportConfig.DataConfig.MeasureBy">
 				<ng-template let-value="value" datatable-cell-template>
 					{{ value | number}}
 				</ng-template>

@@ -6,7 +6,7 @@ import { Location } from '@angular/common';
 import * as echarts from 'echarts';
 import { lib } from 'src/app/services/static/global-functions';
 import { ReportService } from 'src/app/services/report.service';
-import { ReportConfig } from 'src/app/models/options-interface';
+import { ReportDataConfig } from 'src/app/models/options-interface';
 
 @Component({
     selector: 'app-sample-report',
@@ -41,7 +41,7 @@ export class SampleReportPage extends PageBase {
         ]
     }
 
-    reportConfig: ReportConfig = {
+    reportConfig: ReportDataConfig = {
         ReprotInfo: { Id: 1, Code: 'SampleReport', Name: 'POS SO Status', Type: 'pie' },
         TimeFrame: { Dimension: 'OrderDate', From: { Type: 'Relative', IsPastDate: true, Period: 'Hour', Amount: 7 }, To: { Type: 'Relative', IsPastDate: true, Period: 'Day', Amount: 0 } },
         CompareTo: { Type: 'Relative', IsPastDate: true, Period: 'Week', Amount: 1 },
@@ -146,7 +146,7 @@ export class SampleReportPage extends PageBase {
         }
 
         this.chartOption.dataset = {
-            dimensions: [this.reportConfig.CompareBy[0].Property, this.viewDimension],
+            dimensions: [this.reportConfig.DataConfig.CompareBy[0].Property, this.viewDimension],
             source: this.items
         };
         this.loadChart();
