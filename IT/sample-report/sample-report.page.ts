@@ -6,7 +6,7 @@ import { Location } from '@angular/common';
 import * as echarts from 'echarts';
 import { lib } from 'src/app/services/static/global-functions';
 import { ReportService } from 'src/app/services/report.service';
-import { ReportDataConfig } from 'src/app/models/options-interface';
+import { BIReport, ReportDataConfig } from 'src/app/models/options-interface';
 
 @Component({
     selector: 'app-sample-report',
@@ -41,52 +41,8 @@ export class SampleReportPage extends PageBase {
         ]
     }
 
-    reportConfig: ReportDataConfig = {
-        ReprotInfo: { Id: 1, Code: 'SampleReport', Name: 'POS SO Status', Type: 'pie' },
-        TimeFrame: { Dimension: 'OrderDate', From: { Type: 'Relative', IsPastDate: true, Period: 'Hour', Amount: 7 }, To: { Type: 'Relative', IsPastDate: true, Period: 'Day', Amount: 0 } },
-        CompareTo: { Type: 'Relative', IsPastDate: true, Period: 'Week', Amount: 1 },
-        Schema: { Id: 1, Code: 'SALE_Order', Name: 'Sale orders' },
-        Transform: {
-            Filter: {
-                Dimension: 'logical', Operator: 'AND',
-                Logicals: [
-                    { Dimension: 'IDBranch', Operator: 'IN', Value: this.env.selectedBranchAndChildren },
-                    { Dimension: 'Status', Operator: 'IN', Value: JSON.stringify(['New', 'Confirmed', 'Scheduled', 'Picking', 'Delivered', 'Done', 'Cancelled', 'InDelivery']) }, //'Splitted', 'Merged',
-                    { Dimension: 'CalcTotal', Operator: '>', Value: '0' },
-                    // { Dimension: 'OrderDate', Operator: '>=', Value: '2023-08-19' }, auto from timeframe
-                    // { Dimension: 'OrderDate', Operator: '<=', Value: new Date() },
-                    {
-                        Dimension: 'logical', Operator: 'OR', Logicals: [
-                            { Dimension: 'Type', Operator: '=', Value: 'POSOrder' },
-                            // { Dimension: 'Type', Operator: '=', Value: 'FMCG' },
-                        ]
-                    },
-                ]
-            },
-        },
-        Interval: { Property: 'OrderDate', Type: 'Day', Title: 'OrderDate-Hour' },
-        CompareBy: [
-            //{ Property: 'IDBranch' },
-            { Property: 'Status' },
-        ],
-        //isGroupByCompareProperties: true, //=> chưa dùng đến
-        MeasureBy: [
-            { Property: 'Id', Method: 'count', Title: 'Count' },
-
-            // { Property: 'TotalBeforeDiscount', Method: 'sum', Title: 'BeforeDiscount' },
-            // { Property: 'TotalDiscount', Method: 'sum', Title: 'TotalDiscount' },
-            // { Property: 'TotalAfterDiscount', Method: 'sum', Title: 'AfterDiscount' },
-            // { Property: 'Tax', Method: 'sum', Title: 'Tax' },
-            // { Property: 'TotalAfterTax', Method: 'sum', Title: 'TotalAfterTax' },
-            // { Property: 'Received', Method: 'sum', Title: 'Received' },
-            // { Property: 'Debt', Method: 'sum', Title: 'Debt' },
-            // { Property: 'CalcTotalAdditions', Method: 'sum', Title: 'Additions' },
-            { Property: 'CalcTotal', Method: 'sum', Title: 'CalcTotal' },
-        ]
-    }
-
-
-
+    reportConfig: BIReport;
+    
 
     constructor(
         public pageProvider: ReportService,
@@ -181,3 +137,141 @@ export class SampleReportPage extends PageBase {
 
 
 }
+
+
+/*
+var legendList = ['New', 'Done', 'Cancelled'];
+
+option = {
+  backgroundColor: '',
+  textStyle: { color: '#1b1a16' },
+  legend: {
+    show: true,
+    bottom: 0,
+    type: 'scroll',
+    padding: [16, 16, 16, 16],
+    icon: 'circle',
+    textStyle: { color: '#1b1a16' },
+    //data: legendList.map(m=>{return {name: m}})
+  },
+  tooltip: {
+    appendToBody: true,
+    extraCssText: 'width:auto; max-width: 250px; white-space:pre-wrap;',
+    textStyle: { color: '#1b1a16' },
+    
+    trigger: 'axis',
+    axisPointer: {
+      type: 'shadow'
+    }
+    
+  },
+  toolbox: {
+    show: false,
+    orient: 'vertical',
+    right: 16,
+    itemSize: 20,
+    feature: { magicType: { type: ['line', 'bar', 'stack'] }, saveAsImage: {} },
+    iconStyle: { color: '#9dbc01', borderColor: '#9dbc01' }
+  },
+  xAxis: { type: 'date' },
+  yAxis: { type: 'value' },
+  series: [
+    {
+      name: 'New',
+      type: 'bar',
+      stack: 'x',
+      encode: { x: 'OrderDate-Hour', y: 'CalcTotal' },
+      datasetIndex: 1
+    },
+    {
+      name: 'Done',
+      type: 'bar',
+      stack: 'x',
+      encode: { x: 'OrderDate-Hour', y: 'CalcTotal' },
+      datasetIndex: 2
+    },{
+      name: 'Cancelled',
+      type: 'bar',
+      stack: 'x',
+      encode: { x: 'OrderDate-Hour', y: 'CalcTotal' },
+      datasetIndex: 3
+    }
+  ],
+  dataset: [
+    {
+      dimensions: ['Status', 'OrderDate-Hour', 'CalcTotal'],
+      source: [
+        {
+          Status: 'Cancelled',
+          'OrderDate-Hour': '2023-09-13',
+          Count: 2,
+          CalcTotal: 494991
+        },
+        {
+          Status: 'Done',
+          'OrderDate-Hour': '2023-09-13',
+          Count: 2,
+          CalcTotal: 430920
+        },
+        {
+          Status: 'Done',
+          'OrderDate-Hour': '2023-09-14',
+          Count: 2,
+          CalcTotal: 504504
+        },
+        {
+          Status: 'Done',
+          'OrderDate-Hour': '2023-09-15',
+          Count: 3,
+          CalcTotal: 27783
+        },
+        {
+          Status: 'Cancelled',
+          'OrderDate-Hour': '2023-09-16',
+          Count: 1,
+          CalcTotal: 164430
+        },
+        {
+          Status: 'Cancelled',
+          'OrderDate-Hour': '2023-09-19',
+          Count: 1,
+          CalcTotal: 164430
+        },
+        {
+          Status: 'Done',
+          'OrderDate-Hour': '2023-09-19',
+          Count: 1,
+          CalcTotal: 18144
+        },
+        {
+          Status: 'New',
+          'OrderDate-Hour': '2023-09-19',
+          Count: 1,
+          CalcTotal: 73710
+        }
+      ]
+    },
+    {
+      transform: {
+        type: 'filter',
+        config: { dimension: 'Status', value: 'New' }
+      }
+    },
+    {
+      transform: {
+        type: 'filter',
+        config: { dimension: 'Status', value: 'Done' }
+      }
+    },
+    {
+      transform: {
+        type: 'filter',
+        config: { dimension: 'Status', value: 'Cancelled' }
+      }
+    },
+    
+    
+    
+  ]
+};
+*/

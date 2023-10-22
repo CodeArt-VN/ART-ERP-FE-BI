@@ -1,0 +1,33 @@
+app-report-chart {
+	transition: all 150ms linear 0s;
+	
+	&.full {
+		position: relative;
+		right: auto;
+		cursor: auto;
+		width: 100%;
+		min-height: 590px;
+		height: auto;
+		background: var(--ion-color-tertiary-tint);
+		border-radius: 6px;
+		margin-top: 20px;
+	}
+
+	&.mini{
+		transition: all 150ms linear 0s;
+		position: absolute;
+		cursor: pointer;
+		height: 100px;
+		width: 200px;
+		right: 16px;
+		top: 0px;
+	}
+}
+
+
+
+
+::ng-deep .col-name{
+	min-width: 150px;
+	max-width: 50vw;
+}

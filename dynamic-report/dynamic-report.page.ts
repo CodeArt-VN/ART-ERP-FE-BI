@@ -7,13 +7,14 @@ import * as echarts from 'echarts';
 import { lib } from 'src/app/services/static/global-functions';
 import { ReportService } from 'src/app/services/report.service';
 import { BIReport, ReportDataConfig } from 'src/app/models/options-interface';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
-    selector: 'app-bill-status-report',
-    templateUrl: 'bill-status-report.page.html',
-    styleUrls: ['bill-status-report.page.scss']
+    selector: 'app-dynamic-report',
+    templateUrl: 'dynamic-report.page.html',
+    styleUrls: ['dynamic-report.page.scss']
 })
-export class BillStatusReportPage extends PageBase {
+export class DynamicReportPage extends PageBase {
     viewDimension = '';
 
     reportConfig: BIReport;
@@ -26,24 +27,28 @@ export class BillStatusReportPage extends PageBase {
         public loadingController: LoadingController,
         public env: EnvService,
         public navCtrl: NavController,
+        public route: ActivatedRoute,
         public location: Location,
     ) {
         super();
-        this.pageConfig.isShowFeature = true;
-        
+        //this.pageConfig.isShowFeature = true;
+        this.id = this.route.snapshot.paramMap.get('id');
     }
 
     preLoadData(event?: any): void {
-        this.reportConfig = this.pageProvider.getReportConfig(1);
+        this.reportConfig = this.pageProvider.getReportConfig(this.id, this.pageConfig.pageName);
         this.subscriptions.push(
-            this.pageProvider.regReportTrackingData(1).subscribe(ds => {
-                this.items = ds.data;
+            this.pageProvider.regReportTrackingData(this.reportConfig.Id).subscribe(ds => {
+                if (ds) {
+                    this.items = ds?.data;
+                }
+                
                 super.loadedData();
             }));
     }
 
     loadData(event?: any): void {
-        this.pageProvider.getReportData(1);
+        this.pageProvider.getReportData(this.reportConfig.Id);
         super.loadedData(event);
     }
 
@@ -62,7 +67,7 @@ export class BillStatusReportPage extends PageBase {
 
     onSave(config) {
         this.pageProvider.saveReportConfig(config);
-        this.pageProvider.getDatasetFromServer(1);
+        this.pageProvider.getDatasetFromServer(this.reportConfig.Id);
     }
 
     

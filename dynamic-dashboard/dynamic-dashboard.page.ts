@@ -15,12 +15,12 @@ interface Safe extends GridsterConfig {
 }
 
 @Component({
-    selector: 'app-sample-dashboard',
-    templateUrl: 'sample-dashboard.page.html',
-    styleUrls: ['sample-dashboard.page.scss'],
+    selector: 'app-dynamic-dashboard',
+    templateUrl: 'dynamic-dashboard.page.html',
+    styleUrls: ['dynamic-dashboard.page.scss'],
 
 })
-export class SampleDashboardPage extends PageBase {
+export class DynamicDashboardPage extends PageBase {
     @ViewChild('reportSearch') searchBar: IonSearchbar;
     options: Safe;
     items: Array<GridsterItem>;
@@ -48,6 +48,9 @@ export class SampleDashboardPage extends PageBase {
     }
 
     preLoadData(event?: any): void {
+
+
+
         this.item = {
             MinCols: 4,
             MaxCols: 4,
@@ -55,8 +58,8 @@ export class SampleDashboardPage extends PageBase {
             MaxRows: 100,
         };
         this.options = {
-            itemChangeCallback: SampleDashboardPage.itemChange,
-            //initCallback: SampleDashboardPage.initCallback,
+            itemChangeCallback: DynamicDashboardPage.itemChange,
+            //initCallback: DynamicDashboardPage.initCallback,
 
             displayGrid: DisplayGrid.None,
             margin: 16,
@@ -80,15 +83,37 @@ export class SampleDashboardPage extends PageBase {
         };
 
         this.items = [
-            { x: 0, y: 0, cols: 1, rows: 1, Id: 1, IDReport: 3 },
-            { x: 2, y: 0, cols: 3, rows: 1, Id: 2, IDReport: 1 },
-            { x: 0, y: 1, cols: 2, rows: 1, Id: 3, IDReport: 2 },
-            { x: 3, y: 1, cols: 2, rows: 1, Id: 4, IDReport: 4 },
+            {"x":0,"y":0,"cols":1,"rows":1,"IDReport":3,"Id":0},
+            {"x":1,"y":0,"cols":1,"rows":1,"IDReport":5,"Id":0},
+            {"x":2,"y":0,"cols":2,"rows":1,"IDReport":1,"Id":0},
+            {"x":0,"y":1,"cols":2,"rows":1,"IDReport":4,"Id":0},
+            {"x":2,"y":1,"cols":1,"rows":1,"IDReport":2,"Id":0},
+            {"x":3,"y":1,"cols":1,"rows":1,"IDReport":10,"Id":0},
+            {"x":0,"y":2,"cols":1,"rows":1,"IDReport":11,"Id":0},
+            {"x":1,"y":2,"cols":1,"rows":2,"IDReport":13,"Id":0},
+            {"x":2,"y":2,"cols":2,"rows":2,"IDReport":12,"Id":0},
+            {"x":0,"y":3,"cols":1,"rows":1,"IDReport":13,"Id":0},
+            {"x":0,"y":4,"cols":3,"rows":1,"IDReport":7,"Id":0},
+            {"x":3,"y":4,"cols":1,"rows":1,"IDReport":6,"Id":0},
+            {"x":0,"y":5,"cols":1,"rows":1,"IDReport":17,"Id":0},
+            {"x":1,"y":5,"cols":1,"rows":1,"IDReport":16,"Id":0},
+            {"x":2,"y":5,"cols":1,"rows":1,"IDReport":15,"Id":0},
+            {"x":3,"y":5,"cols":1,"rows":1,"IDReport":14,"Id":0}
+
+
+            // { x: 0, y: 0, cols: 1, rows: 1, Id: 1, IDReport: 3 },
+            // { x: 2, y: 0, cols: 3, rows: 1, Id: 2, IDReport: 1 },
+            // { x: 0, y: 1, cols: 2, rows: 1, Id: 3, IDReport: 2 },
+            // { x: 3, y: 1, cols: 2, rows: 1, Id: 4, IDReport: 4 },
 
             // { cols: 2, rows: 2, y: 2, x: 0, minItemRows: 2, minItemCols: 2, maxItemRows: 3, maxItemCols: 4, label: 'Min rows & cols = 2', Id: 1 },
         ];
 
         super.loadedData(event);
+    }
+
+    loadData(event?: any): void {
+        this.preLoadData(event);
     }
 
     ionViewDidEnter() {
@@ -159,7 +184,17 @@ export class SampleDashboardPage extends PageBase {
     }
 
     gotoReport(ev) {
-        this.nav('bill-status-report');
+        if (ev.Code) {
+
+            if (ev.Code == 'demo') {
+                this.nav('dynamic-report/' + ev.Id);        
+            }
+            else{
+                this.nav(ev.Code);
+            }
+            
+        }
+        
     }
 
     showReportPicker() {

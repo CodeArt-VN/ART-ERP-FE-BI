@@ -3,7 +3,7 @@ import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { SampleDashboardPage } from './sample-dashboard.page';
+import { DynamicDashboardPage } from './dynamic-dashboard.page';
 import { ShareModule } from 'src/app/share.module';
 import { GridsterComponent, GridsterItemComponent } from 'angular-gridster2';
 import { PipesModule } from 'src/app/pipes/pipes.module';
@@ -15,10 +15,10 @@ import { PipesModule } from 'src/app/pipes/pipes.module';
     FormsModule,
     ShareModule,
     PipesModule,
-    RouterModule.forChild([{ path: '', component: SampleDashboardPage }]),
+    RouterModule.forChild([{ path: '', component: DynamicDashboardPage }]),
     GridsterComponent,
     GridsterItemComponent
   ],
-  declarations: [SampleDashboardPage]
+  declarations: [DynamicDashboardPage]
 })
-export class SampleDashboardPageModule {}
+export class DynamicDashboardPageModule {}
