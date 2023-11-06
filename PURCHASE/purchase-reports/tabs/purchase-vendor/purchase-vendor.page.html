@@ -21,7 +21,7 @@
                                     <table class="rpt-header" cellpadding="0" cellspacing="0">
                                         <tbody>
                                             <tr>
-                                                <td class="head-c1">{{'erp.app.pages.bi.sales-report.tabs.sale-outlet.company-selling' | translate}}:</td>
+                                                <td class="head-c1">Công ty mua:</td>
                                                 <td class="bol">{{b.Name}}</td>
                                                 <td class="num"></td>
                                                 <td class="bol"></td>
@@ -32,7 +32,7 @@
                                                 <td colspan="6" class="bol title">
                                                     {{'erp.app.pages.bi.sales-report.tabs.sale-outlet.report' | translate}}
                                                     <span *ngIf="reportQuery.IsCalcShippedOnly">{{'erp.app.pages.bi.sales-report.tabs.sale-outlet.revenue' | translate}}</span> 
-                                                    <span *ngIf="!reportQuery.IsCalcShippedOnly">{{'erp.app.pages.bi.sales-report.tabs.sale-outlet.orders' | translate}}</span>
+                                                    <span *ngIf="!reportQuery.IsCalcShippedOnly">MUA HÀNG</span>
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -58,7 +58,7 @@
                                                 <tr class="head">
                                                     <td rowspan="1" class="cen">{{'erp.app.pages.bi.sales-report.tabs.sale-outlet.stt' | translate}}</td>
                                                     <td rowspan="1">
-                                                        <div class="ten-sp min">{{'erp.app.pages.bi.sales-report.tabs.sale-outlet.customer' | translate}}</div>
+                                                        <div class="ten-sp min">Nhà cung cấp</div>
                                                     </td>
                                                     <td class="cen">{{'erp.app.pages.bi.sales-report.tabs.sale-outlet.workphone' | translate}}</td>
                                                     <td class=" num" rowspan="1">{{'erp.app.pages.bi.sales-report.tabs.sale-outlet.total-before-discount' | translate}}</td>
