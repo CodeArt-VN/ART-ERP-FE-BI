@@ -45,8 +45,8 @@ export class PurchaseBuyerPage extends PageBase {
                 outlet: data.outlet
             };
 
-            if (data._cmd == 'exportSaleProductReport') {
-                this.exportPurchaseBuyerReport();
+            if (data._cmd == 'ExportPurchaseOutletReport') {
+                this.ExportPurchaseOutletReport();
             }
             else if (data._cmd == 'runReport') {
                 this.readPurchaseBuyerReport();
@@ -90,7 +90,7 @@ export class PurchaseBuyerPage extends PageBase {
         this.submitAttempt = true;
         let apiPath = {
             method: "GET",
-            url: function () { return ApiSetting.apiDomain("SALE/Order/SaleSalemanReport/") }
+            url: function () { return ApiSetting.apiDomain("PURCHASE/Order/PurchaseBuyerReport/") }
         };
 
         this.loadingController.create({
@@ -139,10 +139,10 @@ export class PurchaseBuyerPage extends PageBase {
                 this.warehouses.push(warehouse);
             }
 
-            let saleitem = warehouse.itemList.find(d => d.IDSaleman == r.IDSaleman);
+            let saleitem = warehouse.itemList.find(d => d.IDBuyer == r.IDBuyer);
             if (!saleitem) {
                 saleitem = {
-                    IDSaleman: r.IDSaleman,
+                    IDBuyer: r.IDBuyer,
                     FullName: r.FullName,
                     WorkPhone: r.WorkPhone,
                     TotalBeforeDiscount: 0.0,
@@ -176,11 +176,11 @@ export class PurchaseBuyerPage extends PageBase {
 
     }
 
-    exportPurchaseBuyerReport() {
+    ExportPurchaseOutletReport() {
         let apiPath = {
             getExport: {
                 method: "GET",
-                url: function () { return ApiSetting.apiDomain("SALE/Order/ExportSaleOutletReport/") }
+                url: function () { return ApiSetting.apiDomain("PURCHASE/Order/ExportPurchaseOutletReport/") }
             }
         };
 

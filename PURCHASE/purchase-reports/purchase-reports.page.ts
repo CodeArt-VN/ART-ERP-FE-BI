@@ -117,8 +117,8 @@ export class PurchaseReportsPage extends PageBase {
         this.rpt.dateQuery(this.filter.type == 'set'?'setdone':this.filter.type).then(_ => { }).catch(err => { let a = err });
     }
 
-    exportSaleProductReport() {
-        this.rpt.rptGlobal.query._cmd = 'exportSaleProductReport';
+    ExportPurchaseOutletReport() {
+        this.rpt.rptGlobal.query._cmd = 'ExportPurchaseOutletReport';
         this.rpt.publishChange(this.rpt.rptGlobal.query);
     }
 

@@ -44,8 +44,8 @@ export class PurchaseVendorPage extends PageBase {
                 outlet: data.outlet
             };
 
-            if (data._cmd == 'exportSaleProductReport') {
-                this.exportSaleOutletReport();
+            if (data._cmd == 'ExportPurchaseOutletReport') {
+                this.ExportPurchaseOutletReport();
             }
             else if (data._cmd == 'runReport') {
                 this.readPurchaseVendor();
@@ -100,7 +100,6 @@ export class PurchaseVendorPage extends PageBase {
 
             this.pageProvider.connect(apiPath.method, apiPath.url(), this.reportQuery).toPromise()
                 .then((resp: any) => {
-                    debugger
                     this.submitAttempt = false;
                     if (loading) loading.dismiss();
                     this.buildBranchesReport(resp);
@@ -245,11 +244,11 @@ export class PurchaseVendorPage extends PageBase {
         });
     }
 
-    exportSaleOutletReport() {
+    ExportPurchaseOutletReport() {
         let apiPath = {
             getExport: {
                 method: "GET",
-                url: function () { return ApiSetting.apiDomain("SALE/Order/ExportSaleOutletReport/") }
+                url: function () { return ApiSetting.apiDomain("PURCHASE/Order/ExportPurchaseOutletReport/") }
             }
         };
 
