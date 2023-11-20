@@ -38,11 +38,11 @@ export class PurchaseBuyerPage extends PageBase {
                 fromDate: data.fromDate,
                 toDate: data.toDate,
                 IDBranch: data.IDBranch,
-                IDOwner: data.saleman?.Id,
-                IDSaleman: data.outlet?.Id,
+                IDBuyer: data.buyer?.Id,
+                IDVendor: data.vendor?.Id,
                 IsCalcShippedOnly: data.isCalcShippedOnly,
-                saleman: data.saleman,
-                outlet: data.outlet
+                buyer: data.buyer,
+                vendor: data.vendor
             };
 
             if (data._cmd == 'ExportPurchaseOutletReport') {
@@ -143,8 +143,8 @@ export class PurchaseBuyerPage extends PageBase {
             if (!saleitem) {
                 saleitem = {
                     IDBuyer: r.IDBuyer,
-                    FullName: r.FullName,
-                    WorkPhone: r.WorkPhone,
+                    BuyerName: r.BuyerName,
+                    BuyerWorkPhone: r.BuyerWorkPhone,
                     TotalBeforeDiscount: 0.0,
                     TotalDiscount: 0.0,
                     TotalAfterDiscount: 0.0

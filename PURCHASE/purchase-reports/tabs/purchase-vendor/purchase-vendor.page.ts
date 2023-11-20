@@ -37,13 +37,12 @@ export class PurchaseVendorPage extends PageBase {
                 fromDate: data.fromDate,
                 toDate: data.toDate,
                 IDBranch: data.IDBranch,
-                IDOwner: data.saleman?.Id,
-                IDContact: data.outlet?.Id,
+                IDBuyer: data.buyer?.Id,
+                IDVendor: data.vendor?.Id,
                 IsCalcShippedOnly: data.isCalcShippedOnly,
-                saleman: data.saleman,
-                outlet: data.outlet
+                buyer: data.buyer,
+                vendor: data.vendor
             };
-
             if (data._cmd == 'ExportPurchaseOutletReport') {
                 this.ExportPurchaseOutletReport();
             }
@@ -131,7 +130,7 @@ export class PurchaseVendorPage extends PageBase {
                     Id: r.IDBranch,
                     Name: r.BranchName,
                     count: 1,
-                    salemans: [],
+                    buyers: [],
                     itemList: [],
                     TotalBeforeDiscount: 0,
                     TotalDiscount: 0,
@@ -144,9 +143,9 @@ export class PurchaseVendorPage extends PageBase {
             if (!saleitem) {
                 saleitem = {
                     IDContact: r.IDVendor,
-                    ContactCode: r.ContactCode,
-                    ContactName: r.ContactName,
-                    WorkPhone: r.WorkPhone,
+                    VendorCode: r.VendorCode,
+                    VendorName: r.VendorName,
+                    VendorWorkPhone: r.VendorWorkPhone,
                     TotalBeforeDiscount: 0.0,
                     TotalDiscount: 0.0,
                     TotalAfterDiscount: 0.0
@@ -183,41 +182,41 @@ export class PurchaseVendorPage extends PageBase {
         for (let i = 0; i < resp.length; i++) {
             const r = resp[i];
 
-            let warehouse = this.items.find(d => d.Id == r.IDBranch);
+            let warehouse:any = this.items.find(d => d.Id == r.IDBranch);
             if (!warehouse) {
                 warehouse = {
                     Id: r.IDBranch,
                     Name: r.BranchName,
-                    salemans: [],
+                    vendors: [],
                 };
                 this.items.push(warehouse);
             }
 
-            let saleman = warehouse.salemans.find(d => d.IDBuyer == r.IDBuyer);
-            if (!saleman) {
-                saleman = {
-                    IDSaleman: r.IDBuyer,
-                    FullName: r.FullName,
+            let vendor = warehouse.vendors.find(d => d.IDVendor == r.IDVendor);
+            if (!vendor) {
+                vendor = {
+                    IDVendor: r.IDVendor,
+                    VendorName: r.VendorName,
                     itemList: [],
                     TotalBeforeDiscount: 0,
                     TotalDiscount: 0,
                     TotalAfterDiscount: 0,
                 }
-                warehouse.salemans.push(saleman);
+                warehouse.vendors.push(vendor);
             }
 
-            let saleitem = saleman.itemList.find(d => d.IDVendor == r.IDVendor);
+            let saleitem = vendor.itemList.find(d => d.IDVendor == r.IDVendor);
             if (!saleitem) {
                 saleitem = {
-                    IDContact: r.IDVendor,
-                    ContactCode: r.ContactCode,
-                    ContactName: r.ContactName,
-                    WorkPhone: r.WorkPhone,
+                    IDVendor: r.IDVendor,
+                    VendorCode: r.VendorCode,
+                    VendorName: r.VendorName,
+                    VendorWorkPhone: r.VendorWorkPhone,
                     TotalBeforeDiscount: 0.0,
                     TotalDiscount: 0.0,
                     TotalAfterDiscount: 0.0,
                 }
-                saleman.itemList.push(saleitem);
+                vendor.itemList.push(saleitem);
             }
 
             saleitem.TotalBeforeDiscount += r.TotalBeforeDiscount;
@@ -228,14 +227,14 @@ export class PurchaseVendorPage extends PageBase {
             saleitem.TotalDiscountText = lib.currencyFormat(saleitem.TotalDiscount);
             saleitem.TotalAfterDiscountText = lib.currencyFormat(saleitem.TotalAfterDiscount);
 
-            saleman.TotalBeforeDiscount += r.TotalBeforeDiscount;
-            saleman.TotalDiscount += r.TotalDiscount;
-            saleman.TotalAfterDiscount += r.TotalAfterDiscount;
+            vendor.TotalBeforeDiscount += r.TotalBeforeDiscount;
+            vendor.TotalDiscount += r.TotalDiscount;
+            vendor.TotalAfterDiscount += r.TotalAfterDiscount;
 
         }
 
         this.items.forEach(s => {
-            s.salemans.forEach(i => {
+            s.vendors.forEach(i => {
                 i.TotalBeforeDiscountText = lib.currencyFormat(i.TotalBeforeDiscount);
                 i.TotalDiscountText = lib.currencyFormat(i.TotalDiscount);
                 i.TotalAfterDiscountText = lib.currencyFormat(i.TotalAfterDiscount);

@@ -40,7 +40,7 @@
 
                                     <table class="rpt-header rpt-nvgh-header" cellpadding="0" cellspacing="0">
                                         <tbody>
-                                            <!-- <tr *ngIf="reportQuery.IDOwner">
+                                                <!-- <tr *ngIf="reportQuery.IDOwner">
                                                 <td class="head-c1">NVBH:</td>
                                                 <td class="bol">{{reportQuery.saleman.FullName}} ({{reportQuery.saleman.PhoneNumber}})</td>
                                             </tr> -->
@@ -89,7 +89,7 @@
                                                     </td>
 
                                                     <td class="cen ">{{uom.Name}}</td>
-                                                    <td class="num ">{{uom.ShippedQuantity}}</td>
+                                                    <td class="num ">{{uom.UoMQuantityExpected}}</td>
 
                                                     <td class="num tien">{{uom.TotalBeforeDiscountText}}</td>
                                                     <td class="num tien">{{uom.TotalDiscountText}}</td>
@@ -171,7 +171,7 @@
 
 
         <ng-container *ngFor="let b of items">
-            <section class="sheet rpt" *ngFor="let s of b.salemans" >
+            <section class="sheet rpt" *ngFor="let s of b.vendors" >
                 <table>
                     <thead>
                         <tr>
@@ -187,7 +187,7 @@
                                     <table class="rpt-header" cellpadding="0" cellspacing="0">
                                         <tbody>
                                             <tr>
-                                                <td class="head-c1">{{'erp.app.pages.bi.sales-report.tabs.sale-product.company-selling' | translate}}:</td>
+                                                <td class="head-c1">Công ty mua:</td>
                                                 <td class="bol">{{b.Name}}</td>
                                                 <td class="num"></td>
                                                 <td class="bol"></td>
@@ -197,7 +197,7 @@
                                             <tr>
                                                 <td colspan="6" class="bol title">{{'erp.app.pages.bi.sales-report.tabs.sale-product.report' | translate}} 
                                                     <span *ngIf="reportQuery.IsCalcShippedOnly">{{'erp.app.pages.bi.sales-report.tabs.sale-product.revenue' | translate}}</span> 
-                                                    <span *ngIf="!reportQuery.IsCalcShippedOnly">{{'erp.app.pages.bi.sales-report.tabs.sale-product.orders' | translate}}</span>
+                                                    <span *ngIf="!reportQuery.IsCalcShippedOnly">MUA HÀNG</span>
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -206,8 +206,8 @@
                                     <table class="rpt-header rpt-nvgh-header" cellpadding="0" cellspacing="0">
                                         <tbody>
                                             <tr >
-                                                <td class="head-c1">NVBH:</td>
-                                                <td class="bol">{{s.FullName}}</td>
+                                                <td class="head-c1">NCC:</td>
+                                                <td class="bol"><b *ngIf="s.VendorCode">{{s.VendorCode}}</b><b *ngIf="!s.VendorCode">{{s.IDVendor}}</b> - {{s.VendorName}}</td>
                                             </tr>
                                             <tr>
                                                 <td class="head-c1">{{'erp.app.pages.bi.sales-report.tabs.sale-product.time-range' | translate}}:</td>
@@ -254,7 +254,7 @@
                                                     </td>
 
                                                     <td class="cen ">{{uom.Name}}</td>
-                                                    <td class="num ">{{uom.ShippedQuantity}}</td>
+                                                    <td class="num ">{{uom.UoMQuantityExpected}}</td>
 
                                                     <td class="num tien">{{uom.TotalBeforeDiscountText}}</td>
                                                     <td class="num tien">{{uom.TotalDiscountText}}</td>

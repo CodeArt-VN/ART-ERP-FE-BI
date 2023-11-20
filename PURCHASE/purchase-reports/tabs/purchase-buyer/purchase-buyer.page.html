@@ -68,9 +68,9 @@
                                             <tr *ngFor="let i of b.itemList; let idx = index; ">
                                                 <td class="cen" >{{idx+1}}</td>
                                                 <td >
-                                                    <div class="ten-sp min"><b *ngIf="i.ContactCode">{{i.ContactCode}}</b><b *ngIf="!i.ContactCode">{{i.IDBuyer}}</b> - {{i.FullName}}</div>
+                                                    <div class="ten-sp min"><b *ngIf="i.BuyerCode">{{i.BuyerCode}}</b><b *ngIf="!i.BuyerCode">{{i.IDBuyer}}</b> - {{i.BuyerName}}</div>
                                                 </td>
-                                                <td class="cen">{{i.WorkPhone}}</td>
+                                                <td class="cen">{{i.BuyerWorkPhone}}</td>
                                                 <td class="num tien">{{i.TotalBeforeDiscountText}}</td>
                                                 <td class="num tien">{{i.TotalDiscountText}}</td>
                                                 <td class="num tien">{{i.TotalAfterDiscountText}}</td>
