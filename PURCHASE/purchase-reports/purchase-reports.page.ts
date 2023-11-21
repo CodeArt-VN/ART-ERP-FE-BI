@@ -70,7 +70,7 @@ export class PurchaseReportsPage extends PageBase {
             this.buyerListInput$.pipe(
                 distinctUntilChanged(),
                 tap(() => this.buyerListLoading = true),
-                switchMap(term => this.staffProvider.search({ Take: 20, Skip: 0, IDDepartment: this.env.selectedBranchAndChildren, Term: term }).pipe(
+                switchMap(term => this.staffProvider.search({ Take: 20, Skip: 0, Term: term }).pipe(
                     catchError(() => of([])), // empty list on error
                     tap(() => this.buyerListLoading = false)
                 ))
@@ -90,7 +90,7 @@ export class PurchaseReportsPage extends PageBase {
             this.vendorListInput$.pipe(
                 distinctUntilChanged(),
                 tap(() => this.vendorListLoading = true),
-                switchMap(term => this.contactProvider.search({ Take: 20, Skip: 0, Term: term }).pipe(
+                switchMap(term => this.contactProvider.search({ Take: 20, Skip: 0, Term: term, IsVendor: true, SkipAddress: true}).pipe(
                     catchError(() => of([])), // empty list on error
                     tap(() => this.vendorListLoading = false)
                 ))
@@ -117,8 +117,8 @@ export class PurchaseReportsPage extends PageBase {
         this.rpt.dateQuery(this.filter.type == 'set'?'setdone':this.filter.type).then(_ => { }).catch(err => { let a = err });
     }
 
-    exportSaleProductReport() {
-        this.rpt.rptGlobal.query._cmd = 'exportSaleProductReport';
+    ExportPurchaseOutletReport() {
+        this.rpt.rptGlobal.query._cmd = 'ExportPurchaseOutletReport';
         this.rpt.publishChange(this.rpt.rptGlobal.query);
     }
 

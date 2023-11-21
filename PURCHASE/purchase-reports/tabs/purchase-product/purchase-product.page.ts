@@ -42,15 +42,15 @@ export class PurchaseProductPage extends PageBase {
                 fromDate: data.fromDate,
                 toDate: data.toDate,
                 IDBranch: data.IDBranch,
-                IDOwner: data.saleman?.Id,
-                IDContact: data.outlet?.Id,
+                IDBuyer: data.buyer?.Id,
+                IDVendor: data.vendor?.Id,
                 IsCalcShippedOnly: data.isCalcShippedOnly,
-                saleman: data.saleman,
-                outlet: data.outlet
+                buyer: data.buyer,
+                vendor: data.vendor
             };
 
-            if (data._cmd == 'exportPurchaseProductReport') {
-                this.exportPurchaseProductReport();
+            if (data._cmd == 'ExportPurchaseOutletReport') {
+                this.ExportPurchaseOutletReport();
             }
             else if (data._cmd == 'runReport') {
                 this.readPurchaseProductReport();
@@ -136,7 +136,7 @@ export class PurchaseProductPage extends PageBase {
                     Id: r.IDBranch,
                     Name: r.BranchName,
                     count: 1,
-                    salemans: [],
+                    buyers: [],
                     itemList: [],
                     TotalBeforeDiscount: 0,
                     TotalDiscount: 0,
@@ -144,18 +144,6 @@ export class PurchaseProductPage extends PageBase {
                 };
                 this.warehouses.push(warehouse);
             }
-
-            // let saleman = warehouse.itemList.find(d => d.IDSaleman == r.IDSaleman);
-            // if(!saleman){
-            //     saleman = {
-            //         IDSaleman: r.IDSaleman,
-            //         Name : r.FullName,
-            //         itemList: [],
-            //         TotalBeforeDiscount: 0,
-            //         TotalDiscount: 0,
-            //         TotalAfterDiscount: 0,
-            //     }
-            // }
 
             let saleitem = warehouse.itemList.find(d => d.IDItem == r.IDItem);
             if (!saleitem) {
@@ -173,7 +161,7 @@ export class PurchaseProductPage extends PageBase {
                 itemUoM = {
                     Id: r.IDUoM,
                     Name: r.UoM,
-                    ShippedQuantity: r.Quantity,  // r.ShippedQuantity,
+                    UoMQuantityExpected: r.UoMQuantityExpected,  // r.ShippedQuantity,
                     TotalBeforeDiscount: r.TotalBeforeDiscount,
                     TotalDiscount: r.TotalDiscount,
                     TotalAfterDiscount: r.TotalAfterDiscount,
@@ -190,15 +178,6 @@ export class PurchaseProductPage extends PageBase {
             warehouse.TotalAfterDiscount += r.TotalAfterDiscount;
 
 
-            // let saleman = warehouse.salemans.find(d => d.Id == r.IDSaleman)
-            // if(!saleman){
-            //     saleman = {
-            //         Id: r.IDSaleman,
-            //         Name: r.FullName,
-            //         itemList: []
-            //     }
-            //     warehouse.salemans.push(saleman);
-            // }
 
         }
         this.warehouses.forEach(i => {
@@ -218,25 +197,25 @@ export class PurchaseProductPage extends PageBase {
                 warehouse = {
                     Id: r.IDBranch,
                     Name: r.BranchName,
-                    salemans: [],
+                    vendors: [],
                 };
                 this.items.push(warehouse);
             }
 
-            let saleman = warehouse.salemans.find(d => d.IDSaleman == r.IDSaleman);
-            if (!saleman) {
-                saleman = {
-                    IDSaleman: r.IDSaleman,
-                    FullName: r.FullName,
+            let vendor = warehouse.vendors.find(d => d.IDVendor == r.IDVendor);
+            if (!vendor) {
+                vendor = {
+                    IDVendor: r.IDVendor,
+                    VendorName: r.VendorName,
                     itemList: [],
                     TotalBeforeDiscount: 0,
                     TotalDiscount: 0,
                     TotalAfterDiscount: 0,
                 }
-                warehouse.salemans.push(saleman);
+                warehouse.vendors.push(vendor);
             }
 
-            let saleitem = saleman.itemList.find(d => d.IDItem == r.IDItem);
+            let saleitem = vendor.itemList.find(d => d.IDItem == r.IDItem);
             if (!saleitem) {
                 saleitem = {
                     IDItem: r.IDItem,
@@ -244,7 +223,7 @@ export class PurchaseProductPage extends PageBase {
                     ItemName: r.ItemName,
                     UoMs: [],
                 }
-                saleman.itemList.push(saleitem);
+                vendor.itemList.push(saleitem);
             }
 
             let itemUoM = saleitem.UoMs.find(d => d.Id == r.IDUoM);
@@ -252,7 +231,7 @@ export class PurchaseProductPage extends PageBase {
                 itemUoM = {
                     Id: r.IDUoM,
                     Name: r.UoM,
-                    ShippedQuantity: r.Quantity, //r.ShippedQuantity,
+                    UoMQuantityExpected: r.UoMQuantityExpected, //r.ShippedQuantity,
                     TotalBeforeDiscount: r.TotalBeforeDiscount,
                     TotalDiscount: r.TotalDiscount,
                     TotalAfterDiscount: r.TotalAfterDiscount,
@@ -264,17 +243,13 @@ export class PurchaseProductPage extends PageBase {
                 saleitem.UoMs.push(itemUoM);
             }
 
-            saleman.TotalBeforeDiscount += r.TotalBeforeDiscount;
-            saleman.TotalDiscount += r.TotalDiscount;
-            saleman.TotalAfterDiscount += r.TotalAfterDiscount;
-
-
-
-
+            vendor.TotalBeforeDiscount += r.TotalBeforeDiscount;
+            vendor.TotalDiscount += r.TotalDiscount;
+            vendor.TotalAfterDiscount += r.TotalAfterDiscount;
         }
 
         this.items.forEach(s => {
-            s.salemans.forEach(i => {
+            s.vendors.forEach(i => {
                 i.TotalBeforeDiscountText = lib.currencyFormat(i.TotalBeforeDiscount);
                 i.TotalDiscountText = lib.currencyFormat(i.TotalDiscount);
                 i.TotalAfterDiscountText = lib.currencyFormat(i.TotalAfterDiscount);
@@ -283,11 +258,11 @@ export class PurchaseProductPage extends PageBase {
         });
     }
 
-    exportPurchaseProductReport() {
+    ExportPurchaseOutletReport() {
         let apiPath = {
             getExport: {
                 method: "GET",
-                url: function () { return ApiSetting.apiDomain("SALE/Order/ExportSaleProductReport/") }
+                url: function () { return ApiSetting.apiDomain("PURCHASE/Order/ExportPurchaseOutletReport/") }
             }
         };
 
