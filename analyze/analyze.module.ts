@@ -3,7 +3,7 @@ import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { BillStatusReportPage } from './bill-status-report.page';
+import { AnalyzePage } from './analyze.page';
 import { ShareModule } from 'src/app/share.module';
 
 @NgModule({
@@ -12,8 +12,8 @@ import { ShareModule } from 'src/app/share.module';
     CommonModule,
     FormsModule,
     ShareModule,
-    RouterModule.forChild([{ path: '', component: BillStatusReportPage }])
+    RouterModule.forChild([{ path: '', component: AnalyzePage }])
   ],
-  declarations: [BillStatusReportPage]
+  declarations: [AnalyzePage]
 })
-export class BillStatusReportPageModule {}
+export class AnalyzePageModule {}
