@@ -41,7 +41,7 @@
 
 	<div style="max-width: 1440px;margin: auto;width: 100%;position: sticky;left: 0;" *ngIf="item">
 		<div class="ion-padding" style="position: sticky; left: 0;">
-			<app-page-title [icon]="item.Icon" [color]="item.Color" [title]="item.Name" [remark]="item.Remark">
+			<app-page-title [icon]="formGroup.get('Icon').value" [color]="formGroup.get('Color').value" [title]="formGroup.get('Name').value" [remark]="formGroup.get('Remark').value">
 				<app-report-chart rightContent viewMode="full" *ngIf="item.DataConfig" [reportId]="item.Id" [data]="runTestData" (changeViewDimension)="onViewDimensionChange($event)" (chartClick)="onChartClick($event)"></app-report-chart>
 			</app-page-title>
 		</div>

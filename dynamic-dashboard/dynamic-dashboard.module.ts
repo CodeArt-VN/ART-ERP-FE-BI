@@ -5,8 +5,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DynamicDashboardPage } from './dynamic-dashboard.page';
 import { ShareModule } from 'src/app/share.module';
-import { GridsterComponent, GridsterItemComponent } from 'angular-gridster2';
-import { PipesModule } from 'src/app/pipes/pipes.module';
 
 @NgModule({
   imports: [
@@ -14,10 +12,7 @@ import { PipesModule } from 'src/app/pipes/pipes.module';
     CommonModule,
     FormsModule,
     ShareModule,
-    PipesModule,
-    RouterModule.forChild([{ path: '', component: DynamicDashboardPage }]),
-    GridsterComponent,
-    GridsterItemComponent
+    RouterModule.forChild([{ path: '', component: DynamicDashboardPage }])
   ],
   declarations: [DynamicDashboardPage]
 })
