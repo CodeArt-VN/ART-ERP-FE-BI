@@ -144,9 +144,9 @@ export class DynamicReportPage extends PageBase {
     onViewDimensionChange(dimension) {
         this.viewDimension = dimension;
         if (this.pageConfig.canEdit) {
-            this.formGroup.get('ViewDimension').setValue(this.viewDimension);
-            this.formGroup.get('ViewDimension').markAsDirty();
-            this.saveChange();
+            // this.formGroup.get('ViewDimension').setValue(this.viewDimension);
+            // this.formGroup.get('ViewDimension').markAsDirty();
+            // this.saveChange();
         }
     }
 

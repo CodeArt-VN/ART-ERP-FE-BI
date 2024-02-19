@@ -25,23 +25,24 @@
 					<app-form-control [field]="{id:'Id', type : 'number', form : formGroup }" (change)="saveChange()"></app-form-control>
 					<app-form-control [field]="{id:'Code', form : formGroup }" (change)="saveChange()"></app-form-control>
 					<app-form-control [field]="{id:'Name', form : formGroup }" (change)="saveChange()"></app-form-control>
+				
 
-					<app-form-control [field]="{id:'Icon', form : formGroup }" (change)="saveChange()"></app-form-control>
-					<app-form-control [field]="{id:'Color', form : formGroup }" (change)="saveChange()"></app-form-control>
+					<app-form-control [field]="{id:'Color', type : 'color', form : formGroup }" (change)="saveChange()"></app-form-control>
+                    <app-form-control [field]="{id:'Icon', type : 'icon', form : formGroup, color: formGroup.controls.Color.value }" (change)="saveChange()"></app-form-control>
 					<app-form-control [field]="{id:'Type', type : 'number', form : formGroup }" (change)="saveChange()"></app-form-control>
-					
+
 					<app-form-control [field]="{id:'MinCols', type : 'number', form : formGroup }" (change)="saveChange()"></app-form-control>
 					<app-form-control [field]="{id:'MaxCols', type : 'number', form : formGroup }" (change)="saveChange()"></app-form-control>
 					<app-form-control [field]="{id:'MinRows', type : 'number', form : formGroup }" (change)="saveChange()"></app-form-control>
 					<app-form-control [field]="{id:'MaxRows', type : 'number', form : formGroup }" (change)="saveChange()"></app-form-control>
 
-					<app-form-control [field]="{id:'Remark', type : 'textarea', label: 'Remark', form : formGroup }" (change)="saveChange()"></app-form-control>
-
-
-					<!-- <app-form-control [field]="{id:'CreatedBy', label: 'Created by', form : formGroup }"></app-form-control>
-					<app-form-control [field]="{id:'CreatedDate', type : 'span-datetime', label: 'Created date', form : formGroup }"></app-form-control>
-					<app-form-control [field]="{id:'ModifiedBy', label: 'Last modified by', form : formGroup }"></app-form-control>
-					<app-form-control [field]="{id:'ModifiedDate', type : 'span-datetime', label: 'Last modified date', form : formGroup }"></app-form-control> -->
+					<app-form-control [field]="{id:'Remark', type : 'textarea', form : formGroup }" (change)="saveChange()"></app-form-control>
+					<ng-container *ngIf="item.Id">
+						<app-form-control [field]="{id:'CreatedBy', label: 'Created by', form : formGroup }"></app-form-control>
+						<app-form-control [field]="{id:'CreatedDate', type : 'span-datetime', label: 'Created date', form : formGroup }"></app-form-control>
+						<app-form-control [field]="{id:'ModifiedBy', label: 'Last modified by', form : formGroup }"></app-form-control>
+						<app-form-control [field]="{id:'ModifiedDate', type : 'span-datetime', label: 'Last modified date', form : formGroup }"></app-form-control>
+					</ng-container>
 				</div>
 			</ion-accordion>
 		</ion-accordion-group>
