@@ -100,11 +100,16 @@ export class DynamicReportPage extends PageBase {
                     super.loadedData();
                 }));
 
-            this.pageProvider.getReportData(this.item.Id);
+            this.pageProvider.getReportData(this.item.Id, true);
         }
         super.loadedData(event, ignoredFromGroup);
 
         
+    }
+
+    refresh(event?: any): void {
+        this.subscriptions.forEach(subscription => subscription.unsubscribe());
+        super.refresh(event);
     }
 
     runTestData: any = null;

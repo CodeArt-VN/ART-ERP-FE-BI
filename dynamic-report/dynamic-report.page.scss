@@ -15,7 +15,7 @@ app-report-chart {
 
 	&.mini{
 		transition: all 150ms linear 0s;
-		position: absolute;
+		position: relative;
 		cursor: pointer;
 		height: 100px;
 		width: 200px;
