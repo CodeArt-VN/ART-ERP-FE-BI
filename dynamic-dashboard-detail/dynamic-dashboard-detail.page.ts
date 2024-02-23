@@ -137,6 +137,13 @@ export class DynamicDashboardDetailPage extends PageBase {
                         };
                     });
                 }
+
+                //this.items[0].WidgetConfig= { ViewDimension: 'OriginalTotalAfterTax', Statistics_: ['Count', 'OriginalTotalAfterTax', 'TotalAfterTax']},
+                
+                
+                
+                
+
                 super.loadedData(event, ignoredFromGroup);
             }).catch((err) => {
                 console.log(err);

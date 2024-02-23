@@ -1,0 +1,66 @@
+<ion-header>
+	<app-detail-toolbar BackHref="dynamic-report" [page]="this" [ShowFeature]="true"></app-detail-toolbar>
+</ion-header>
+
+<ion-content appScrollbarTheme class="scrollx" [ngClass]="{withFeature: pageConfig.isShowFeature}">
+	<ion-fab *ngIf="pageConfig.isShowFeature && item" class="feature" vertical="top" horizontal="end" slot="fixed">
+		<ion-accordion-group *ngIf="pageConfig.canEdit" [value]="item.Id? '':'first'">
+			<ion-accordion value="first" style="background: transparent;">
+				<ion-item slot="header" color="light">
+					<ion-label>{{'Report information' | translate}}</ion-label>
+				</ion-item>
+				<div class="ion-padding" slot="content" style="background: transparent;">
+					<app-form-control [field]="{id:'Id', type : 'number', form : formGroup }" (change)="saveChange()"></app-form-control>
+					<app-form-control [field]="{id:'Code', form : formGroup }" (change)="saveChange()"></app-form-control>
+					<app-form-control [field]="{id:'Name', form : formGroup }" (change)="saveChange()"></app-form-control>
+				
+
+					<app-form-control [field]="{id:'Color', type : 'color', form : formGroup }" (change)="saveChange()"></app-form-control>
+                    <app-form-control [field]="{id:'Icon', type : 'icon', form : formGroup, color: formGroup.controls.Color.value }" (change)="saveChange()"></app-form-control>
+
+
+					<app-form-control [field]="{id:'Type', type : 'number', form : formGroup }" (change)="saveChange()"></app-form-control>
+					<app-form-control [field]="{id:'Remark', type : 'textarea', label: 'Remark', form : formGroup }" (change)="saveChange()"></app-form-control>
+
+					<ng-container *ngIf="item.Id">
+						<app-form-control [field]="{id:'CreatedBy', label: 'Created by', form : formGroup }"></app-form-control>
+						<app-form-control [field]="{id:'CreatedDate', type : 'span-datetime', label: 'Created date', form : formGroup }"></app-form-control>
+						<app-form-control [field]="{id:'ModifiedBy', label: 'Last modified by', form : formGroup }"></app-form-control>
+						<app-form-control [field]="{id:'ModifiedDate', type : 'span-datetime', label: 'Last modified date', form : formGroup }"></app-form-control>
+					</ng-container>
+				</div>
+			</ion-accordion>
+		</ion-accordion-group>
+
+		<app-report-config *ngIf="item.Id" [canEdit]="pageConfig.canEdit" [canChangeReportConfig]="pageConfig.canChangeReportConfig" [canEditScript]="pageConfig.canEditScript" [reportId]="item.Id" (runReport)="onRunReport($event)" (save)="onSave($event)"></app-report-config>
+	</ion-fab>
+
+	<ion-refresher [disabled]="!pageConfig.refresher" [disabled]="!pageConfig.refresher" slot="fixed" (ionRefresh)="refresh($event)">
+		<ion-refresher-content></ion-refresher-content>
+	</ion-refresher>
+
+	<div style="max-width: 1440px;margin: auto;width: 100%;position: sticky;left: 0; z-index: 1;" *ngIf="item">
+		<div class="ion-padding" style="position: sticky; left: 0;">
+			<app-page-title [icon]="formGroup.get('Icon').value" [color]="formGroup.get('Color').value" [title]="formGroup.get('Name').value" [remark]="formGroup.get('Remark').value">
+				<app-report-chart rightContent viewMode="full" *ngIf="item.DataConfig" [reportId]="item.Id" [data]="runTestData" (changeViewDimension)="onViewDimensionChange($event)" (chartClick)="onChartClick($event)"></app-report-chart>
+			</app-page-title>
+		</div>
+	</div>
+
+	<div style="max-width: 1440px;margin: auto;width: 100%; position: relative; z-index: 0;" *ngIf="item">
+		<app-data-table style="width: fit-content;min-width: calc(100% - 32px);" [rows]="items" [trackBy]="'Count'" [(selectedRows)]="selectedItems" [showSpinner]="pageConfig.showSpinner" class="box-shadow ion-margin-horizontal" (activate)="onActive($event)">
+			<datatable-column [checkbox]="true" name=""></datatable-column>
+			<datatable-column class="col-id" name="#"></datatable-column>
+			<datatable-column class="col-name" [sticky]="true" name="{{c.Property}}" [property]="c.Property" *ngFor="let c of item.DataConfig?.CompareBy"></datatable-column>
+			<datatable-column class="col-date" *ngIf="item.DataConfig?.Interval?.Property" [name]="item.DataConfig?.Interval?.Title || item.DataConfig?.Interval?.Property" [property]="item.DataConfig?.Interval?.Title || item.DataConfig?.Interval?.Property"></datatable-column>
+			<datatable-column class="col-money" [class]="viewDimension == (m.Title || m.Property) ? 'selected':'' " name="{{(m.Title || m.Property)}}" [property]="m.Title || m.Property" *ngFor="let m of item.DataConfig?.MeasureBy">
+				<ng-template let-value="value" datatable-cell-template>
+					{{ value | number}}
+				</ng-template>
+			</datatable-column>
+			<datatable-column class="col-remark" name=""></datatable-column>
+		</app-data-table>
+	</div>
+
+	<div class="ion-padding"></div>
+</ion-content>
