@@ -14,8 +14,8 @@ import { ShareChartsModule } from 'src/app/components/charts/share-charts.module
     IonicModule,
     ShareModule,
     ShareChartsModule,
-    RouterModule.forChild([{ path: '', component: PosDashboardPage }])
+    RouterModule.forChild([{ path: '', component: PosDashboardPage }]),
   ],
-  declarations: [PosDashboardPage]
+  declarations: [PosDashboardPage],
 })
 export class PosDashboardPageModule {}

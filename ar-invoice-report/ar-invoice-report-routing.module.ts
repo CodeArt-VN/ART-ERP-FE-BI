@@ -10,21 +10,28 @@ const routes: Routes = [
     component: ARInvoiceReportPage,
     children: [
       //{ path: 'sale-overview', children: [{ loadChildren: () => import('./tabs/sale-overview/sale-overview.module').then(m => m.SaleOverviewPageModule), path: '', canActivate: [AuthGuard] }] },
-      { path: 'revenue', children: [{ loadChildren: () => import('./tabs/revenue/revenue.module').then(m => m.RevenuePageModule), path: '', canActivate: [AuthGuard] }] },
-
-
+      {
+        path: 'revenue',
+        children: [
+          {
+            loadChildren: () => import('./tabs/revenue/revenue.module').then((m) => m.RevenuePageModule),
+            path: '',
+            canActivate: [AuthGuard],
+          },
+        ],
+      },
 
       {
-      	path: '',
-      	redirectTo: '/ar-invoice-report/revenue',
-      	pathMatch: 'full'
-      }
-    ]
-  }
+        path: '',
+        redirectTo: '/ar-invoice-report/revenue',
+        pathMatch: 'full',
+      },
+    ],
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
 })
-export class ARInvoiceReportPageRoutingModule { }
+export class ARInvoiceReportPageRoutingModule {}

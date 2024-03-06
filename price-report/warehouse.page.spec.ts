@@ -10,7 +10,7 @@ describe('PriceReportPage', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [PriceReportPage],
-      imports: [IonicModule.forRoot()]
+      imports: [IonicModule.forRoot()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(PriceReportPage);

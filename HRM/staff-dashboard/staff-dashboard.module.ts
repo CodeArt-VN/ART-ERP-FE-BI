@@ -12,8 +12,8 @@ import { ShareModule } from 'src/app/share.module';
     CommonModule,
     FormsModule,
     ShareModule,
-    RouterModule.forChild([{ path: '', component: StaffDashboardPage }])
+    RouterModule.forChild([{ path: '', component: StaffDashboardPage }]),
   ],
-  declarations: [StaffDashboardPage]
+  declarations: [StaffDashboardPage],
 })
 export class StaffDashboardPageModule {}

@@ -10,13 +10,7 @@ import { ARInvoiceReportPage } from './ar-invoice-report.page';
 import { ShareModule } from 'src/app/share.module';
 
 @NgModule({
-  imports: [
-    CommonModule,
-    FormsModule,
-    IonicModule,
-    ShareModule,
-    ARInvoiceReportPageRoutingModule
-  ],
-  declarations: [ARInvoiceReportPage]
+  imports: [CommonModule, FormsModule, IonicModule, ShareModule, ARInvoiceReportPageRoutingModule],
+  declarations: [ARInvoiceReportPage],
 })
 export class ARInvoiceReportPageModule {}

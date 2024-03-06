@@ -2,7 +2,7 @@ import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule,ReactiveFormsModule  } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { ShareModule } from 'src/app/share.module';
 
@@ -17,8 +17,8 @@ import { ShareChartsModule } from 'src/app/components/charts/share-charts.module
     ReactiveFormsModule,
     ShareChartsModule,
     ShareModule,
-    RouterModule.forChild([{ path: '', component: POSReceiptReportPage }])
+    RouterModule.forChild([{ path: '', component: POSReceiptReportPage }]),
   ],
-  declarations: [POSReceiptReportPage]
+  declarations: [POSReceiptReportPage],
 })
 export class POSReceiptReportPageModule {}

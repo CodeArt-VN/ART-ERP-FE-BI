@@ -9,14 +9,7 @@ import { ShareChartsModule } from 'src/app/components/charts/share-charts.module
 import { PosShiftPageRoutingModule } from './pos-shift-routing.module';
 
 @NgModule({
-  imports: [
-    CommonModule,
-    FormsModule,
-    IonicModule,
-    ShareModule,
-    ShareChartsModule,
-    PosShiftPageRoutingModule
-  ],
-  declarations: [PosShiftPage]
+  imports: [CommonModule, FormsModule, IonicModule, ShareModule, ShareChartsModule, PosShiftPageRoutingModule],
+  declarations: [PosShiftPage],
 })
 export class PosShiftPageModule {}

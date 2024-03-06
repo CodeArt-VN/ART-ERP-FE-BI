@@ -10,7 +10,7 @@ describe('SaleProductPage', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [SaleProductPage],
-      imports: [IonicModule.forRoot()]
+      imports: [IonicModule.forRoot()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(SaleProductPage);

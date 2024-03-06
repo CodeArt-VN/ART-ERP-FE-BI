@@ -9,8 +9,8 @@ describe('ARInvoiceReportPage', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ARInvoiceReportPage ],
-      imports: [IonicModule.forRoot()]
+      declarations: [ARInvoiceReportPage],
+      imports: [IonicModule.forRoot()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ARInvoiceReportPage);

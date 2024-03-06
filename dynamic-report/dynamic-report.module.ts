@@ -12,8 +12,8 @@ import { ShareModule } from 'src/app/share.module';
     CommonModule,
     FormsModule,
     ShareModule,
-    RouterModule.forChild([{ path: '', component: DynamicReportPage }])
+    RouterModule.forChild([{ path: '', component: DynamicReportPage }]),
   ],
-  declarations: [DynamicReportPage]
+  declarations: [DynamicReportPage],
 })
 export class DynamicReportPageModule {}

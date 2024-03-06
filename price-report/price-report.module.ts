@@ -15,8 +15,8 @@ import { PriceReportComponentsModule } from './components/price-report-component
     ReactiveFormsModule,
     PriceReportComponentsModule,
     ShareModule,
-    RouterModule.forChild([{ path: '', component: PriceReportPage }])
+    RouterModule.forChild([{ path: '', component: PriceReportPage }]),
   ],
-  declarations: [PriceReportPage]
+  declarations: [PriceReportPage],
 })
 export class PriceReportPageModule {}

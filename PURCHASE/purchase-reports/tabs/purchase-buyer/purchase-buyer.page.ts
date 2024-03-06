@@ -1,5 +1,12 @@
 import { Component, ViewChild } from '@angular/core';
-import { ActionSheetController, AlertController, LoadingController, PopoverController, NavController, Platform } from '@ionic/angular';
+import {
+  ActionSheetController,
+  AlertController,
+  LoadingController,
+  PopoverController,
+  NavController,
+  Platform,
+} from '@ionic/angular';
 import { EnvService } from 'src/app/services/core/env.service';
 import { PageBase } from 'src/app/page-base';
 import { ReportService } from 'src/app/services/report.service';
@@ -9,203 +16,203 @@ import { ApiSetting } from 'src/app/services/static/api-setting';
 import { CommonService } from 'src/app/services/core/common.service';
 
 @Component({
-    selector: 'app-purchase-buyer',
-    templateUrl: 'purchase-buyer.page.html',
-    styleUrls: ['purchase-buyer.page.scss']
+  selector: 'app-purchase-buyer',
+  templateUrl: 'purchase-buyer.page.html',
+  styleUrls: ['purchase-buyer.page.scss'],
 })
 export class PurchaseBuyerPage extends PageBase {
-    today = '';
-    reportQuery: any = {};
+  today = '';
+  reportQuery: any = {};
 
+  constructor(
+    public pageProvider: CommonService,
+    public actionSheetController: ActionSheetController,
+    public alertCtrl: AlertController,
+    public loadingController: LoadingController,
+    public env: EnvService,
+    public navCtrl: NavController,
+    private platform: Platform,
+    public rpt: ReportService,
+  ) {
+    super();
+    this.today = lib.dateFormat(new Date(), 'hh:MM dd/mm/yyyy');
 
+    this.pageConfig.subscribeReport = this.rpt.Tracking().subscribe((data) => {
+      console.log('subscribeReport');
+      this.reportQuery = {
+        fromDate: data.fromDate,
+        toDate: data.toDate,
+        IDBranch: data.IDBranch,
+        IDBuyer: data.buyer?.Id,
+        IDVendor: data.vendor?.Id,
+        IsCalcShippedOnly: data.isCalcShippedOnly,
+        buyer: data.buyer,
+        vendor: data.vendor,
+      };
 
-    constructor(
-        public pageProvider: CommonService,
-        public actionSheetController: ActionSheetController,
-        public alertCtrl: AlertController,
-        public loadingController: LoadingController,
-        public env: EnvService,
-        public navCtrl: NavController,
-        private platform: Platform,
-        public rpt: ReportService,
-    ) {
-        super();
-        this.today = lib.dateFormat(new Date, 'hh:MM dd/mm/yyyy');
+      if (data._cmd == 'ExportPurchaseOutletReport') {
+        this.ExportPurchaseOutletReport();
+      } else if (data._cmd == 'runReport') {
+        this.readPurchaseBuyerReport();
+      }
+    });
+  }
 
-        this.pageConfig.subscribeReport = this.rpt.Tracking().subscribe((data) => {
-            console.log('subscribeReport');
-            this.reportQuery = {
-                fromDate: data.fromDate,
-                toDate: data.toDate,
-                IDBranch: data.IDBranch,
-                IDBuyer: data.buyer?.Id,
-                IDVendor: data.vendor?.Id,
-                IsCalcShippedOnly: data.isCalcShippedOnly,
-                buyer: data.buyer,
-                vendor: data.vendor
-            };
+  ngOnDestroy() {
+    this.pageConfig?.subscribeReport?.unsubscribe();
+    super.ngOnDestroy();
+  }
 
-            if (data._cmd == 'ExportPurchaseOutletReport') {
-                this.ExportPurchaseOutletReport();
+  loadData(event) {
+    super.loadedData(event);
+  }
+
+  ionViewDidEnter() {
+    this.buildCharts();
+  }
+
+  refresh() {
+    this.buildCharts();
+  }
+
+  buildCharts() {
+    this.chartNameBuild();
+  }
+
+  chartNameBuild() {}
+
+  warehouses = [];
+
+  readPurchaseBuyerReport() {
+    if (this.submitAttempt) {
+      return;
+    }
+
+    this.submitAttempt = true;
+    let apiPath = {
+      method: 'GET',
+      url: function () {
+        return ApiSetting.apiDomain('PURCHASE/Order/PurchaseBuyerReport/');
+      },
+    };
+
+    this.loadingController
+      .create({
+        cssClass: 'my-custom-class',
+        message: 'Đang tạo bảng kê, xin vui lòng chờ giây lát...',
+      })
+      .then((loading) => {
+        loading.present();
+
+        this.pageProvider
+          .connect(apiPath.method, apiPath.url(), this.reportQuery)
+          .toPromise()
+          .then((resp: any) => {
+            this.submitAttempt = false;
+            if (loading) loading.dismiss();
+            this.buildBranchesReport(resp);
+            super.loadedData();
+          })
+          .catch((err) => {
+            if (err.message != null) {
+              this.env.showMessage(err.message, 'danger');
+            } else {
+              this.env.showTranslateMessage('Cannot extract data', 'danger');
             }
-            else if (data._cmd == 'runReport') {
-                this.readPurchaseBuyerReport();
-            }
-        })
-    }
+            this.submitAttempt = false;
+            if (loading) loading.dismiss();
+            this.refresh();
+          });
+      });
+  }
 
-    ngOnDestroy() {
-        this.pageConfig?.subscribeReport?.unsubscribe();
-        super.ngOnDestroy();
-    }
+  buildBranchesReport(resp) {
+    this.warehouses = [];
+    for (let i = 0; i < resp.length; i++) {
+      const r = resp[i];
 
-    loadData(event) {
-        super.loadedData(event);
-    }
-
-    ionViewDidEnter() {
-        this.buildCharts();
-    }
-
-    refresh() {
-        this.buildCharts();
-    }
-
-
-    buildCharts() {
-        this.chartNameBuild();
-    }
-
-    chartNameBuild() {
-
-    }
-
-    warehouses = [];
-
-    readPurchaseBuyerReport() {
-        if (this.submitAttempt) {
-            return;
-        }
-
-        this.submitAttempt = true;
-        let apiPath = {
-            method: "GET",
-            url: function () { return ApiSetting.apiDomain("PURCHASE/Order/PurchaseBuyerReport/") }
+      let warehouse = this.warehouses.find((d) => d.Id == r.IDBranch);
+      if (!warehouse) {
+        warehouse = {
+          Id: r.IDBranch,
+          Name: r.BranchName,
+          count: 1,
+          itemList: [],
+          TotalBeforeDiscount: 0,
+          TotalDiscount: 0,
+          TotalAfterDiscount: 0,
         };
+        this.warehouses.push(warehouse);
+      }
 
-        this.loadingController.create({
-            cssClass: 'my-custom-class',
-            message: 'Đang tạo bảng kê, xin vui lòng chờ giây lát...'
-        }).then(loading => {
-            loading.present();
-
-            this.pageProvider.connect(apiPath.method, apiPath.url(), this.reportQuery).toPromise()
-                .then((resp: any) => {
-                    this.submitAttempt = false;
-                    if (loading) loading.dismiss();
-                    this.buildBranchesReport(resp);
-                    super.loadedData();
-
-                }).catch(err => {
-                    if (err.message != null) {
-                        this.env.showMessage(err.message, 'danger');
-                    }
-                    else {
-                        this.env.showTranslateMessage('erp.app.pages.bi.sales-report.message.can-not-get-data','danger');
-                    }
-                    this.submitAttempt = false;
-                    if (loading) loading.dismiss();
-                    this.refresh();
-                })
-        });
-    }
-
-    buildBranchesReport(resp) {
-        this.warehouses = [];
-        for (let i = 0; i < resp.length; i++) {
-            const r = resp[i];
-
-            let warehouse = this.warehouses.find(d => d.Id == r.IDBranch);
-            if (!warehouse) {
-                warehouse = {
-                    Id: r.IDBranch,
-                    Name: r.BranchName,
-                    count: 1,
-                    itemList: [],
-                    TotalBeforeDiscount: 0,
-                    TotalDiscount: 0,
-                    TotalAfterDiscount: 0,
-                };
-                this.warehouses.push(warehouse);
-            }
-
-            let saleitem = warehouse.itemList.find(d => d.IDBuyer == r.IDBuyer);
-            if (!saleitem) {
-                saleitem = {
-                    IDBuyer: r.IDBuyer,
-                    BuyerName: r.BuyerName,
-                    BuyerWorkPhone: r.BuyerWorkPhone,
-                    TotalBeforeDiscount: 0.0,
-                    TotalDiscount: 0.0,
-                    TotalAfterDiscount: 0.0
-                }
-                warehouse.itemList.push(saleitem);
-            }
-
-
-            saleitem.TotalBeforeDiscount += r.TotalBeforeDiscount;
-            saleitem.TotalDiscount += r.TotalDiscount;
-            saleitem.TotalAfterDiscount += r.TotalAfterDiscount;
-
-            saleitem.TotalBeforeDiscountText = lib.currencyFormat(saleitem.TotalBeforeDiscount);
-            saleitem.TotalDiscountText = lib.currencyFormat(saleitem.TotalDiscount);
-            saleitem.TotalAfterDiscountText = lib.currencyFormat(saleitem.TotalAfterDiscount);
-
-            warehouse.TotalBeforeDiscount += r.TotalBeforeDiscount;
-            warehouse.TotalDiscount += r.TotalDiscount;
-            warehouse.TotalAfterDiscount += r.TotalAfterDiscount;
-
-        }
-        this.warehouses.forEach(w => {
-            w.TotalBeforeDiscountText = lib.currencyFormat(w.TotalBeforeDiscount);
-            w.TotalDiscountText = lib.currencyFormat(w.TotalDiscount);
-            w.TotalAfterDiscountText = lib.currencyFormat(w.TotalAfterDiscount);
-
-            w.itemList.sort((a, b) => (parseFloat(b.TotalAfterDiscount) - parseFloat(a.TotalAfterDiscount)));
-        });
-
-    }
-
-    ExportPurchaseOutletReport() {
-        let apiPath = {
-            getExport: {
-                method: "GET",
-                url: function () { return ApiSetting.apiDomain("PURCHASE/Order/ExportPurchaseOutletReport/") }
-            }
+      let saleitem = warehouse.itemList.find((d) => d.IDBuyer == r.IDBuyer);
+      if (!saleitem) {
+        saleitem = {
+          IDBuyer: r.IDBuyer,
+          BuyerName: r.BuyerName,
+          BuyerWorkPhone: r.BuyerWorkPhone,
+          TotalBeforeDiscount: 0.0,
+          TotalDiscount: 0.0,
+          TotalAfterDiscount: 0.0,
         };
+        warehouse.itemList.push(saleitem);
+      }
 
-        this.loadingController.create({
-            cssClass: 'my-custom-class',
-            message: 'Đang tạo bảng kê, xin vui lòng chờ giây lát...'
-        }).then(loading => {
-            loading.present();
-            this.pageProvider.export(apiPath, this.reportQuery).then((response: any) => {
-                this.submitAttempt = false;
-                if (loading) loading.dismiss();
-                this.downloadURLContent(ApiSetting.mainService.base + response);
-            }).catch(err => {
-				if (err.message != null) {
-					this.env.showMessage(err.message, 'danger');
-				}
-				else {
-					this.env.showTranslateMessage('erp.app.pages.bi.sales-report.message.can-not-get-data','danger');
-				}
-                this.submitAttempt = false;
-                if (loading) loading.dismiss();
-                this.refresh();
-            });
+      saleitem.TotalBeforeDiscount += r.TotalBeforeDiscount;
+      saleitem.TotalDiscount += r.TotalDiscount;
+      saleitem.TotalAfterDiscount += r.TotalAfterDiscount;
 
-        });
+      saleitem.TotalBeforeDiscountText = lib.currencyFormat(saleitem.TotalBeforeDiscount);
+      saleitem.TotalDiscountText = lib.currencyFormat(saleitem.TotalDiscount);
+      saleitem.TotalAfterDiscountText = lib.currencyFormat(saleitem.TotalAfterDiscount);
 
+      warehouse.TotalBeforeDiscount += r.TotalBeforeDiscount;
+      warehouse.TotalDiscount += r.TotalDiscount;
+      warehouse.TotalAfterDiscount += r.TotalAfterDiscount;
     }
+    this.warehouses.forEach((w) => {
+      w.TotalBeforeDiscountText = lib.currencyFormat(w.TotalBeforeDiscount);
+      w.TotalDiscountText = lib.currencyFormat(w.TotalDiscount);
+      w.TotalAfterDiscountText = lib.currencyFormat(w.TotalAfterDiscount);
+
+      w.itemList.sort((a, b) => parseFloat(b.TotalAfterDiscount) - parseFloat(a.TotalAfterDiscount));
+    });
+  }
+
+  ExportPurchaseOutletReport() {
+    let apiPath = {
+      getExport: {
+        method: 'GET',
+        url: function () {
+          return ApiSetting.apiDomain('PURCHASE/Order/ExportPurchaseOutletReport/');
+        },
+      },
+    };
+
+    this.loadingController
+      .create({
+        cssClass: 'my-custom-class',
+        message: 'Đang tạo bảng kê, xin vui lòng chờ giây lát...',
+      })
+      .then((loading) => {
+        loading.present();
+        this.pageProvider
+          .export(apiPath, this.reportQuery)
+          .then((response: any) => {
+            this.submitAttempt = false;
+            if (loading) loading.dismiss();
+            this.downloadURLContent(ApiSetting.mainService.base + response);
+          })
+          .catch((err) => {
+            if (err.message != null) {
+              this.env.showMessage(err.message, 'danger');
+            } else {
+              this.env.showTranslateMessage('Cannot extract data', 'danger');
+            }
+            this.submitAttempt = false;
+            if (loading) loading.dismiss();
+            this.refresh();
+          });
+      });
+  }
 }

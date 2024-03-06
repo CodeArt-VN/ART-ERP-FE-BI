@@ -1,47 +1,46 @@
-.chart-contain{
-    display: flex;
-    flex-direction: row;
-    flex: auto;
-    margin-top: 40px !important;
-    min-height: 150px;
-    min-width: 240px;
-    width: 240px;
-    background: var(--ion-color-tertiary-tint);
-    border-radius: 0 0 0 18px;
-    margin: 15px;
+.chart-contain {
+  display: flex;
+  flex-direction: row;
+  flex: auto;
+  margin-top: 40px !important;
+  min-height: 150px;
+  min-width: 240px;
+  width: 240px;
+  background: var(--ion-color-tertiary-tint);
+  border-radius: 0 0 0 18px;
+  margin: 15px;
 
-    @media screen and (min-width: 768px) {
-        border-radius: 6px;
-    }
+  @media screen and (min-width: 768px) {
+    border-radius: 6px;
+  }
 }
-.text{
-    min-height: 50px;
-    min-width: 100;
-    width: 50%;
+.text {
+  min-height: 50px;
+  min-width: 100;
+  width: 50%;
 }
-.chart{
-    min-height: 50px;
-    min-width: 100;
-    width: 50%;
+.chart {
+  min-height: 50px;
+  min-width: 100;
+  width: 50%;
 }
 .text-value {
-    font-size: 1.8rem;
-    font-weight: 500;
-    margin-top: 40px;
-    margin-left: 20px; 
+  font-size: calc(10/16 * 1.8rem);
+  font-weight: 500;
+  margin-top: 40px;
+  margin-left: 20px;
 }
 .value-target {
-    padding: 0;
-    font-size: 1rem;
-    text-transform: uppercase;
-    opacity: 0.5;
-    margin: 7px 7px 10px 0px;
+  padding: 0;
+  font-size: calc(10/16 * 1rem);
+  text-transform: uppercase;
+  opacity: 0.5;
+  margin: 7px 7px 10px 0px;
 }
 .text-name {
-    padding-left: 0;
-    font-size: 1.0rem;
-    text-transform: uppercase;
-    opacity: 0.5;
-    margin: 7px 7px 10px 21px;
-
+  padding-left: 0;
+  font-size: calc(10/16 * 1rem);
+  text-transform: uppercase;
+  opacity: 0.5;
+  margin: 7px 7px 10px 21px;
 }

@@ -1,180 +1,334 @@
 <ion-header>
-	<ion-toolbar>
-		<ion-buttons slot="start" class="ion-hide-sm-down_">
-			<ion-button color="dark" class="ion-hide-sm-down">
-				Purchases Reports
-			</ion-button>
-		</ion-buttons>
-		<ion-buttons slot="end">
-			<ion-button (click)="print()" title="{{'erp.app.pages.bi.sales-report.print' | translate}}">
-				<ion-icon slot="icon-only" name="print"></ion-icon>
-			</ion-button>
-			
-			<ion-button (click)="refresh()" title="{{'erp.app.pages.bi.sales-report.refresh' | translate}}">
-				<ion-icon slot="icon-only" name="reload-outline"></ion-icon>
-			</ion-button>
-			
-			<ion-button title="{{'erp.app.pages.bi.sales-report.show-feature' | translate}}" (click)="pageConfig.isShowFeature = !pageConfig.isShowFeature;">
-				<ion-icon slot="icon-only" [name]="pageConfig.isShowFeature? 'close-outline':'list-circle-outline'">
-				</ion-icon>
-			</ion-button>
-		</ion-buttons>
-	</ion-toolbar>
+  <ion-toolbar>
+    <ion-buttons slot="start" class="ion-hide-sm-down_">
+      <ion-button color="dark" class="ion-hide-sm-down"> Purchases Reports </ion-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button (click)="print()" title="{{'Form printing' | translate}}">
+        <ion-icon slot="icon-only" name="print"></ion-icon>
+      </ion-button>
 
-	<ion-toolbar style="--padding-start: 4px;" color="primary">
-		<ion-segment scrollable="true" (ionChange)="segmentChanged($event)" [value]="segmentView">
-			<ion-segment-button value="purchase-reports/purchase-buyer">
-				<ion-label>NVMH</ion-label>
-			</ion-segment-button>
-			<ion-segment-button value="purchase-reports/purchase-product">
-				<ion-label>Sản phẩm</ion-label>
-			</ion-segment-button>
-			<ion-segment-button value="purchase-reports/purchase-vendor">
-				<ion-label>Nhà cung cấp</ion-label>
-			</ion-segment-button>
-			<ion-segment-button value="purchase-reports/ap-invoice">
-				<ion-label>Hóa đơn</ion-label>
-			</ion-segment-button>
-			<!-- <ion-segment-button value="purchase-reports/sale-shipping">
+      <ion-button (click)="refresh()" title="{{'Refresh' | translate}}">
+        <ion-icon slot="icon-only" name="reload-outline"></ion-icon>
+      </ion-button>
+
+      <ion-button
+        title="{{'Expanded function' | translate}}"
+        (click)="pageConfig.isShowFeature = !pageConfig.isShowFeature;"
+      >
+        <ion-icon slot="icon-only" [name]="pageConfig.isShowFeature? 'close-outline':'list-circle-outline'"> </ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <ion-toolbar style="--padding-start: 4px" color="primary">
+    <ion-segment scrollable="true" (ionChange)="segmentChanged($event)" [value]="segmentView">
+      <ion-segment-button value="purchase-reports/purchase-buyer">
+        <ion-label>NVMH</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="purchase-reports/purchase-product">
+        <ion-label>Sản phẩm</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="purchase-reports/purchase-vendor">
+        <ion-label>Nhà cung cấp</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="purchase-reports/ap-invoice">
+        <ion-label>Hóa đơn</ion-label>
+      </ion-segment-button>
+      <!-- <ion-segment-button value="purchase-reports/sale-shipping">
 				<ion-label>Giao hàng</ion-label>
 			</ion-segment-button> -->
-			<!-- <ion-segment-button value="purchase-reports/sale-performance">
+      <!-- <ion-segment-button value="purchase-reports/sale-performance">
 				<ion-label>Hiệu suất</ion-label>
 			</ion-segment-button> -->
-			<!-- <ion-segment-button value="purchase-reports/sale-commission">
+      <!-- <ion-segment-button value="purchase-reports/sale-commission">
 				<ion-label>Commission</ion-label>
 			</ion-segment-button> -->
-			<!-- <ion-segment-button value="purchase-reports/sale-order-details">
+      <!-- <ion-segment-button value="purchase-reports/sale-order-details">
 				<ion-label>Đơn hàng</ion-label>
 			</ion-segment-button> -->
-			<!-- <ion-segment-button value="purchase-reports/sale-forecasts">
+      <!-- <ion-segment-button value="purchase-reports/sale-forecasts">
 				<ion-label>Dự phóng</ion-label>
 			</ion-segment-button> -->
-
-		</ion-segment>
-	</ion-toolbar>
+    </ion-segment>
+  </ion-toolbar>
 </ion-header>
 
+<ion-content
+  appScrollbarTheme
+  appPrintFix
+  class="A4"
+  [ngClass]="{withFeature: pageConfig.isShowFeature}"
+  forceOverscroll="false"
+>
+  <ion-fab
+    *ngIf="pageConfig.isShowFeature"
+    [ngClass]="{withSearch: pageConfig.isShowSearch}"
+    class="feature no-print"
+    vertical="top"
+    horizontal="end"
+    slot="fixed"
+  >
+    <ion-list-header lines="inset">
+      <ion-label color="dark">{{'Sort condition' | translate}}</ion-label>
+    </ion-list-header>
+    <div class="ion-padding" style="padding-bottom: 0">
+      <div class="c-control">
+        <label class="c-label">{{'Group by' | translate}}</label>
+        <ng-container *ngFor="let f of rpt.rptGlobal.frequency">
+          <ion-button [fill]="filter.frequency == f.Id ? 'solid' : 'outline'" size="small" (click)="changeFrequency(f)">
+            {{f.Name}}
+          </ion-button>
+        </ng-container>
+      </div>
+      <div class="c-control">
+        <label class="c-label">{{'Time' | translate}} ({{filter.fromDate}} - {{filter.toDate}})</label>
+        <ion-button
+          *ngIf="filter.frequency == 1"
+          (click)="changeDateFillter('d')"
+          [fill]="filter.type=='d'? 'solid': 'outline'"
+          size="small"
+          >{{'Today' | translate}}</ion-button
+        >
+        <ion-button
+          *ngIf="filter.frequency == 1"
+          (click)="changeDateFillter('dw')"
+          [fill]="filter.type=='dw'? 'solid': 'outline'"
+          size="small"
+          >{{'This week' | translate}}</ion-button
+        >
+        <ion-button
+          *ngIf="filter.frequency == 1"
+          (click)="changeDateFillter('dm')"
+          [fill]="filter.type=='dm'? 'solid': 'outline'"
+          size="small"
+          >{{'This month' | translate}}</ion-button
+        >
 
+        <ion-button
+          *ngIf="filter.frequency == 2"
+          (click)="changeDateFillter('m')"
+          [fill]="filter.type=='m'? 'solid': 'outline'"
+          size="small"
+          >{{'This month' | translate}}</ion-button
+        >
+        <ion-button
+          *ngIf="filter.frequency == 2"
+          (click)="changeDateFillter('m3')"
+          [fill]="filter.type=='m3'? 'solid': 'outline'"
+          size="small"
+          >{{'3 months' | translate}}</ion-button
+        >
+        <ion-button
+          *ngIf="filter.frequency == 2"
+          (click)="changeDateFillter('m6')"
+          [fill]="filter.type=='m6'? 'solid': 'outline'"
+          size="small"
+          >{{'6 months' | translate}}</ion-button
+        >
+        <ion-button
+          *ngIf="filter.frequency == 2"
+          (click)="changeDateFillter('my')"
+          [fill]="filter.type=='my'? 'solid': 'outline'"
+          size="small"
+          >{{'This year' | translate}}</ion-button
+        >
 
-<ion-content appScrollbarTheme appPrintFix class="A4" [ngClass]="{withFeature: pageConfig.isShowFeature}" forceOverscroll="false">
-	<ion-fab *ngIf="pageConfig.isShowFeature" [ngClass]="{withSearch: pageConfig.isShowSearch}" class="feature no-print " vertical="top" horizontal="end" slot="fixed">
-		<ion-list-header lines="inset">
-			<ion-label color="dark">{{'erp.app.pages.bi.sales-report.sort-conditions' | translate}}</ion-label>
-		</ion-list-header>
-		<div class="ion-padding" style="padding-bottom: 0;">
-			<div class="c-control">
-				<label class="c-label">{{'erp.app.pages.bi.sales-report.group-by' | translate}}</label>
-				<ng-container *ngFor="let f of rpt.rptGlobal.frequency">
-					<ion-button [fill]="filter.frequency == f.Id ? 'solid' : 'outline'" size="small" (click)="changeFrequency(f)">
-						{{f.Name}}
-					</ion-button>
-				</ng-container>
-			</div>
-			<div class="c-control">
-				<label class="c-label">{{'erp.app.pages.bi.sales-report.time' | translate}} ({{filter.fromDate}} - {{filter.toDate}})</label>
-				<ion-button *ngIf="filter.frequency == 1" (click)="changeDateFillter('d')" [fill]="filter.type=='d'? 'solid': 'outline'" size="small">{{'erp.app.pages.bi.sales-report.d' | translate}}</ion-button>
-				<ion-button *ngIf="filter.frequency == 1" (click)="changeDateFillter('dw')" [fill]="filter.type=='dw'? 'solid': 'outline'" size="small">{{'erp.app.pages.bi.sales-report.dw' | translate}}</ion-button>
-				<ion-button *ngIf="filter.frequency == 1" (click)="changeDateFillter('dm')" [fill]="filter.type=='dm'? 'solid': 'outline'" size="small">{{'erp.app.pages.bi.sales-report.dm' | translate}}</ion-button>
+        <ion-button
+          *ngIf="filter.frequency == 3"
+          (click)="changeDateFillter('q')"
+          [fill]="filter.type=='q'? 'solid': 'outline'"
+          size="small"
+          >{{'This quarter' | translate}}</ion-button
+        >
+        <ion-button
+          *ngIf="filter.frequency == 3"
+          (click)="changeDateFillter('q2')"
+          [fill]="filter.type=='q2'? 'solid': 'outline'"
+          size="small"
+          >{{'2 quarters' | translate}}</ion-button
+        >
+        <ion-button
+          *ngIf="filter.frequency == 3"
+          (click)="changeDateFillter('q3')"
+          [fill]="filter.type=='q3'? 'solid': 'outline'"
+          size="small"
+          >{{'3 quarters' | translate}}</ion-button
+        >
+        <ion-button
+          *ngIf="filter.frequency == 3"
+          (click)="changeDateFillter('qy')"
+          [fill]="filter.type=='qy'? 'solid': 'outline'"
+          size="small"
+          >{{'This year' | translate}}</ion-button
+        >
 
-				<ion-button *ngIf="filter.frequency == 2" (click)="changeDateFillter('m')" [fill]="filter.type=='m'? 'solid': 'outline'" size="small">{{'erp.app.pages.bi.sales-report.m' | translate}}</ion-button>
-				<ion-button *ngIf="filter.frequency == 2" (click)="changeDateFillter('m3')" [fill]="filter.type=='m3'? 'solid': 'outline'" size="small">{{'erp.app.pages.bi.sales-report.m3' | translate}}</ion-button>
-				<ion-button *ngIf="filter.frequency == 2" (click)="changeDateFillter('m6')" [fill]="filter.type=='m6'? 'solid': 'outline'" size="small">{{'erp.app.pages.bi.sales-report.m6' | translate}}</ion-button>
-				<ion-button *ngIf="filter.frequency == 2" (click)="changeDateFillter('my')" [fill]="filter.type=='my'? 'solid': 'outline'" size="small">{{'erp.app.pages.bi.sales-report.my' | translate}}</ion-button>
+        <ion-button
+          *ngIf="filter.frequency == 4"
+          (click)="changeDateFillter('y')"
+          [fill]="filter.type=='y'? 'solid': 'outline'"
+          size="small"
+          >{{'This year' | translate}}</ion-button
+        >
+        <ion-button
+          *ngIf="filter.frequency == 4"
+          (click)="changeDateFillter('y2')"
+          [fill]="filter.type=='y2'? 'solid': 'outline'"
+          size="small"
+          >{{'2 years' | translate}}</ion-button
+        >
+        <ion-button
+          *ngIf="filter.frequency == 4"
+          (click)="changeDateFillter('y3')"
+          [fill]="filter.type=='y3'? 'solid': 'outline'"
+          size="small"
+          >{{'3 years' | translate}}</ion-button
+        >
 
-				<ion-button *ngIf="filter.frequency == 3" (click)="changeDateFillter('q')" [fill]="filter.type=='q'? 'solid': 'outline'" size="small">{{'erp.app.pages.bi.sales-report.q' | translate}}</ion-button>
-				<ion-button *ngIf="filter.frequency == 3" (click)="changeDateFillter('q2')" [fill]="filter.type=='q2'? 'solid': 'outline'" size="small">{{'erp.app.pages.bi.sales-report.q2' | translate}}</ion-button>
-				<ion-button *ngIf="filter.frequency == 3" (click)="changeDateFillter('q3')" [fill]="filter.type=='q3'? 'solid': 'outline'" size="small">{{'erp.app.pages.bi.sales-report.q3' | translate}}</ion-button>
-				<ion-button *ngIf="filter.frequency == 3" (click)="changeDateFillter('qy')" [fill]="filter.type=='qy'? 'solid': 'outline'" size="small">{{'erp.app.pages.bi.sales-report.qy' | translate}}</ion-button>
+        <ion-button (click)="changeDateFillter('set')" [fill]="filter.type=='set'? 'solid': 'outline'" size="small"
+          >{{'Options' | translate}}</ion-button
+        >
 
-				<ion-button *ngIf="filter.frequency == 4" (click)="changeDateFillter('y')" [fill]="filter.type=='y'? 'solid': 'outline'" size="small">{{'erp.app.pages.bi.sales-report.y' | translate}}</ion-button>
-				<ion-button *ngIf="filter.frequency == 4" (click)="changeDateFillter('y2')" [fill]="filter.type=='y2'? 'solid': 'outline'" size="small">{{'erp.app.pages.bi.sales-report.y2' | translate}}</ion-button>
-				<ion-button *ngIf="filter.frequency == 4" (click)="changeDateFillter('y3')" [fill]="filter.type=='y3'? 'solid': 'outline'" size="small">{{'erp.app.pages.bi.sales-report.y3' | translate}}</ion-button>
+        <div *ngIf="filter.type=='set'" class="date-pick">
+          <input
+            (change)="changeDateFillter('setdone')"
+            [(ngModel)]="filter.fromDate"
+            required
+            type="date"
+            pattern="\d{1,2}/\d{1,2}/\d{4}"
+            class="datepicker"
+            name="date"
+            value=""
+          />
+          <input
+            (change)="changeDateFillter('setdone')"
+            [(ngModel)]="filter.toDate"
+            required
+            type="date"
+            pattern="\d{1,2}/\d{1,2}/\d{4}"
+            class="datepicker"
+            name="date"
+            value=""
+          />
+        </div>
+      </div>
 
-				<ion-button (click)="changeDateFillter('set')" [fill]="filter.type=='set'? 'solid': 'outline'" size="small">{{'erp.app.pages.bi.sales-report.option' | translate}}</ion-button>
-
-				<div *ngIf="filter.type=='set'" class="date-pick">
-					<input (change)="changeDateFillter('setdone')" [(ngModel)]="filter.fromDate" required type="date" pattern="\d{1,2}/\d{1,2}/\d{4}" class="datepicker" name="date" value="" />
-					<input (change)="changeDateFillter('setdone')" [(ngModel)]="filter.toDate" required type="date" pattern="\d{1,2}/\d{1,2}/\d{4}" class="datepicker" name="date" value="" />
-				</div>
-			</div>
-
-			<!-- <div class="c-control">
-				<label class="c-label" for="IDBuyer">{{'erp.app.pages.bi.sales-report.calc-info' | translate}} <i>
+      <!-- <div class="c-control">
+				<label class="c-label" for="IDBuyer">{{'Calculation method' | translate}} <i>
 					<small *ngIf="filter.isCalcShippedOnly">
-						{{'erp.app.pages.bi.sales-report.calc-by-date' | translate}}
+						{{'Calculated by delivery date' | translate}}
 					</small>
 					<small *ngIf="!filter.isCalcShippedOnly">
-						{{'erp.app.pages.bi.sales-report.calc-by-order' | translate}}
+						{{'Calculated by order date' | translate}}
 					</small>
 				</i></label>
-				<ion-button (click)="filter.isCalcShippedOnly = true" [fill]="filter.isCalcShippedOnly? 'solid': 'outline'" size="small">{{'erp.app.pages.bi.sales-report.calc-shipped-only' | translate}}</ion-button>
-				<ion-button (click)="filter.isCalcShippedOnly = false" [fill]="!filter.isCalcShippedOnly? 'solid': 'outline'" size="small">{{'erp.app.pages.bi.sales-report.calc-shipped-only-false' | translate}}</ion-button>
+				<ion-button (click)="filter.isCalcShippedOnly = true" [fill]="filter.isCalcShippedOnly? 'solid': 'outline'" size="small">{{'Actual amount delivered' | translate}}</ion-button>
+				<ion-button (click)="filter.isCalcShippedOnly = false" [fill]="!filter.isCalcShippedOnly? 'solid': 'outline'" size="small">{{'Order' | translate}}</ion-button>
 				
 			</div> -->
 
-			<div class="c-control">
-				<label class="c-label" for="IDBuyer">NVMH</label>
-				<ng-select [(ngModel)]="filter.buyer" class="c-input no-check-dirty" #IDBuyer labelForId="IDBuyer" [items]="buyerList$ | async" [typeahead]="buyerListInput$" [loading]='buyerListLoading' [virtualScroll]="true" bindLabel="FullName" placeholder="{{'erp.app.pages.bi.sales-report.search-placeholder' | translate}}">
-					<ng-template ng-option-tmp let-i="item" let-search="searchTerm">
-						<div *ngIf="i">
-							<div><span [ngOptionHighlight]="search">{{i.FullName}}</span></div>
-							<small>#<b><span class="important" [ngOptionHighlight]="search">{{i.Id}} - {{i.Code}}</span></b> <span *ngIf="i.Phone"> | {{'erp.app.pages.bi.sales-report.phone' | translate}}: <b [ngOptionHighlight]="search">{{i.Phone}}</b></span></small>
-						</div>
-					</ng-template>
-				</ng-select>
-			</div>
-			
-			<div class="c-control">
-				<label class="c-label" for="IDVendor">Nhà cung cấp</label>
-				<ng-select [(ngModel)]="filter.vendor" class="c-input no-check-dirty" #IDVendor labelForId="IDVendor" [items]="vendorList$ | async" [typeahead]="vendorListInput$" [loading]='vendorListLoading' [virtualScroll]="true" bindLabel="Name" placeholder="{{'erp.app.pages.bi.sales-report.search-placeholder' | translate}}">
-					<ng-template ng-label-tmp let-i="item" let-a="item.Address">
-						{{i.Name}}
-						<small *ngIf="a">
-							<span *ngIf="a.AddressLine1"> | {{a.AddressLine1}}</span>
-							<span *ngIf="a.Ward">, {{a.Ward}}</span>
-							<span *ngIf="a.District">, {{a.District}}</span>
-							<span *ngIf="a.Province">, {{a.Province}}</span>
-						</small>
-					</ng-template>
-					<ng-template ng-option-tmp let-i="item" let-a="item.Address" let-search="searchTerm">
-						<div *ngIf="i">
-							<div>
-								<span [ngOptionHighlight]="search">{{i.Name}}</span>
-								<span *ngIf="i.WorkPhone"> | <small> <b [ngOptionHighlight]="search">{{i.WorkPhone}}</b> </small></span>
-							</div>
-							<small *ngIf="a">
-								<b *ngIf="i.Code"><span class="important" [ngOptionHighlight]="search">{{i.Code}}</span></b>
-								<span *ngIf="a.AddressLine1"> | {{a.AddressLine1}}</span>
-								<span *ngIf="a.Ward">, {{a.Ward}}</span>
-								<span *ngIf="a.District">, {{a.District}}</span>
-								<span *ngIf="a.Province">, {{a.Province}}</span>
-								<br *ngIf="a.AddressLine2 || a.Contact">
-								<span *ngIf="a.AddressLine2">{{a.AddressLine2}}</span>
-								<span *ngIf="a.Contact"> | {{'erp.app.pages.bi.sales-report.contact' | translate}}: {{a.Contact}}</span>
-								<span *ngIf="a.Phone1"> - {{a.Phone1}}</span>
-								<span *ngIf="a.Phone2"> - {{a.Phone2}}</span>
-							</small>
-						</div>
-					</ng-template>
-				</ng-select>
-			</div>
+      <div class="c-control">
+        <label class="c-label" for="IDBuyer">NVMH</label>
+        <ng-select
+          [(ngModel)]="filter.buyer"
+          class="c-input no-check-dirty"
+          #IDBuyer
+          labelForId="IDBuyer"
+          [items]="buyerList$ | async"
+          [typeahead]="buyerListInput$"
+          [loading]="buyerListLoading"
+          [virtualScroll]="true"
+          bindLabel="FullName"
+          placeholder="{{'Search for name, code or phone number' | translate}}"
+        >
+          <ng-template ng-option-tmp let-i="item" let-search="searchTerm">
+            <div *ngIf="i">
+              <div>
+                <span [ngOptionHighlight]="search">{{i.FullName}}</span>
+              </div>
+              <small
+                >#<b><span class="important" [ngOptionHighlight]="search">{{i.Id}} - {{i.Code}}</span></b>
+                <span *ngIf="i.Phone">
+                  | {{'Telephone' | translate}}:
+                  <b [ngOptionHighlight]="search">{{i.Phone}}</b></span
+                ></small
+              >
+            </div>
+          </ng-template>
+        </ng-select>
+      </div>
 
-			
+      <div class="c-control">
+        <label class="c-label" for="IDVendor">Nhà cung cấp</label>
+        <ng-select
+          [(ngModel)]="filter.vendor"
+          class="c-input no-check-dirty"
+          #IDVendor
+          labelForId="IDVendor"
+          [items]="vendorList$ | async"
+          [typeahead]="vendorListInput$"
+          [loading]="vendorListLoading"
+          [virtualScroll]="true"
+          bindLabel="Name"
+          placeholder="{{'Search for name, code or phone number' | translate}}"
+        >
+          <ng-template ng-label-tmp let-i="item" let-a="item.Address">
+            {{i.Name}}
+            <small *ngIf="a">
+              <span *ngIf="a.AddressLine1"> | {{a.AddressLine1}}</span>
+              <span *ngIf="a.Ward">, {{a.Ward}}</span>
+              <span *ngIf="a.District">, {{a.District}}</span>
+              <span *ngIf="a.Province">, {{a.Province}}</span>
+            </small>
+          </ng-template>
+          <ng-template ng-option-tmp let-i="item" let-a="item.Address" let-search="searchTerm">
+            <div *ngIf="i">
+              <div>
+                <span [ngOptionHighlight]="search">{{i.Name}}</span>
+                <span *ngIf="i.WorkPhone">
+                  |
+                  <small>
+                    <b [ngOptionHighlight]="search">{{i.WorkPhone}}</b>
+                  </small></span
+                >
+              </div>
+              <small *ngIf="a">
+                <b *ngIf="i.Code"><span class="important" [ngOptionHighlight]="search">{{i.Code}}</span></b>
+                <span *ngIf="a.AddressLine1"> | {{a.AddressLine1}}</span>
+                <span *ngIf="a.Ward">, {{a.Ward}}</span>
+                <span *ngIf="a.District">, {{a.District}}</span>
+                <span *ngIf="a.Province">, {{a.Province}}</span>
+                <br *ngIf="a.AddressLine2 || a.Contact" />
+                <span *ngIf="a.AddressLine2">{{a.AddressLine2}}</span>
+                <span *ngIf="a.Contact"> | {{'Contact' | translate}}: {{a.Contact}}</span>
+                <span *ngIf="a.Phone1"> - {{a.Phone1}}</span>
+                <span *ngIf="a.Phone2"> - {{a.Phone2}}</span>
+              </small>
+            </div>
+          </ng-template>
+        </ng-select>
+      </div>
 
-			<div class="c-control">
-				<ion-button [disabled]="submitAttempt" color="primary" expand="block" (click)="runReports()"> {{'erp.app.pages.bi.sales-report.run-reports' | translate}}</ion-button> 
-				<!-- shape="round" -->
-			</div>
+      <div class="c-control">
+        <ion-button [disabled]="submitAttempt" color="primary" expand="block" (click)="runReports()">
+          {{'Data calculation' | translate}}</ion-button
+        >
+        <!-- shape="round" -->
+      </div>
 
-			<div class="c-control">
-				<ion-button [disabled]="submitAttempt" color="primary" fill="outline" expand="block" (click)="ExportPurchaseOutletReport()"> {{'erp.app.pages.bi.sales-report.export-sale-product-report' | translate}}</ion-button> 
-				<!-- shape="round" -->
-			</div>
-
-		</div>
-
-
-	</ion-fab>
-	<ion-router-outlet></ion-router-outlet>
+      <div class="c-control">
+        <ion-button
+          [disabled]="submitAttempt"
+          color="primary"
+          fill="outline"
+          expand="block"
+          (click)="ExportPurchaseOutletReport()"
+        >
+          {{'Export to Excel' | translate}}</ion-button
+        >
+        <!-- shape="round" -->
+      </div>
+    </div>
+  </ion-fab>
+  <ion-router-outlet></ion-router-outlet>
 </ion-content>

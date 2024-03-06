@@ -1,272 +1,284 @@
 <ion-header>
-	<ion-toolbar>
-		<ion-buttons slot="start" class="ion-hide-sm-down_">
-			<ion-button color="dark" class="ion-hide-sm-down">
-				Daily report
-			</ion-button>
-		</ion-buttons>
+  <ion-toolbar>
+    <ion-buttons slot="start" class="ion-hide-sm-down_">
+      <ion-button color="dark" class="ion-hide-sm-down"> Daily report </ion-button>
+    </ion-buttons>
 
-		<ion-buttons slot="end">
+    <ion-buttons slot="end">
+      <ion-button (click)="refresh()" title="In phiếu">
+        <ion-icon slot="icon-only" name="reload-outline"></ion-icon>
+      </ion-button>
 
-
-			<ion-button (click)="refresh()" title="In phiếu">
-				<ion-icon slot="icon-only" name="reload-outline"></ion-icon>
-			</ion-button>
-
-			<ion-button title="Chức năng mở rộng" (click)="pageConfig.isShowFeature = !pageConfig.isShowFeature;">
-				<ion-icon slot="icon-only" [name]="pageConfig.isShowFeature? 'close-outline':'list-circle-outline'">
-				</ion-icon>
-			</ion-button>
-
-		</ion-buttons>
-	</ion-toolbar>
+      <ion-button title="Chức năng mở rộng" (click)="pageConfig.isShowFeature = !pageConfig.isShowFeature;">
+        <ion-icon slot="icon-only" [name]="pageConfig.isShowFeature? 'close-outline':'list-circle-outline'"> </ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
 </ion-header>
 
-
-
-
 <ion-content appScrollbarTheme>
+  <ion-fab
+    [hidden]="!pageConfig.isShowFeature"
+    [ngClass]="{withSearch: pageConfig.isShowSearch}"
+    class="feature"
+    vertical="top"
+    horizontal="end"
+    slot="fixed"
+  >
+    <div class="ion-padding">
+      <div>
+        <div class="title">Thời gian</div>
 
-	<ion-fab [hidden]="!pageConfig.isShowFeature" [ngClass]="{withSearch: pageConfig.isShowSearch}" class="feature" vertical="top" horizontal="end" slot="fixed">
-		<div class="ion-padding">
-			<div>
-				<div class="title">Thời gian</div>
+        <ion-button
+          (click)="changeDateFillter('day')"
+          [fill]="rpt.rptGlobal.query.type=='day'? 'solid': 'outline'"
+          size="small"
+          >1d</ion-button
+        >
+        <ion-button
+          (click)="changeDateFillter('week')"
+          [fill]="rpt.rptGlobal.query.type=='week'? 'solid': 'outline'"
+          size="small"
+          >7d</ion-button
+        >
+        <ion-button
+          (click)="changeDateFillter('month')"
+          [fill]="rpt.rptGlobal.query.type=='month'? 'solid': 'outline'"
+          size="small"
+          >1m</ion-button
+        >
+        <ion-button
+          (click)="changeDateFillter('3m')"
+          [fill]="rpt.rptGlobal.query.type=='3m'? 'solid': 'outline'"
+          size="small"
+          >3m</ion-button
+        >
+        <ion-button
+          (click)="changeDateFillter('set')"
+          [fill]="rpt.rptGlobal.query.type=='set'? 'solid': 'outline'"
+          size="small"
+          >Tùy chọn...</ion-button
+        >
 
-				<ion-button (click)="changeDateFillter('day')"
-					[fill]="rpt.rptGlobal.query.type=='day'? 'solid': 'outline'" size="small">1d</ion-button>
-				<ion-button (click)="changeDateFillter('week')"
-					[fill]="rpt.rptGlobal.query.type=='week'? 'solid': 'outline'" size="small">7d</ion-button>
-				<ion-button (click)="changeDateFillter('month')"
-					[fill]="rpt.rptGlobal.query.type=='month'? 'solid': 'outline'" size="small">1m</ion-button>
-				<ion-button (click)="changeDateFillter('3m')"
-					[fill]="rpt.rptGlobal.query.type=='3m'? 'solid': 'outline'" size="small">3m</ion-button>
-				<ion-button (click)="changeDateFillter('set')"
-					[fill]="rpt.rptGlobal.query.type=='set'? 'solid': 'outline'" size="small">Tùy chọn...</ion-button>
+        <div class="query-time">{{rpt.rptGlobal.query.fromDate}} - {{rpt.rptGlobal.query.toDate}}</div>
+      </div>
 
-				<div class="query-time">{{rpt.rptGlobal.query.fromDate}} - {{rpt.rptGlobal.query.toDate}}</div>
-			</div>
+      <div>
+        <div class="title">Chi nhánh</div>
+        <ng-container *ngFor="let b of rpt.rptGlobal.branch">
+          <ion-button [fill]="b.IsHidden ? 'outline' : 'solid'" size="small" (click)="toogleBranchDataset(b)">
+            {{b.Name}}
+          </ion-button>
+        </ng-container>
+      </div>
+    </div>
 
-			<div>
-				<div class="title">Chi nhánh</div>
-				<ng-container *ngFor="let b of rpt.rptGlobal.branch">
-					<ion-button [fill]="b.IsHidden ? 'outline' : 'solid'" size="small" (click)="toogleBranchDataset(b)">
-						{{b.Name}}
-					</ion-button>
-				</ng-container>
-			</div>
-		</div>
+    <div class="chart-box">
+      <div class="title">Occupancy rate / Công suất hoạt động</div>
+      <div class="chart-contain">
+        <canvas id="cCanvas" #cCanvas></canvas>
+      </div>
+    </div>
 
-			<div class="chart-box">
-				<div class="title">Occupancy rate / Công suất hoạt động</div>
-				<div class="chart-contain">
-					<canvas id="cCanvas" #cCanvas></canvas>
-				</div>
-			</div>
+    <div class="chart-box" style="background-color: transparent">
+      <div class="title">Cash flow data</div>
+      <div class="chart-contain">
+        <table class="data-table">
+          <ng-container *ngFor="let i of dataCashFlow">
+            <tr (click)="i.isShow=!i.isShow">
+              <td>
+                <div [ngClass]="{bold: i.data}" class="data-title" [innerHtml]="i.title"></div>
+              </td>
+              <td class="value">{{i.value}}</td>
+            </tr>
+            <ng-container *ngIf="i.data && i.isShow">
+              <tr *ngFor="let j of i.data">
+                <td>
+                  <div [ngClass]="{bold: j.data}" class="data-sub-title" [innerHtml]="j.title"></div>
+                </td>
+                <td class="sub-value">{{j.value}}</td>
+              </tr>
+            </ng-container>
+          </ng-container>
+        </table>
+      </div>
+    </div>
+  </ion-fab>
 
-			<div class="chart-box" style="background-color: transparent;">
-				<div class="title">Cash flow data</div>
-				<div class="chart-contain">
-					<table class="data-table">
-						<ng-container *ngFor="let i of dataCashFlow">
-							<tr (click)="i.isShow=!i.isShow">
-								<td>
-									<div [ngClass]="{bold: i.data}" class="data-title" [innerHtml]="i.title"></div>
-								</td>
-								<td class="value">
-									{{i.value}}
-								</td>
-							</tr>
-							<ng-container *ngIf="i.data && i.isShow">
-								<tr *ngFor="let j of i.data">
-									<td>
-										<div [ngClass]="{bold: j.data}" class="data-sub-title" [innerHtml]="j.title">
-										</div>
-									</td>
-									<td class="sub-value">
-										{{j.value}}
-									</td>
-								</tr>
-							</ng-container>
-						</ng-container>
-					</table>
-				</div>
-			</div>
+  <div class="main-view">
+    <div class="row-1" class="ion-hide">
+      <div class="top-main-chart">
+        <div class="number-container">
+          <div class="number">50</div>
+          <div class="title">Số lượng tiệc</div>
+        </div>
+        <div class="chart-contain">
+          <canvas id="soLuongTiecCanvas" #soLuongTiecCanvas></canvas>
+        </div>
+      </div>
 
+      <div class="top-chart multi-lines">
+        <div>
+          <span class="number">5</span>
+          <span class="title">Ads</span>
+        </div>
+        <div>
+          <span class="number">4</span>
+          <span class="title">Prom</span>
+        </div>
+        <div>
+          <span class="number">5</span>
+          <span class="title">Call</span>
+        </div>
+        <div>
+          <span class="number">5</span>
+          <span class="title">Walk</span>
+        </div>
+      </div>
+      <div class="top-chart">
+        <div class="number">341.6 B</div>
+        <div class="title">Doanh thu thuần</div>
+        <div class="stats">
+          <ion-text color="success">
+            <ion-icon name="arrow-round-up"></ion-icon>
+            +1%
+          </ion-text>
+        </div>
+      </div>
+      <div class="top-chart">
+        <div class="number">291.5 K</div>
+        <div class="title">Số khách tham dự</div>
+        <div class="stats">
+          <ion-text color="danger">
+            <ion-icon name="arrow-round-down"></ion-icon>
+            1%
+          </ion-text>
+        </div>
+      </div>
+    </div>
 
-	</ion-fab>
-	
-	<div class="main-view">
-		<div class="row-1" class="ion-hide">
-			<div class="top-main-chart">
-				<div class="number-container">
-					<div class="number">50</div>
-					<div class="title">Số lượng tiệc</div>
-				</div>
-				<div class="chart-contain">
-					<canvas id="soLuongTiecCanvas" #soLuongTiecCanvas></canvas>
-				</div>
-			</div>
+    <div class="row-2">
+      <div class="calendar-heatmap-holder">
+        <div class="col2">
+          <div class="info" [ngStyle]="{'border-color': (selectedHeatNode.color + selectedHeatNode.opacity) }">
+            <div class="multi">
+              <div>
+                <span class="number">20</span>
+                <span class="title"
+                  >Numbers of events <br />
+                  Số lượng tiệc</span
+                >
+              </div>
+              <div>
+                <span class="number">10</span>
+                <span class="title"
+                  >Corp events <br />
+                  Tiệc công ty</span
+                >
+              </div>
+              <div>
+                <span class="number">10</span>
+                <span class="title"
+                  >Personal events <br />
+                  Tiệc cá nhân
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
 
-			<div class="top-chart multi-lines">
-				<div>
-					<span class="number">5</span>
-					<span class="title">Ads</span>
-				</div>
-				<div>
-					<span class="number">4</span>
-					<span class="title">Prom</span>
-				</div>
-				<div>
-					<span class="number">5</span>
-					<span class="title">Call</span>
-				</div>
-				<div>
-					<span class="number">5</span>
-					<span class="title">Walk</span>
-				</div>
-			</div>
-			<div class="top-chart">
-				<div class="number">341.6 B</div>
-				<div class="title">Doanh thu thuần</div>
-				<div class="stats">
-					<ion-text color="success">
-						<ion-icon name="arrow-round-up"></ion-icon>
-						+1%
-					</ion-text>
-				</div>
-			</div>
-			<div class="top-chart">
-				<div class="number">291.5 K</div>
-				<div class="title">Số khách tham dự</div>
-				<div class="stats">
-					<ion-text color="danger">
-						<ion-icon name="arrow-round-down"></ion-icon>
-						1%
-					</ion-text>
-				</div>
-			</div>
+        <div class="col2">
+          <div class="info" [ngStyle]="{'border-color': (selectedHeatNode.color + selectedHeatNode.opacity) }">
+            <div class="multi">
+              <div>
+                <span class="number">400</span>
+                <span class="title"
+                  >Numbers of guests <br />
+                  Số lượng khách tham dự</span
+                >
+              </div>
+              <div>
+                <span class="number">40</span>
+                <span class="title"
+                  >Numbers of tables served <br />
+                  Số lượng bàn tiệc
+                </span>
+              </div>
+              <div>
+                <span class="number">70%</span>
+                <span class="title"
+                  >Occupancy rate <br />
+                  Công suất hoạt động
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
 
-		</div>
+        <div class="col2">
+          <div class="info" [ngStyle]="{'border-color': (selectedHeatNode.color + selectedHeatNode.opacity) }">
+            <div class="multi">
+              <div>
+                <span class="number">{{selectedHeatNode.value}}</span>
+                <span class="title">Số lượng tiệc</span>
+              </div>
+              <div>
+                <span class="number">{{selectedHeatNode.value * 451 * 1.5}} M</span>
+                <span class="title">Doanh thu thuần</span>
+              </div>
+              <div>
+                <span class="number">{{selectedHeatNode.value * 451}}</span>
+                <span class="title">Số khách tham dự</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-		<div class="row-2">
+    <div class="row-3">
+      <div class="chart-box" style="min-width: 40%; height: 300px">
+        <div class="title">PnL</div>
+        <div class="chart-contain">
+          <!-- <canvas id="pnlCanvas" #pnlCanvas></canvas> -->
+          <ng-container *ngIf="items.length">
+            <app-bar-chart [Title]="" [Label]="PnLChartLabel" [Data]="PnLChartData"></app-bar-chart>
+          </ng-container>
+        </div>
+      </div>
+      <div class="chart-box" style="min-width: 40%; height: 300px">
+        <div class="title">Cash flow</div>
+        <div class="chart-contain">
+          <!-- <canvas id="cashFlowCanvas" #cashFlowCanvas></canvas> -->
+          <ng-container *ngIf="items.length">
+            <app-bar-chart [Title]="" [Label]="CashFlowChartLabel" [Data]="CashFlowChartData"></app-bar-chart>
+          </ng-container>
+        </div>
+      </div>
 
-			<div class="calendar-heatmap-holder">
-
-				<div class="col2">
-					<div class="info"
-						[ngStyle]="{'border-color': (selectedHeatNode.color + selectedHeatNode.opacity) }">
-						<div class="multi">
-							<div>
-								<span class="number">20</span>
-								<span class="title">Numbers of events <br> Số lượng tiệc</span>
-							</div>
-							<div>
-								<span class="number">10</span>
-								<span class="title">Corp events <br> Tiệc công ty</span>
-							</div>
-							<div>
-								<span class="number">10</span>
-								<span class="title">Personal events <br> Tiệc cá nhân </span>
-							</div>
-						</div>
-					</div>
-				</div>
-
-				<div class="col2">
-					<div class="info"
-						[ngStyle]="{'border-color': (selectedHeatNode.color + selectedHeatNode.opacity) }">
-						<div class="multi">
-							<div>
-								<span class="number">400</span>
-								<span class="title">Numbers of guests <br> Số lượng khách tham dự</span>
-							</div>
-							<div>
-								<span class="number">40</span>
-								<span class="title">Numbers of tables served <br> Số lượng bàn tiệc </span>
-							</div>
-							<div>
-								<span class="number">70%</span>
-								<span class="title">Occupancy rate <br> Công suất hoạt động </span>
-							</div>
-						</div>
-					</div>
-				</div>
-
-				<div class="col2">
-					<div class="info"
-						[ngStyle]="{'border-color': (selectedHeatNode.color + selectedHeatNode.opacity) }">
-						<div class="multi">
-							<div>
-								<span class="number">{{selectedHeatNode.value}}</span>
-								<span class="title">Số lượng tiệc</span>
-							</div>
-							<div>
-								<span class="number">{{selectedHeatNode.value * 451 * 1.5}} M</span>
-								<span class="title">Doanh thu thuần</span>
-							</div>
-							<div>
-								<span class="number">{{selectedHeatNode.value * 451}}</span>
-								<span class="title">Số khách tham dự</span>
-							</div>
-						</div>
-					</div>
-				</div>
-
-			</div>
-		</div>
-
-		<div class="row-3">
-			<div class="chart-box" style="min-width: 40%; height: 300px;">
-				<div class="title">PnL</div>
-				<div class="chart-contain">
-					<!-- <canvas id="pnlCanvas" #pnlCanvas></canvas> -->
-					<ng-container *ngIf="items.length">
-						<app-bar-chart [Title]="" [Label]="PnLChartLabel" [Data]="PnLChartData" ></app-bar-chart>
-					</ng-container>
-				</div>
-			</div>
-			<div class="chart-box" style="min-width: 40%; height: 300px;">
-				<div class="title">Cash flow</div>
-				<div class="chart-contain">
-					<!-- <canvas id="cashFlowCanvas" #cashFlowCanvas></canvas> -->
-					<ng-container *ngIf="items.length">
-						<app-bar-chart [Title]="" [Label]="CashFlowChartLabel" [Data]="CashFlowChartData" ></app-bar-chart>
-					</ng-container>
-				</div>
-			</div>
-
-			<div class="chart-box" style="width: 100%;">
-				<div class="title">PnL data</div>
-				<div class="chart-contain">
-					<table class="data-table">
-						<ng-container *ngFor="let i of dataPnL">
-							<tr (click)="i.isShow=!i.isShow">
-								<td>
-									<div [ngClass]="{bold: i.data}" class="data-title" [innerHtml]="i.title"></div>
-								</td>
-								<td [ngClass]="{bold: i.data}" class="value">
-									{{i.value}}
-								</td>
-							</tr>
-							<ng-container *ngIf="i.data && i.isShow">
-								<tr *ngFor="let j of i.data">
-									<td>
-										<div [ngClass]="{bold: j.data}" class="data-sub-title" [innerHtml]="j.title">
-										</div>
-									</td>
-									<td [ngClass]="{bold: j.data}" class="sub-value">
-										{{j.value}}
-									</td>
-								</tr>
-							</ng-container>
-						</ng-container>
-					</table>
-				</div>
-			</div>
-
-
-		</div>
-	</div>
-
-
+      <div class="chart-box" style="width: 100%">
+        <div class="title">PnL data</div>
+        <div class="chart-contain">
+          <table class="data-table">
+            <ng-container *ngFor="let i of dataPnL">
+              <tr (click)="i.isShow=!i.isShow">
+                <td>
+                  <div [ngClass]="{bold: i.data}" class="data-title" [innerHtml]="i.title"></div>
+                </td>
+                <td [ngClass]="{bold: i.data}" class="value">{{i.value}}</td>
+              </tr>
+              <ng-container *ngIf="i.data && i.isShow">
+                <tr *ngFor="let j of i.data">
+                  <td>
+                    <div [ngClass]="{bold: j.data}" class="data-sub-title" [innerHtml]="j.title"></div>
+                  </td>
+                  <td [ngClass]="{bold: j.data}" class="sub-value">{{j.value}}</td>
+                </tr>
+              </ng-container>
+            </ng-container>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
 </ion-content>

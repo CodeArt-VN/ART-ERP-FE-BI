@@ -9,8 +9,8 @@ describe('PosDashboardPage', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ PosDashboardPage ],
-      imports: [IonicModule.forRoot()]
+      declarations: [PosDashboardPage],
+      imports: [IonicModule.forRoot()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(PosDashboardPage);

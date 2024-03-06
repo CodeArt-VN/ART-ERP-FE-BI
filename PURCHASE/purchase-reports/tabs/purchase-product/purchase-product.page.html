@@ -1,117 +1,113 @@
 <ion-content appScrollbarTheme appPrintFix class="A4 left">
-    <app-page-message [itemsLength] = "items.length" [showSpinner]="pageConfig.showSpinner"></app-page-message>
-	
-    <div style="overflow: auto;">
+  <app-page-message [itemsLength]="items.length" [showSpinner]="pageConfig.showSpinner"></app-page-message>
 
-
-        <ng-container *ngIf="!reportQuery.IDOwner">
-            <section class="sheet rpt" *ngFor="let b of warehouses">
-                <table>
-                    <thead>
-                        <tr>
-                            <td>
-                                <div class="page-header-space"></div>
-                            </td>
-                        </tr>
-                    </thead>
+  <div style="overflow: auto">
+    <ng-container *ngIf="!reportQuery.IDOwner">
+      <section class="sheet rpt" *ngFor="let b of warehouses">
+        <table>
+          <thead>
+            <tr>
+              <td>
+                <div class="page-header-space"></div>
+              </td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <div class="top-zone">
+                  <table class="rpt-header" cellpadding="0" cellspacing="0">
                     <tbody>
-                        <tr>
-                            <td>
-                                <div class="top-zone">
-                                    <table class="rpt-header" cellpadding="0" cellspacing="0">
-                                        <tbody>
-                                            <tr>
-                                                <td class="head-c1">Công ty mua:</td>
-                                                <td class="bol">{{b.Name}}</td>
-                                                <td class="num"></td>
-                                                <td class="bol"></td>
-                                                <td class="num">{{'erp.app.pages.bi.sales-report.tabs.sale-product.print-date' | translate}}:</td>
-                                                <td class="num bol ngay-hd">{{today}}</td>
-                                            </tr>
-                                            <tr>
-                                                <td colspan="6" class="bol title">
-                                                    {{'erp.app.pages.bi.sales-report.tabs.sale-product.report' | translate}} 
-                                                    <span *ngIf="reportQuery.IsCalcShippedOnly">{{'erp.app.pages.bi.sales-report.tabs.sale-product.revenue' | translate}}</span> 
-                                                    <span *ngIf="!reportQuery.IsCalcShippedOnly">MUA HÀNG</span>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                      <tr>
+                        <td class="head-c1">Công ty mua:</td>
+                        <td class="bol">{{b.Name}}</td>
+                        <td class="num"></td>
+                        <td class="bol"></td>
+                        <td class="num">{{'Printing date' | translate}}:</td>
+                        <td class="num bol ngay-hd">{{today}}</td>
+                      </tr>
+                      <tr>
+                        <td colspan="6" class="bol title">
+                          {{'Report' | translate}}
+                          <span *ngIf="reportQuery.IsCalcShippedOnly">{{'sales quantity' | translate}}</span>
+                          <span *ngIf="!reportQuery.IsCalcShippedOnly">MUA HÀNG</span>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
 
-                                    <table class="rpt-header rpt-nvgh-header" cellpadding="0" cellspacing="0">
-                                        <tbody>
-                                                <!-- <tr *ngIf="reportQuery.IDOwner">
+                  <table class="rpt-header rpt-nvgh-header" cellpadding="0" cellspacing="0">
+                    <tbody>
+                      <!-- <tr *ngIf="reportQuery.IDOwner">
                                                 <td class="head-c1">NVBH:</td>
                                                 <td class="bol">{{reportQuery.saleman.FullName}} ({{reportQuery.saleman.PhoneNumber}})</td>
                                             </tr> -->
-                                            <tr>
-                                                <td class="head-c1">{{'erp.app.pages.bi.sales-report.tabs.sale-product.time-range' | translate}}:</td>
-                                                <td class="bol">
-                                                    {{reportQuery.fromDate}} - {{reportQuery.toDate}}
-                                                    <span *ngIf="reportQuery.IsCalcShippedOnly">{{'erp.app.pages.bi.sales-report.tabs.sale-product.expect-receipt-date' | translate}}</span>
-                                                    <span *ngIf="!reportQuery.IsCalcShippedOnly">{{'erp.app.pages.bi.sales-report.tabs.sale-product.order-date' | translate}}</span>
-                                                </td>
-                                            </tr>
-                                            <!-- <tr>
+                      <tr>
+                        <td class="head-c1">{{'Time' | translate}}:</td>
+                        <td class="bol">
+                          {{reportQuery.fromDate}} - {{reportQuery.toDate}}
+                          <span *ngIf="reportQuery.IsCalcShippedOnly">{{'(deliverate date)' | translate}}</span>
+                          <span *ngIf="!reportQuery.IsCalcShippedOnly">{{'(order date)' | translate}}</span>
+                        </td>
+                      </tr>
+                      <!-- <tr>
                                             <td class="head-c1">Gồm có:</td>
                                             <td class="bol">33 mã hàng - Doanh số: 20.000.000₫ - 5.000.000₫ = 15.000.000₫ </td>
                                         </tr> -->
-                                        </tbody>
-                                    </table>
+                    </tbody>
+                  </table>
 
+                  <div class="ds-san-pham">
+                    <table cellpadding="0" cellspacing="0">
+                      <tbody>
+                        <tr class="head">
+                          <td rowspan="1" class="cen">{{'No.' | translate}}</td>
+                          <td rowspan="1">
+                            <div class="ten-sp min">{{'Product name' | translate}}</div>
+                          </td>
 
-                                    <div class="ds-san-pham">
-                                        <table cellpadding="0" cellspacing="0">
-                                            <tbody>
-                                                <tr class="head">
-                                                    <td rowspan="1" class="cen">{{'erp.app.pages.bi.sales-report.tabs.sale-product.stt' | translate}}</td>
-                                                    <td rowspan="1">
-                                                        <div class="ten-sp min">{{'erp.app.pages.bi.sales-report.tabs.sale-product.item' | translate}}</div>
-                                                    </td>
-
-                                                    <td class="cen">{{'erp.app.pages.bi.sales-report.tabs.sale-product.unit' | translate}}</td>
-                                                    <td class="num">{{'erp.app.pages.bi.sales-report.tabs.sale-product.quantity' | translate}}</td>
-                                                    <td class=" num" rowspan="1">{{'erp.app.pages.bi.sales-report.tabs.sale-product.total-before-discount' | translate}}</td>
-                                                    <td class=" num" rowspan="1">{{'erp.app.pages.bi.sales-report.tabs.sale-product.total-discount' | translate}}</td>
-                                                    <td class=" num" rowspan="1">{{'erp.app.pages.bi.sales-report.tabs.sale-product.total-after-discount' | translate}}</td>
-                                                </tr>
-                                                <!-- <tr class="head">
+                          <td class="cen">{{'Unit' | translate}}</td>
+                          <td class="num">{{'Quantity' | translate}}</td>
+                          <td class="num" rowspan="1">{{'sales quantity before discount' | translate}}</td>
+                          <td class="num" rowspan="1">{{'Discount' | translate}}</td>
+                          <td class="num" rowspan="1">{{'sales quantity after discount' | translate}}</td>
+                        </tr>
+                        <!-- <tr class="head">
                                                     <td class="num ">Thùng</td>
                                                     <td class="num ">Lẻ</td>
                                                 </tr> -->
+                      </tbody>
+                      <ng-container *ngFor="let i of b.itemList; let idx = index; ">
+                        <tr class="odd" *ngFor="let uom of i.UoMs; let gdx = index; ">
+                          <td class="cen" [attr.rowspan]="i.UoMs.length" *ngIf="gdx == 0">{{idx+1}}</td>
+                          <td [attr.rowspan]="i.UoMs.length" *ngIf="gdx == 0">
+                            <div class="ten-sp min">
+                              <b *ngIf="i.ItemCode">{{i.ItemCode}}</b><b *ngIf="!i.ItemCode">{{i.IDItem}}</b>
+                              - {{i.ItemName}}
+                            </div>
+                          </td>
 
-                                            </tbody>
-                                            <ng-container *ngFor="let i of b.itemList; let idx = index; ">
-                                                <tr class="odd" *ngFor="let uom of i.UoMs; let gdx = index; ">
-                                                    <td class="cen" [attr.rowspan]="i.UoMs.length" *ngIf="gdx == 0">{{idx+1}}</td>
-                                                    <td [attr.rowspan]="i.UoMs.length" *ngIf="gdx == 0">
-                                                        <div class="ten-sp min"><b *ngIf="i.ItemCode">{{i.ItemCode}}</b><b *ngIf="!i.ItemCode">{{i.IDItem}}</b> - {{i.ItemName}}</div>
-                                                    </td>
+                          <td class="cen">{{uom.Name}}</td>
+                          <td class="num">{{uom.UoMQuantityExpected}}</td>
 
-                                                    <td class="cen ">{{uom.Name}}</td>
-                                                    <td class="num ">{{uom.UoMQuantityExpected}}</td>
+                          <td class="num tien">{{uom.TotalBeforeDiscountText}}</td>
+                          <td class="num tien">{{uom.TotalDiscountText}}</td>
+                          <td class="num tien">{{uom.TotalAfterDiscountText}}</td>
+                        </tr>
+                      </ng-container>
+                      <tbody>
+                        <tr class="head">
+                          <td class="num" colspan="4">{{'Total' | translate}}</td>
+                          <td class="num tien">{{b.TotalBeforeDiscountText}}</td>
+                          <td class="num tien">{{b.TotalDiscountText}}</td>
+                          <td class="num tien">{{b.TotalAfterDiscountText}}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
 
-                                                    <td class="num tien">{{uom.TotalBeforeDiscountText}}</td>
-                                                    <td class="num tien">{{uom.TotalDiscountText}}</td>
-                                                    <td class="num tien">{{uom.TotalAfterDiscountText}}</td>
-                                                </tr>
-                                            </ng-container>
-                                            <tbody>
-                                                <tr class="head">
-
-                                                    <td class="num" colspan="4">{{'erp.app.pages.bi.sales-report.tabs.sale-product.total' | translate}}</td>
-                                                    <td class="num tien">{{b.TotalBeforeDiscountText}}</td>
-                                                    <td class="num tien">{{b.TotalDiscountText}}</td>
-                                                    <td class="num tien">{{b.TotalAfterDiscountText}}</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-
-
-                                    <div class="no-break-page">
-
-                                        <!-- <table cellpadding="0" cellspacing="0">
+                  <div class="no-break-page">
+                    <!-- <table cellpadding="0" cellspacing="0">
                                         <tbody>
                                             <tr>
                                                 <td class="">
@@ -125,158 +121,150 @@
                                         </tbody>
                                     </table> -->
 
-
-                                        <table class="chu-ky" cellpadding="0" cellspacing="0">
-                                            <tbody>
-                                                <tr>
-
-                                                    <td>
-                                                        {{'erp.app.pages.bi.sales-report.tabs.sale-product.form-creator' | translate}}
-                                                        <div class="line2">
-                                                            {{'erp.app.pages.bi.sales-report.tabs.sale-product.signed-full-name' | translate}}
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        {{'erp.app.pages.bi.sales-report.tabs.sale-product.chief-accountant' | translate}}
-                                                        <div class="line2">
-                                                            {{'erp.app.pages.bi.sales-report.tabs.sale-product.signed-full-name' | translate}}
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        {{'erp.app.pages.bi.sales-report.tabs.sale-product.general-manager' | translate}}
-                                                        <div class="line2">
-                                                            {{'erp.app.pages.bi.sales-report.tabs.sale-product.signed-full-name' | translate}}
-                                                        </div>
-                                                    </td>
-                                                </tr>
-
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-
-                    <tfoot>
+                    <table class="chu-ky" cellpadding="0" cellspacing="0">
+                      <tbody>
                         <tr>
-                            <td>
-                                <div class="page-footer-space"></div>
-                            </td>
+                          <td>
+                            {{'Preparer' | translate}}
+                            <div class="line2">{{'Sign and write full name' | translate}}</div>
+                          </td>
+                          <td>
+                            {{'Chief accountant' | translate}}
+                            <div class="line2">{{'Sign and write full name' | translate}}</div>
+                          </td>
+                          <td>
+                            {{'General Director' | translate}}
+                            <div class="line2">{{'Sign and write full name' | translate}}</div>
+                          </td>
                         </tr>
-                    </tfoot>
-                </table>
-            </section>
-        </ng-container>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
 
+          <tfoot>
+            <tr>
+              <td>
+                <div class="page-footer-space"></div>
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      </section>
+    </ng-container>
 
-        <ng-container *ngFor="let b of items">
-            <section class="sheet rpt" *ngFor="let s of b.vendors" >
-                <table>
-                    <thead>
-                        <tr>
-                            <td>
-                                <div class="page-header-space"></div>
-                            </td>
-                        </tr>
-                    </thead>
+    <ng-container *ngFor="let b of items">
+      <section class="sheet rpt" *ngFor="let s of b.vendors">
+        <table>
+          <thead>
+            <tr>
+              <td>
+                <div class="page-header-space"></div>
+              </td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <div class="top-zone">
+                  <table class="rpt-header" cellpadding="0" cellspacing="0">
                     <tbody>
-                        <tr>
-                            <td>
-                                <div class="top-zone">
-                                    <table class="rpt-header" cellpadding="0" cellspacing="0">
-                                        <tbody>
-                                            <tr>
-                                                <td class="head-c1">Công ty mua:</td>
-                                                <td class="bol">{{b.Name}}</td>
-                                                <td class="num"></td>
-                                                <td class="bol"></td>
-                                                <td class="num">{{'erp.app.pages.bi.sales-report.tabs.sale-product.print-date' | translate}}:</td>
-                                                <td class="num bol ngay-hd">{{today}}</td>
-                                            </tr>
-                                            <tr>
-                                                <td colspan="6" class="bol title">{{'erp.app.pages.bi.sales-report.tabs.sale-product.report' | translate}} 
-                                                    <span *ngIf="reportQuery.IsCalcShippedOnly">{{'erp.app.pages.bi.sales-report.tabs.sale-product.revenue' | translate}}</span> 
-                                                    <span *ngIf="!reportQuery.IsCalcShippedOnly">MUA HÀNG</span>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                      <tr>
+                        <td class="head-c1">Công ty mua:</td>
+                        <td class="bol">{{b.Name}}</td>
+                        <td class="num"></td>
+                        <td class="bol"></td>
+                        <td class="num">{{'Printing date' | translate}}:</td>
+                        <td class="num bol ngay-hd">{{today}}</td>
+                      </tr>
+                      <tr>
+                        <td colspan="6" class="bol title">
+                          {{'Report' | translate}}
+                          <span *ngIf="reportQuery.IsCalcShippedOnly">{{'sales quantity' | translate}}</span>
+                          <span *ngIf="!reportQuery.IsCalcShippedOnly">MUA HÀNG</span>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
 
-                                    <table class="rpt-header rpt-nvgh-header" cellpadding="0" cellspacing="0">
-                                        <tbody>
-                                            <tr >
-                                                <td class="head-c1">NCC:</td>
-                                                <td class="bol"><b *ngIf="s.VendorCode">{{s.VendorCode}}</b><b *ngIf="!s.VendorCode">{{s.IDVendor}}</b> - {{s.VendorName}}</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="head-c1">{{'erp.app.pages.bi.sales-report.tabs.sale-product.time-range' | translate}}:</td>
-                                                <td class="bol">
-                                                    {{reportQuery.fromDate}} - {{reportQuery.toDate}}
-                                                    <span *ngIf="reportQuery.IsCalcShippedOnly">{{'erp.app.pages.bi.sales-report.tabs.sale-product.expect-receipt-date' | translate}}</span>
-                                                    <span *ngIf="!reportQuery.IsCalcShippedOnly">{{'erp.app.pages.bi.sales-report.tabs.sale-product.order-date' | translate}}</span>
-                                                </td>
-                                            </tr>
-                                            <!-- <tr>
+                  <table class="rpt-header rpt-nvgh-header" cellpadding="0" cellspacing="0">
+                    <tbody>
+                      <tr>
+                        <td class="head-c1">NCC:</td>
+                        <td class="bol">
+                          <b *ngIf="s.VendorCode">{{s.VendorCode}}</b><b *ngIf="!s.VendorCode">{{s.IDVendor}}</b>
+                          - {{s.VendorName}}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="head-c1">{{'Time' | translate}}:</td>
+                        <td class="bol">
+                          {{reportQuery.fromDate}} - {{reportQuery.toDate}}
+                          <span *ngIf="reportQuery.IsCalcShippedOnly">{{'(deliverate date)' | translate}}</span>
+                          <span *ngIf="!reportQuery.IsCalcShippedOnly">{{'(order date)' | translate}}</span>
+                        </td>
+                      </tr>
+                      <!-- <tr>
                                             <td class="head-c1">Gồm có:</td>
                                             <td class="bol">33 mã hàng - Doanh số: 20.000.000₫ - 5.000.000₫ = 15.000.000₫ </td>
                                         </tr> -->
-                                        </tbody>
-                                    </table>
+                    </tbody>
+                  </table>
 
+                  <div class="ds-san-pham">
+                    <table cellpadding="0" cellspacing="0">
+                      <tbody>
+                        <tr class="head">
+                          <td rowspan="1" class="cen">{{'No.' | translate}}</td>
+                          <td rowspan="1">
+                            <div class="ten-sp min">{{'Product name' | translate}}</div>
+                          </td>
 
-                                    <div class="ds-san-pham">
-                                        <table cellpadding="0" cellspacing="0">
-                                            <tbody>
-                                                <tr class="head">
-                                                    <td rowspan="1" class="cen">{{'erp.app.pages.bi.sales-report.tabs.sale-product.stt' | translate}}</td>
-                                                    <td rowspan="1">
-                                                        <div class="ten-sp min">{{'erp.app.pages.bi.sales-report.tabs.sale-product.item' | translate}}</div>
-                                                    </td>
-
-                                                    <td class="cen">{{'erp.app.pages.bi.sales-report.tabs.sale-product.unit' | translate}}</td>
-                                                    <td class="num">{{'erp.app.pages.bi.sales-report.tabs.sale-product.quantity' | translate}}</td>
-                                                    <td class=" num" rowspan="1">{{'erp.app.pages.bi.sales-report.tabs.sale-product.total-before-discount' | translate}}</td>
-                                                    <td class=" num" rowspan="1">{{'erp.app.pages.bi.sales-report.tabs.sale-product.total-discount' | translate}}</td>
-                                                    <td class=" num" rowspan="1">{{'erp.app.pages.bi.sales-report.tabs.sale-product.total-after-discount' | translate}}</td>
-                                                </tr>
-                                                <!-- <tr class="head">
+                          <td class="cen">{{'Unit' | translate}}</td>
+                          <td class="num">{{'Quantity' | translate}}</td>
+                          <td class="num" rowspan="1">{{'sales quantity before discount' | translate}}</td>
+                          <td class="num" rowspan="1">{{'Discount' | translate}}</td>
+                          <td class="num" rowspan="1">{{'sales quantity after discount' | translate}}</td>
+                        </tr>
+                        <!-- <tr class="head">
                                                     <td class="num ">Thùng</td>
                                                     <td class="num ">Lẻ</td>
                                                 </tr> -->
+                      </tbody>
+                      <ng-container *ngFor="let i of s.itemList; let idx = index; ">
+                        <tr class="odd" *ngFor="let uom of i.UoMs; let gdx = index; ">
+                          <td class="cen" [attr.rowspan]="i.UoMs.length" *ngIf="gdx == 0">{{idx+1}}</td>
+                          <td [attr.rowspan]="i.UoMs.length" *ngIf="gdx == 0">
+                            <div class="ten-sp min">
+                              <b *ngIf="i.ItemCode">{{i.ItemCode}}</b><b *ngIf="!i.ItemCode">{{i.IDItem}}</b>
+                              - {{i.ItemName}}
+                            </div>
+                          </td>
 
-                                            </tbody>
-                                            <ng-container *ngFor="let i of s.itemList; let idx = index; ">
-                                                <tr class="odd" *ngFor="let uom of i.UoMs; let gdx = index; ">
-                                                    <td class="cen" [attr.rowspan]="i.UoMs.length" *ngIf="gdx == 0">{{idx+1}}</td>
-                                                    <td [attr.rowspan]="i.UoMs.length" *ngIf="gdx == 0">
-                                                        <div class="ten-sp min"><b *ngIf="i.ItemCode">{{i.ItemCode}}</b><b *ngIf="!i.ItemCode">{{i.IDItem}}</b> - {{i.ItemName}}</div>
-                                                    </td>
+                          <td class="cen">{{uom.Name}}</td>
+                          <td class="num">{{uom.UoMQuantityExpected}}</td>
 
-                                                    <td class="cen ">{{uom.Name}}</td>
-                                                    <td class="num ">{{uom.UoMQuantityExpected}}</td>
+                          <td class="num tien">{{uom.TotalBeforeDiscountText}}</td>
+                          <td class="num tien">{{uom.TotalDiscountText}}</td>
+                          <td class="num tien">{{uom.TotalAfterDiscountText}}</td>
+                        </tr>
+                      </ng-container>
+                      <tbody>
+                        <tr class="head">
+                          <td class="num" colspan="4">{{'Total' | translate}}</td>
+                          <td class="num tien">{{s.TotalBeforeDiscountText}}</td>
+                          <td class="num tien">{{s.TotalDiscountText}}</td>
+                          <td class="num tien">{{s.TotalAfterDiscountText}}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
 
-                                                    <td class="num tien">{{uom.TotalBeforeDiscountText}}</td>
-                                                    <td class="num tien">{{uom.TotalDiscountText}}</td>
-                                                    <td class="num tien">{{uom.TotalAfterDiscountText}}</td>
-                                                </tr>
-                                            </ng-container>
-                                            <tbody>
-                                                <tr class="head">
-
-                                                    <td class="num" colspan="4">{{'erp.app.pages.bi.sales-report.tabs.sale-product.total' | translate}}</td>
-                                                    <td class="num tien">{{s.TotalBeforeDiscountText}}</td>
-                                                    <td class="num tien">{{s.TotalDiscountText}}</td>
-                                                    <td class="num tien">{{s.TotalAfterDiscountText}}</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-
-
-                                    <div class="no-break-page">
-
-                                        <!-- <table cellpadding="0" cellspacing="0">
+                  <div class="no-break-page">
+                    <!-- <table cellpadding="0" cellspacing="0">
                                         <tbody>
                                             <tr>
                                                 <td class="">
@@ -290,50 +278,39 @@
                                         </tbody>
                                     </table> -->
 
-
-                                        <table class="chu-ky" cellpadding="0" cellspacing="0">
-                                            <tbody>
-                                                <tr>
-
-                                                    <td>
-                                                        {{'erp.app.pages.bi.sales-report.tabs.sale-product.form-creator' | translate}}
-                                                        <div class="line2">
-                                                            {{'erp.app.pages.bi.sales-report.tabs.sale-product.signed-full-name' | translate}}
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        {{'erp.app.pages.bi.sales-report.tabs.sale-product.chief-accountant' | translate}}
-                                                        <div class="line2">
-                                                            {{'erp.app.pages.bi.sales-report.tabs.sale-product.signed-full-name' | translate}}
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        {{'erp.app.pages.bi.sales-report.tabs.sale-product.general-manager' | translate}}
-                                                        <div class="line2">
-                                                            {{'erp.app.pages.bi.sales-report.tabs.sale-product.signed-full-name' | translate}}
-                                                        </div>
-                                                    </td>
-                                                </tr>
-
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-
-                    <tfoot>
+                    <table class="chu-ky" cellpadding="0" cellspacing="0">
+                      <tbody>
                         <tr>
-                            <td>
-                                <div class="page-footer-space"></div>
-                            </td>
+                          <td>
+                            {{'Preparer' | translate}}
+                            <div class="line2">{{'Sign and write full name' | translate}}</div>
+                          </td>
+                          <td>
+                            {{'Chief accountant' | translate}}
+                            <div class="line2">{{'Sign and write full name' | translate}}</div>
+                          </td>
+                          <td>
+                            {{'General Director' | translate}}
+                            <div class="line2">{{'Sign and write full name' | translate}}</div>
+                          </td>
                         </tr>
-                    </tfoot>
-                </table>
-            </section>
-        </ng-container>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
 
-    </div>
-
+          <tfoot>
+            <tr>
+              <td>
+                <div class="page-footer-space"></div>
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      </section>
+    </ng-container>
+  </div>
 </ion-content>

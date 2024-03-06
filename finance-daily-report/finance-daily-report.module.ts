@@ -12,8 +12,8 @@ import { ShareModule } from 'src/app/share.module';
     CommonModule,
     FormsModule,
     ShareModule,
-    RouterModule.forChild([{ path: '', component: FinanceDailyReportPage }])
+    RouterModule.forChild([{ path: '', component: FinanceDailyReportPage }]),
   ],
-  declarations: [FinanceDailyReportPage]
+  declarations: [FinanceDailyReportPage],
 })
 export class FinanceDailyReportPageModule {}

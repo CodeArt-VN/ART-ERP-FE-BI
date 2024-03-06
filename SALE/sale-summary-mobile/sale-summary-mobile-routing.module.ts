@@ -6,7 +6,7 @@ import { SaleSummaryMobilePage } from './sale-summary-mobile.page';
 const routes: Routes = [
   {
     path: '',
-    component: SaleSummaryMobilePage
+    component: SaleSummaryMobilePage,
   },
 ];
 
@@ -14,4 +14,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
 })
-export class SaleSummaryMobilePageRoutingModule { }
+export class SaleSummaryMobilePageRoutingModule {}

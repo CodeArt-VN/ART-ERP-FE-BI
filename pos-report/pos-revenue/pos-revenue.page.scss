@@ -1,22 +1,21 @@
-.full-screen{
-    min-height: calc(100vh - 97px);
+.full-screen {
+  min-height: calc(100vh - 97px);
 }
 
 section.table {
-    display: grid;
+  display: grid;
 }
 
-
 .row {
-    max-width: fit-content;
+  max-width: fit-content;
 
-    .col-code {
-        min-width: 175px !important;
-        max-width: 175px !important;
-    }
+  .col-code {
+    min-width: 175px !important;
+    max-width: 175px !important;
+  }
 
-    .col-number {
-        max-width: 125px !important;
-        min-width: 125px !important;
-    }
+  .col-number {
+    max-width: 125px !important;
+    min-width: 125px !important;
+  }
 }

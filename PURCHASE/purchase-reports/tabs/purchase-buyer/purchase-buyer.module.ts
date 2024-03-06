@@ -12,8 +12,8 @@ import { ShareModule } from 'src/app/share.module';
     CommonModule,
     FormsModule,
     ShareModule,
-    RouterModule.forChild([{ path: '', component: PurchaseBuyerPage }])
+    RouterModule.forChild([{ path: '', component: PurchaseBuyerPage }]),
   ],
-  declarations: [PurchaseBuyerPage]
+  declarations: [PurchaseBuyerPage],
 })
 export class PurchaseBuyerPageModule {}

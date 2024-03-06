@@ -9,8 +9,8 @@ describe('PosShiftPage', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ PosShiftPage ],
-      imports: [IonicModule.forRoot()]
+      declarations: [PosShiftPage],
+      imports: [IonicModule.forRoot()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(PosShiftPage);

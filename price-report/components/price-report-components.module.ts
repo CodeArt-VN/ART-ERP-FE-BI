@@ -7,19 +7,8 @@ import { PriceListCompareComponent } from './price-list-compare/price-list-compa
 import { PriceListVersionCompareComponent } from './price-list-version-compare/price-list-version-compare.component';
 
 @NgModule({
-	imports: [IonicModule,
-		CommonModule,
-		ShareModule,
-		FormsModule,
-		ReactiveFormsModule,
-	],
-	declarations: [
-		PriceListCompareComponent,
-		PriceListVersionCompareComponent
-	],
-	exports: [
-		PriceListCompareComponent,
-		PriceListVersionCompareComponent
-	],
+  imports: [IonicModule, CommonModule, ShareModule, FormsModule, ReactiveFormsModule],
+  declarations: [PriceListCompareComponent, PriceListVersionCompareComponent],
+  exports: [PriceListCompareComponent, PriceListVersionCompareComponent],
 })
-export class PriceReportComponentsModule { }
+export class PriceReportComponentsModule {}

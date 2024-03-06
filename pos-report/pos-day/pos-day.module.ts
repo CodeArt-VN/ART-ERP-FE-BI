@@ -5,14 +5,13 @@ import { Routes, RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { ShareModule } from 'src/app/share.module';
 import { PosDayPage } from './pos-day.page';
-import { FileUploadModule } from 'ng2-file-upload';
 import { ShareChartsModule } from 'src/app/components/charts/share-charts.module';
 
 const routes: Routes = [
   {
     path: '',
-    component: PosDayPage
-  }
+    component: PosDayPage,
+  },
 ];
 
 @NgModule({
@@ -21,11 +20,10 @@ const routes: Routes = [
     FormsModule,
     IonicModule,
     ReactiveFormsModule,
-    FileUploadModule,
     ShareModule,
     ShareChartsModule,
-    RouterModule.forChild(routes)
+    RouterModule.forChild(routes),
   ],
-  declarations: [PosDayPage]
+  declarations: [PosDayPage],
 })
-export class PosDayPageModule { }
+export class PosDayPageModule {}

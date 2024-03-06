@@ -1,374 +1,228 @@
 .A4 .sheet {
-    width: 210mm;
-    height: auto;
-    min-height: 296mm;
-    padding: 0 10mm;
+  width: 210mm;
+  height: auto;
+  min-height: 296mm;
+  padding: 0 10mm;
 }
 
 .A5.landscape .sheet {
-    width: 210mm;
-    height: auto;
-    min-height: 147mm;
-    padding: 0 10mm;
+  width: 210mm;
+  height: auto;
+  min-height: 147mm;
+  padding: 0 10mm;
 }
 
 .sheet {
-    &.huong-dan {
-        padding: 10mm !important;
-        height: auto !important;
-        min-height: auto !important;
-        color: #af305a;
+  &.huong-dan {
+    padding: 10mm !important;
+    height: auto !important;
+    min-height: auto !important;
+    color: #af305a;
 
-        a {
-            color: #af305a;
-        }
+    a {
+      color: #af305a;
     }
-
+  }
 }
 
 .giao-nhan {
+  .page-header,
+  .page-header-space {
+    height: 38px;
+  }
 
-    .page-header,
-    .page-header-space {
-        height: 38px;
+  .page-footer,
+  .page-footer-space {
+    height: 38px;
+  }
+
+  .logo {
+    vertical-align: top;
+    width: 90px;
+    max-width: 90px;
+    padding: 0;
+  }
+
+  .logo ion-img {
+    width: 70px;
+    height: auto;
+  }
+
+  .topQR {
+    vertical-align: top;
+    padding: 0;
+    width: 100px;
+    min-width: 100px;
+    max-width: 100px;
+  }
+
+  .topQR div {
+    position: absolute;
+    width: 100px;
+    text-align: center;
+    margin-top: 80px;
+    font-size: 10px;
+    padding-left: 10px;
+  }
+
+  .topQR img {
+    width: 90px;
+    height: 90px;
+    border: solid 1px #ccc;
+    display: block;
+    float: right;
+  }
+
+  .rpt-header .title {
+    font-size: 16px;
+  }
+
+  .ds-san-pham .ten-sp {
+    width: 470px;
+  }
+
+  .ds-san-pham .ten-sp.ck {
+    width: 425px;
+  }
+
+  .ds-san-pham.km .ten-sp {
+    width: 530px;
+  }
+
+  .ds-san-pham .head {
+    border-bottom: dashed 1px #000;
+  }
+
+  .ds-san-pham tbody {
+    border: dashed 1px #000;
+  }
+
+  .ds-san-pham tbody td {
+    padding: 1px 5px;
+    border: none;
+    border-right: dashed 1px;
+  }
+
+  .top-zone {
+    min-height: 440px;
+  }
+
+  .chu-ky {
+    margin-top: 10px;
+
+    .line2 {
+      height: 70px;
     }
+  }
 
-    .page-footer,
-    .page-footer-space {
-        height: 38px;
-    }
-
-    .logo {
-        vertical-align: top;
-        width: 90px;
-        max-width: 90px;
-        padding: 0;
-    }
-
-    .logo ion-img {
-        width: 70px;
-        height: auto;
-    }
-
-    .topQR {
-        vertical-align: top;
-        padding: 0;
-        width: 100px;
-        min-width: 100px;
-        max-width: 100px;
-    }
-
-    .topQR div {
-        position: absolute;
-        width: 100px;
-        text-align: center;
-        margin-top: 80px;
-        font-size: 10px;
-        padding-left: 10px;
-    }
-
-    .topQR img {
-        width: 90px;
-        height: 90px;
-        border: solid 1px #CCC;
-        display: block;
-        float: right;
-    }
-
-    .rpt-header .title {
-        font-size: 16px;
-    }
-
-    .ds-san-pham .ten-sp {
-        width: 470px;
-    }
-
-    .ds-san-pham .ten-sp.ck {
-        width: 425px;
-    }
-
-    .ds-san-pham.km .ten-sp {
-        width: 530px;
-    }
-
-    .ds-san-pham .head {
-        border-bottom: dashed 1px #000;
-    }
-
-    .ds-san-pham tbody {
-        border: dashed 1px #000;
-    }
-
-    .ds-san-pham tbody td {
-        padding: 1px 5px;
-        border: none;
-        border-right: dashed 1px;
-    }
-
-    .top-zone {
-        min-height: 440px;
-    }
-
-    .chu-ky {
-        margin-top: 10px;
-
-        .line2 {
-            height: 70px;
-        }
-    }
-
-    .noti {
-        margin-top: 0px;
-    }
+  .noti {
+    margin-top: 0px;
+  }
 }
-
-
 
 @media print {
-	.bill {
-		color: #000;
-		display: block !important;
-		overflow: hidden !important;
-
-		.title {
-			color: #000;
-		}
-
-        .detail {
-            text-align: end;
-        }
-
-		.header {
-			text-align: center;
-
-			span {
-				display: inline-block;
-				width: 100%;
-			}
-
-			.logo {
-				img {
-					max-width: 150px;
-					max-height: 75px;
-				}
-			}
-
-			.brand {
-				font-weight: bold;
-			}
-
-			.address {
-				font-size: 80%;
-				font-style: italic;
-			}
-
-			.phone {}
-
-			.bill-no {
-				font-weight: bold;
-			}
-
-
-		}
-
-		.table-info {
-			border: solid;
-			margin: 5px 0;
-			padding: 5px;
-			border-width: 1px 0;
-		}
-
-		.table-info-top {
-			border-top: solid;
-			margin: 5px 0;
-			padding: 5px;
-			border-width: 1px 0;
-		}
-
-		.table-info-bottom {
-			border-bottom: solid;
-			margin: 5px 0;
-			padding: 5px;
-			border-width: 1px 0;
-		}
-
-		.items {
-			margin: 5px 0;
-			line-height: 18px;
-
-			tr {
-				td {
-					border-bottom: dashed 1px #CCC;
-					padding: 0 5px;
-
-
-				}
-
-				&:last-child td {
-					border: none !important;
-				}
-			}
-
-			.name {
-				width: 100%;
-				border: none !important;
-			}
-
-			.code {
-				font-weight: bold;
-				text-transform: uppercase;
-			}
-
-			.quantity {
-				font-weight: bold;
-			}
-
-			.total {
-				text-align: right;
-			}
-
-
-		}
-
-		.message {
-			text-align: center;
-		}
-
-		.header,
-		.table-info,
-		.table-info-top,
-		.table-info-bottom,
-		.message {
-			padding-left: 12px;
-			padding-right: 8px;
-		}
-
-		.items {
-			padding-left: 8px;
-			padding-right: 4px;
-		}
-
-        .sign-box {
-            display: flex;
-            justify-content: space-around;
-            margin: 10px 0 30px;
-    
-            .box {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-            }
-        }
-	}
-}
-
-.bill {
+  .bill {
     color: #000;
     display: block !important;
     overflow: hidden !important;
 
     .title {
-        color: #000;
+      color: #000;
     }
 
     .detail {
-        text-align: end;
+      text-align: end;
     }
 
     .header {
-        text-align: center;
+      text-align: center;
 
-        span {
-            display: inline-block;
-            width: 100%;
+      span {
+        display: inline-block;
+        width: 100%;
+      }
+
+      .logo {
+        img {
+          max-width: 150px;
+          max-height: 75px;
         }
+      }
 
-        .logo {
-            img {
-                max-width: 150px;
-                max-height: 75px;
-            }
-        }
+      .brand {
+        font-weight: bold;
+      }
 
-        .brand {
-            font-weight: bold;
-        }
+      .address {
+        font-size: 80%;
+        font-style: italic;
+      }
 
-        .address {
-            font-size: 80%;
-            font-style: italic;
-        }
+      .phone {
+      }
 
-        .phone {}
-
-        .bill-no {
-            font-weight: bold;
-        }
-
-
+      .bill-no {
+        font-weight: bold;
+      }
     }
 
     .table-info {
-        border: solid;
-        margin: 5px 0;
-        padding: 5px;
-        border-width: 1px 0;
+      border: solid;
+      margin: 5px 0;
+      padding: 5px;
+      border-width: 1px 0;
     }
 
     .table-info-top {
-        border-top: solid;
-        margin: 5px 0;
-        padding: 5px;
-        border-width: 1px 0;
+      border-top: solid;
+      margin: 5px 0;
+      padding: 5px;
+      border-width: 1px 0;
     }
 
     .table-info-bottom {
-        border-bottom: 5px dashed black;
-        margin: 5px 0;
-        padding: 5px;
-        border-width: 1px 0;
+      border-bottom: solid;
+      margin: 5px 0;
+      padding: 5px;
+      border-width: 1px 0;
     }
 
     .items {
-        margin: 5px 0;
-        line-height: 18px;
+      margin: 5px 0;
+      line-height: 18px;
 
-        tr {
-            td {
-                border-bottom: dashed 1px #CCC;
-                padding: 0 5px;
-
-
-            }
-
-            &:last-child td {
-                border: none !important;
-            }
+      tr {
+        td {
+          border-bottom: dashed 1px #ccc;
+          padding: 0 5px;
         }
 
-        .name {
-            width: 100%;
-            border: none !important;
+        &:last-child td {
+          border: none !important;
         }
+      }
 
-        .code {
-            font-weight: bold;
-            text-transform: uppercase;
-        }
+      .name {
+        width: 100%;
+        border: none !important;
+      }
 
-        .quantity {
-            font-weight: bold;
-        }
+      .code {
+        font-weight: bold;
+        text-transform: uppercase;
+      }
 
-        .total {
-            text-align: right;
-        }
+      .quantity {
+        font-weight: bold;
+      }
 
-
+      .total {
+        text-align: right;
+      }
     }
 
     .message {
-        text-align: center;
+      text-align: center;
     }
 
     .header,
@@ -376,24 +230,156 @@
     .table-info-top,
     .table-info-bottom,
     .message {
-        padding-left: 12px;
-        padding-right: 8px;
+      padding-left: 12px;
+      padding-right: 8px;
     }
 
     .items {
-        padding-left: 8px;
-        padding-right: 4px;
+      padding-left: 8px;
+      padding-right: 4px;
     }
 
     .sign-box {
-        display: flex;
-        justify-content: space-around;
-        margin: 10px 0 30px;
+      display: flex;
+      justify-content: space-around;
+      margin: 10px 0 30px;
 
-        .box {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+      .box {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
     }
+  }
+}
+
+.bill {
+  color: #000;
+  display: block !important;
+  overflow: hidden !important;
+
+  .title {
+    color: #000;
+  }
+
+  .detail {
+    text-align: end;
+  }
+
+  .header {
+    text-align: center;
+
+    span {
+      display: inline-block;
+      width: 100%;
+    }
+
+    .logo {
+      img {
+        max-width: 150px;
+        max-height: 75px;
+      }
+    }
+
+    .brand {
+      font-weight: bold;
+    }
+
+    .address {
+      font-size: 80%;
+      font-style: italic;
+    }
+
+    .phone {
+    }
+
+    .bill-no {
+      font-weight: bold;
+    }
+  }
+
+  .table-info {
+    border: solid;
+    margin: 5px 0;
+    padding: 5px;
+    border-width: 1px 0;
+  }
+
+  .table-info-top {
+    border-top: solid;
+    margin: 5px 0;
+    padding: 5px;
+    border-width: 1px 0;
+  }
+
+  .table-info-bottom {
+    border-bottom: 5px dashed black;
+    margin: 5px 0;
+    padding: 5px;
+    border-width: 1px 0;
+  }
+
+  .items {
+    margin: 5px 0;
+    line-height: 18px;
+
+    tr {
+      td {
+        border-bottom: dashed 1px #ccc;
+        padding: 0 5px;
+      }
+
+      &:last-child td {
+        border: none !important;
+      }
+    }
+
+    .name {
+      width: 100%;
+      border: none !important;
+    }
+
+    .code {
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    .quantity {
+      font-weight: bold;
+    }
+
+    .total {
+      text-align: right;
+    }
+  }
+
+  .message {
+    text-align: center;
+  }
+
+  .header,
+  .table-info,
+  .table-info-top,
+  .table-info-bottom,
+  .message {
+    padding-left: 12px;
+    padding-right: 8px;
+  }
+
+  .items {
+    padding-left: 8px;
+    padding-right: 4px;
+  }
+
+  .sign-box {
+    display: flex;
+    justify-content: space-around;
+    margin: 10px 0 30px;
+
+    .box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+  }
 }

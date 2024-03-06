@@ -1,30 +1,27 @@
 <ion-header>
-	<ion-toolbar>
-		<ion-buttons slot="start">
-			<ion-button color="dark">
-				{{'erp.app.pages.bi.staff-dashboard.page-title' | translate}}
-			</ion-button>
-		</ion-buttons>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button color="dark"> {{'Dashboard' | translate}} </ion-button>
+    </ion-buttons>
 
-		<ion-buttons slot="end">
-			<ion-button (click)="refresh()" title="{{'erp.app.pages.bi.staff-dashboard.refresh' | translate}}">
-				<ion-icon slot="icon-only" name="reload-outline"></ion-icon>
-			</ion-button>
+    <ion-buttons slot="end">
+      <ion-button (click)="refresh()" title="{{'Refresh' | translate}}">
+        <ion-icon slot="icon-only" name="reload-outline"></ion-icon>
+      </ion-button>
 
-			<ion-button title="{{'erp.app.pages.bi.staff-dashboard.show-feature' | translate}}" (click)="pageConfig.isShowFeature = !pageConfig.isShowFeature;">
-				<ion-icon slot="icon-only" [name]="pageConfig.isShowFeature? 'close-outline':'list-circle-outline'">
-				</ion-icon>
-			</ion-button>
-
-		</ion-buttons>
-	</ion-toolbar>
+      <ion-button
+        title="{{'Expanded function' | translate}}"
+        (click)="pageConfig.isShowFeature = !pageConfig.isShowFeature;"
+      >
+        <ion-icon slot="icon-only" [name]="pageConfig.isShowFeature? 'close-outline':'list-circle-outline'"> </ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
 </ion-header>
 
-
 <ion-content appScrollbarTheme>
-
-	<div class="main-view" style="max-width: 1140px; margin: auto;">
-		<!-- <div class="row-1">
+  <div class="main-view" style="max-width: 1140px; margin: auto">
+    <!-- <div class="row-1">
 			<div class="top-main-chart">
 				<swiper-container >
 					<swiper-slide>
@@ -87,29 +84,25 @@
 			</div>
 		</div> -->
 
-		<div class="row-2">
-			<div class="title"></div>
-			<div class="calendar-heatmap-holder">
+    <div class="row-2">
+      <div class="title"></div>
+      <div class="calendar-heatmap-holder">
+        <ion-grid fixed>
+          <ion-row>
+            <ion-col size="4" size-md="2" size-lg="2" size-xl="2" *ngFor="let i of btns">
+              <div class="chart-box button" (click)="open(i)">
+                <div class="chart-contain">
+                  <ion-icon class="btn-icon" [name]="i.Icon"></ion-icon>
+                  <span class="btn-title">{{'erp.app.pages.bi.staff-dashboard.' + i.Form | translate}}</span>
+                </div>
+              </div>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </div>
+    </div>
 
-				<ion-grid fixed>
-					<ion-row>
-						<ion-col size="4" size-md="2" size-lg="2" size-xl="2" *ngFor="let i of btns">
-							<div  class="chart-box button" (click)="open(i)">
-								<div class="chart-contain ">
-									<ion-icon class="btn-icon" [name]="i.Icon" ></ion-icon>
-									<span class="btn-title">{{'erp.app.pages.bi.staff-dashboard.' + i.Form | translate}}</span>
-								</div>
-							</div>
-						</ion-col>
-						
-					</ion-row>
-				</ion-grid>
-
-
-			</div>
-		</div>
-
-		<!-- <div class="row-3">
+    <!-- <div class="row-3">
 
 			<div style="height: 225px; min-width: 40%; background-color: transparent;" class="chart-box">
 				<div class="title">Doanh thu / Chỉ tiêu</div>
@@ -176,29 +169,25 @@
 		
 
 		</div> -->
-	</div>
-
-
+  </div>
 </ion-content>
 
-
 <ion-content *ngIf="0">
-	<div *ngIf="pageConfig.showSpinner" class="page-loading">
-		<ion-spinner name="dots"></ion-spinner>
-	</div>
-	<div class="empty-message" *ngIf="this.env.user && this.env.user.UserName && !items.length && pageConfig.showSpinner==false">
-		<div class="icon">
-			<img appSvgImage src="./assets/undraw_no_data_qbuo.svg">
-		</div>
-		<div class="message">
-			<div class="title">
-				{{'erp.app.pages.bi.staff-dashboard.empty-title' | translate}}
-			</div>
-			<div class="detail">
-				<ion-text>
-					{{'erp.app.pages.bi.staff-dashboard.empty-detail' | translate}}
-				</ion-text>
-			</div>
-		</div>
-	</div>
+  <div *ngIf="pageConfig.showSpinner" class="page-loading">
+    <ion-spinner name="dots"></ion-spinner>
+  </div>
+  <div
+    class="empty-message"
+    *ngIf="this.env.user && this.env.user.UserName && !items.length && pageConfig.showSpinner==false"
+  >
+    <div class="icon">
+      <img appSvgImage src="./assets/undraw_no_data_qbuo.svg" />
+    </div>
+    <div class="message">
+      <div class="title">{{'No data available' | translate}}</div>
+      <div class="detail">
+        <ion-text> {{'Cannot find relevant data. Please select other sorting conditions!' | translate}} </ion-text>
+      </div>
+    </div>
+  </div>
 </ion-content>

@@ -9,17 +9,8 @@ import { SaleSummaryMobilePage } from './sale-summary-mobile.page';
 import { ShareModule } from 'src/app/share.module';
 import { ShareChartsModule } from 'src/app/components/charts/share-charts.module';
 
-
-
 @NgModule({
-  imports: [
-    CommonModule,
-    FormsModule,
-    ShareModule,
-    IonicModule,
-    SaleSummaryMobilePageRoutingModule,
-    ShareChartsModule
-  ],
-  declarations: [SaleSummaryMobilePage]
+  imports: [CommonModule, FormsModule, ShareModule, IonicModule, SaleSummaryMobilePageRoutingModule, ShareChartsModule],
+  declarations: [SaleSummaryMobilePage],
 })
-export class SaleSummaryMobilePageModule { }
+export class SaleSummaryMobilePageModule {}

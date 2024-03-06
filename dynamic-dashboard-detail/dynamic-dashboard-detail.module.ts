@@ -17,8 +17,8 @@ import { PipesModule } from 'src/app/pipes/pipes.module';
     PipesModule,
     RouterModule.forChild([{ path: '', component: DynamicDashboardDetailPage }]),
     GridsterComponent,
-    GridsterItemComponent
+    GridsterItemComponent,
   ],
-  declarations: [DynamicDashboardDetailPage]
+  declarations: [DynamicDashboardDetailPage],
 })
 export class DynamicDashboardDetailPageModule {}

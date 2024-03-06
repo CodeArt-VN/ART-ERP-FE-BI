@@ -13,8 +13,8 @@ import { SaleDailyReportPage } from './sale-daily-report.page';
     CommonModule,
     FormsModule,
     ShareModule,
-    RouterModule.forChild([{ path: '', component: SaleDailyReportPage }])
+    RouterModule.forChild([{ path: '', component: SaleDailyReportPage }]),
   ],
-  declarations: [SaleDailyReportPage]
+  declarations: [SaleDailyReportPage],
 })
 export class SaleDailyReportModule {}

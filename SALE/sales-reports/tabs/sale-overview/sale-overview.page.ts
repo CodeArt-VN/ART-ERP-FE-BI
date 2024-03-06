@@ -6,25 +6,19 @@ import { CustomService } from 'src/app/services/custom.service';
 import { ReportService } from 'src/app/services/report.service';
 
 @Component({
-    selector: 'app-sale-overview',
-    templateUrl: 'sale-overview.page.html',
-    styleUrls: ['sale-overview.page.scss']
+  selector: 'app-sale-overview',
+  templateUrl: 'sale-overview.page.html',
+  styleUrls: ['sale-overview.page.scss'],
 })
 export class SaleOverviewPage extends PageBase {
-
-  
-
-    constructor(
-        private pageService: CustomService,
-        public actionSheetController: ActionSheetController,
-        public env: EnvService,
-        public navCtrl: NavController,
-        private platform: Platform,
-        public rpt: ReportService,
-    ) {
-        super();
-        
-
-    }
-
+  constructor(
+    private pageService: CustomService,
+    public actionSheetController: ActionSheetController,
+    public env: EnvService,
+    public navCtrl: NavController,
+    private platform: Platform,
+    public rpt: ReportService,
+  ) {
+    super();
+  }
 }

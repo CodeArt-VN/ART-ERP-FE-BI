@@ -9,135 +9,146 @@ import { ReportService } from 'src/app/services/report.service';
 import { BIReport, ReportDataConfig } from 'src/app/models/options-interface';
 
 @Component({
-    selector: 'app-sample-report',
-    templateUrl: 'sample-report.page.html',
-    styleUrls: ['sample-report.page.scss']
+  selector: 'app-sample-report',
+  templateUrl: 'sample-report.page.html',
+  styleUrls: ['sample-report.page.scss'],
 })
 export class SampleReportPage extends PageBase {
-    /** Chart element Id */
-    elId: string = '';
+  /** Chart element Id */
+  elId: string = '';
 
-    /** switch between Dimensions */
-    viewDimension = 'Count';
+  /** switch between Dimensions */
+  viewDimension = 'Count';
 
-    /** Toggle show full chart options */
-    showFullChart = false;
+  /** Toggle show full chart options */
+  showFullChart = false;
 
-    /** Chart object */
-    myChart = null;
+  /** Chart object */
+  myChart = null;
 
-    /** Chart options */
-    chartOption: echarts.EChartsOption = {
-        tooltip: { trigger: 'item' },
-        series: [
-            {
-                name: 'Sale order status',
-                type: 'pie',
-                radius: ['40%', '60%'],
-                avoidLabelOverlap: false,
-                itemStyle: { borderRadius: 6, borderColor: 'transparent', borderWidth: 2 },
-                label: { show: true, formatter: '{b}: {@' + this.viewDimension + '} ({d}%)' },
-            }
-        ]
-    }
+  /** Chart options */
+  chartOption: echarts.EChartsOption = {
+    tooltip: { trigger: 'item' },
+    series: [
+      {
+        name: 'Sale order status',
+        type: 'pie',
+        radius: ['40%', '60%'],
+        avoidLabelOverlap: false,
+        itemStyle: {
+          borderRadius: 6,
+          borderColor: 'transparent',
+          borderWidth: 2,
+        },
+        label: {
+          show: true,
+          formatter: '{b}: {@' + this.viewDimension + '} ({d}%)',
+        },
+      },
+    ],
+  };
 
-    reportConfig: BIReport;
-    
+  reportConfig: BIReport;
 
-    constructor(
-        public pageProvider: ReportService,
-        public modalController: ModalController,
-        public popoverCtrl: PopoverController,
-        public alertCtrl: AlertController,
-        public loadingController: LoadingController,
-        public env: EnvService,
-        public navCtrl: NavController,
-        public location: Location,
-    ) {
-        super();
-        this.elId = lib.generateCode();
-        this.subscriptions.push(
-            this.pageProvider.regReportTrackingData(1).subscribe(ds => {
-                this.items = ds.data;//[...this.items, ...ds.data];
-                console.log(this.items);
-                this.buildDataset();
-                super.loadedData();
-            }));
-    }
-
-    loadData(event?: any): void {
-        this.pageProvider.getReportData(1, true);
-    }
-
-    ionViewDidEnter(): void {
-        let that = this;
-        var chartDom = document.getElementById(this.elId);
-        this.myChart = echarts.init(chartDom);
-        this.myChart.on('click', function (params) {
-            console.log(params.name);
-            that.query.Title = params.name;
-            that.query.InvoiceDate = lib.dateFormat(new Date());
-            that.refresh();
-        });
-
+  constructor(
+    public pageProvider: ReportService,
+    public modalController: ModalController,
+    public popoverCtrl: PopoverController,
+    public alertCtrl: AlertController,
+    public loadingController: LoadingController,
+    public env: EnvService,
+    public navCtrl: NavController,
+    public location: Location,
+  ) {
+    super();
+    this.elId = lib.generateCode();
+    this.subscriptions.push(
+      this.pageProvider.regReportTrackingData(1).subscribe((ds) => {
+        this.items = ds.data; //[...this.items, ...ds.data];
+        console.log(this.items);
         this.buildDataset();
-        new ResizeObserver(() => this.myChart.resize()).observe(chartDom);
+        super.loadedData();
+      }),
+    );
+  }
+
+  loadData(event?: any): void {
+    this.pageProvider.getReportData(1, true);
+  }
+
+  ionViewDidEnter(): void {
+    let that = this;
+    var chartDom = document.getElementById(this.elId);
+    this.myChart = echarts.init(chartDom);
+    this.myChart.on('click', function (params) {
+      console.log(params.name);
+      that.query.Title = params.name;
+      that.query.InvoiceDate = lib.dateFormat(new Date());
+      that.refresh();
+    });
+
+    this.buildDataset();
+    new ResizeObserver(() => this.myChart.resize()).observe(chartDom);
+  }
+
+  /**
+   * Toggle chart full option view / mini chart view
+   */
+  toggleMiniChart() {
+    this.showFullChart = !this.showFullChart;
+    var chartDom = document.getElementById(this.elId);
+    chartDom.parentElement.classList.toggle('show-full');
+
+    this.loadChart();
+  }
+
+  buildDataset(dimention = null) {
+    if (dimention) {
+      this.viewDimension = dimention;
     }
 
+    this.chartOption.dataset = {
+      dimensions: [this.reportConfig.DataConfig.CompareBy[0].Property, this.viewDimension],
+      source: this.items,
+    };
+    this.loadChart();
+  }
 
-    /**
-     * Toggle chart full option view / mini chart view
-     */
-    toggleMiniChart() {
-        this.showFullChart = !this.showFullChart;
-        var chartDom = document.getElementById(this.elId);
-        chartDom.parentElement.classList.toggle("show-full");
-
-        this.loadChart();
+  loadChart() {
+    // Set show full chart options
+    if (this.showFullChart) {
+      this.chartOption.toolbox = {
+        show: true,
+        feature: {
+          magicType: { show: true, type: ['line', 'bar'] },
+          restore: { show: true },
+        },
+      };
+      (this.chartOption.legend = {
+        show: true,
+        padding: [16, 16, 16, 16],
+        textStyle: {
+          color: lib.getCssVariableValue('--ion-color-dark'),
+        },
+      }),
+        (this.chartOption.series[0].label = {
+          show: true,
+          formatter: '{b}: {@' + this.viewDimension + '} ({d}%)',
+        });
+    } else {
+      this.chartOption.legend = { show: false };
+      this.chartOption.series[0].label.show = false;
     }
 
-    buildDataset(dimention = null) {
-        if (dimention) {
-            this.viewDimension = dimention;
-        }
+    this.myChart?.setOption(this.chartOption);
+  }
 
-        this.chartOption.dataset = {
-            dimensions: [this.reportConfig.DataConfig.CompareBy[0].Property, this.viewDimension],
-            source: this.items
-        };
-        this.loadChart();
-    }
+  onActive(e) {
+    console.log(this.selectedItems);
 
-    loadChart() {
-        // Set show full chart options
-        if (this.showFullChart) {
-            this.chartOption.toolbox = {
-                show: true,
-                feature: {
-                    magicType: { show: true, type: ['line', 'bar'] },
-                    restore: { show: true },
-                }
-            };
-            this.chartOption.legend = { show: true, padding: [16, 16, 16, 16], textStyle: { color: lib.getCssVariableValue('--ion-color-dark') } },
-                this.chartOption.series[0].label = { show: true, formatter: '{b}: {@' + this.viewDimension + '} ({d}%)' };
-        }
-        else {
-            this.chartOption.legend = { show: false }
-            this.chartOption.series[0].label.show = false;
-        }
-
-        this.myChart?.setOption(this.chartOption);
-    }
-
-    onActive(e) {
-        console.log(this.selectedItems);
-
-        console.log(e);
-    }
-
-
+    console.log(e);
+  }
 }
-
 
 /*
 var legendList = ['New', 'Done', 'Cancelled'];
