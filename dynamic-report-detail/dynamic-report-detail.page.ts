@@ -7,6 +7,7 @@ import { PageBase } from 'src/app/page-base';
 import { CommonService } from 'src/app/services/core/common.service';
 import { EnvService } from 'src/app/services/core/env.service';
 import { ReportService } from 'src/app/services/report.service';
+import { SYS_FormProvider } from 'src/app/services/static/services.service';
 
 @Component({
   selector: 'app-dynamic-report-detail',
@@ -17,9 +18,11 @@ export class DynamicReportDetailPage extends PageBase {
   viewDimension = '';
 
   item: BIReport;
+  groupList: [];
 
   constructor(
     public pageProvider: ReportService,
+    public formProvider: SYS_FormProvider,
     public modalController: ModalController,
     public popoverCtrl: PopoverController,
     public env: EnvService,
@@ -67,6 +70,17 @@ export class DynamicReportDetailPage extends PageBase {
     if (this.pageConfig.canEdit) {
       this.pageConfig.canEditScript = true;
       this.pageConfig.canChangeReportConfig = true;
+      this.formProvider
+      .read({ IDParent: 2, Type: 11 })
+      .then((res) => {
+        this.groupList = res['data'];
+      })
+      .catch((err) => {
+        this.env.showMessage(err, 'danger');
+      })
+      .finally(() => {
+        super.preLoadData(event);
+      });
     }
 
     if (this.pageConfig.pageName === 'dynamic-report') {
