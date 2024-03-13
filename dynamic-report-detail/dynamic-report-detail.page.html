@@ -26,10 +26,10 @@
             (change)="saveChange()"
           ></app-form-control>
 
-          <app-form-control
-            [field]="{id:'Type', type : 'number', form : formGroup }"
-            (change)="saveChange()"
-          ></app-form-control>
+          <app-form-control  *ngIf="pageConfig.canEdit"
+              [field]="{id:'Type', type : 'ng-select', form : formGroup,  dataSource: groupList,  bindLabel: 'Name',  bindValue: 'Id', multiple:true }"
+              (change)="saveChange()"
+            ></app-form-control>
           <app-form-control
             [field]="{id:'Remark', type : 'textarea', label: 'Remark', form : formGroup }"
             (change)="saveChange()"
