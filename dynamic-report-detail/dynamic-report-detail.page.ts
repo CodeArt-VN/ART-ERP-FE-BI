@@ -196,5 +196,4 @@ export class DynamicReportDetailPage extends PageBase {
     }
     super.savedChange(savedItem, form);
   }
-
 }
