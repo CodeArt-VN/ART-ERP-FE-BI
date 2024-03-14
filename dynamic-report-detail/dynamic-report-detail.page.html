@@ -96,11 +96,13 @@
     <app-data-table
       style="width: fit-content; min-width: calc(100% - 32px)"
       [rows]="items"
+      [isQueryLocalOnly]="true"
       [trackBy]="'Count'"
       [(selectedRows)]="selectedItems"
       [showSpinner]="pageConfig.showSpinner"
       class="box-shadow ion-margin-horizontal"
       (activate)="onActive($event)"
+      (sortLocal)="onSortLocal($event)"
     >
       <datatable-column [checkbox]="true" name=""></datatable-column>
       <datatable-column class="col-id" name="#"></datatable-column>
