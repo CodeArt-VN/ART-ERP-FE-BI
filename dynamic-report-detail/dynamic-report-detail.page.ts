@@ -197,15 +197,4 @@ export class DynamicReportDetailPage extends PageBase {
     super.savedChange(savedItem, form);
   }
 
-  onSortLocal(event) {
-    event.forEach((e) => {
-      this.items.sort((a, b) => {
-        if (e.Order === 'ASC') {
-          return a[e.Dimension] > b[e.Dimension] ? 1 : b[e.Dimension] > a[e.Dimension] ? -1 : 0;
-        } else {
-          return a[e.Dimension] < b[e.Dimension] ? 1 : b[e.Dimension] < a[e.Dimension] ? -1 : 0;
-        }
-      });
-    });
-  }
 }
