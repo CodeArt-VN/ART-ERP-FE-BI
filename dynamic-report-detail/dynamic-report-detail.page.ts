@@ -74,6 +74,9 @@ export class DynamicReportDetailPage extends PageBase {
       .read({ IDParent: 2, Type: 11 })
       .then((res) => {
         this.groupList = res['data'];
+        this.groupList.forEach((i:any) => {
+          i.Id = '' + i.Id;
+        });
       })
       .catch((err) => {
         this.env.showMessage(err, 'danger');

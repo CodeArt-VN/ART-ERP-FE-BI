@@ -272,7 +272,7 @@ export class PurchaseProductPage extends PageBase {
     this.pageProvider
       .export(apiPath, this.reportQuery)
       .then((response: any) => {
-        this.downloadURLContent(ApiSetting.mainService.base + response);
+        this.downloadURLContent(response);
       })
       .catch((err) => {
         console.log(err);

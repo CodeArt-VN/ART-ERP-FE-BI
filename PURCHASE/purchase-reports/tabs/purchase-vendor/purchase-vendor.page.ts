@@ -266,7 +266,7 @@ export class PurchaseVendorPage extends PageBase {
           .then((response: any) => {
             this.submitAttempt = false;
             if (loading) loading.dismiss();
-            this.downloadURLContent(ApiSetting.mainService.base + response);
+            this.downloadURLContent(response);
           })
           .catch((err) => {
             if (err.message != null) {
