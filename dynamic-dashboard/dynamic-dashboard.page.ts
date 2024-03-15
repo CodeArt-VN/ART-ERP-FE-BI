@@ -45,7 +45,8 @@ export class DynamicDashboardPage extends PageBase {
     public location: Location,
   ) {
     super();
-    this.pageConfig.isShowFeature = true;
+    this.pageConfig.isShowFeature = true;;
+    this.pageConfig.isFeatureAsMain = true;
   }
 
   ngOnDestroy(): void {
@@ -84,6 +85,9 @@ export class DynamicDashboardPage extends PageBase {
   }
 
   onGroupChange(g) {
+    // this.pageConfig.isMainPageActive = false;
+    this.pageConfig.isSubActive = true;
+    // this.pageConfig.isShowFeature = false;
     this.groupControl.selectedGroup = g;
     if (g) {
       this.query.Type = g.Id;
