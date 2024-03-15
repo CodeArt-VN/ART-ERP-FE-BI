@@ -28,7 +28,7 @@
   </ion-refresher>
 
   <ion-fab *ngIf="pageConfig.isShowFeature" 
-  [ngClass]="{hiddenMd : isSubActive}"
+  [ngClass]="{'ion-hide-md-down' : pageConfig.isSubActive}"
   class="feature no-print" vertical="bottom" horizontal="start" slot="fixed">
     <ion-list>
       <ion-list-header lines="full">

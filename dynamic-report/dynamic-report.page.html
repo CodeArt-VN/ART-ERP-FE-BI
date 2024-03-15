@@ -27,7 +27,7 @@
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
-  <ion-fab *ngIf="pageConfig.isShowFeature" [ngClass] = "{hiddenMd: isSubActive}" class="feature no-print" vertical="bottom" horizontal="start" slot="fixed">
+  <ion-fab *ngIf="pageConfig.isShowFeature" [ngClass] = "{'ion-hide-md-down': pageConfig.isSubActive}" class="feature no-print" vertical="bottom" horizontal="start" slot="fixed">
     <ion-list>
       <ion-list-header>
         <ion-label color="dark">{{'Groups' | translate}}</ion-label>
