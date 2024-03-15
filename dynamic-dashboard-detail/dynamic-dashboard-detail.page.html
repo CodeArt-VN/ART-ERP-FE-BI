@@ -17,8 +17,8 @@
   </app-detail-toolbar>
 </ion-header>
 
-<ion-content id="dashboard" [fullscreen]="true" appScrollbarTheme>
-  <ion-fab *ngIf="pageConfig.isShowFeature && item" class="feature" vertical="top" horizontal="end" slot="fixed">
+<ion-content id="dashboard" [fullscreen]="true" appScrollbarTheme [ngClass]="{withFeature: pageConfig.isShowFeature}">
+  <ion-fab *ngIf="pageConfig.isShowFeature && item" class="feature" vertical="top" [ngClass] = "{hiddenMd: !isSubActive}" horizontal="end" slot="fixed" >
     <ion-accordion-group *ngIf="pageConfig.canEdit" [value]="'first'">
       <ion-accordion value="first" style="background: transparent">
         <ion-item slot="header" color="light">

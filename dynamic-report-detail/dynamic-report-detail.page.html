@@ -3,7 +3,7 @@
 </ion-header>
 
 <ion-content appScrollbarTheme class="scrollx" [ngClass]="{withFeature: pageConfig.isShowFeature}">
-  <ion-fab *ngIf="pageConfig.isShowFeature && item" class="feature" vertical="top" horizontal="end" slot="fixed">
+  <ion-fab *ngIf="pageConfig.isShowFeature && item" class="feature" vertical="top" horizontal="end" slot="fixed" [ngClass] = "{hiddenMd: !isSubActive}">
     <ion-accordion-group *ngIf="pageConfig.canEdit" [value]="item.Id? '':'first'">
       <ion-accordion value="first" style="background: transparent">
         <ion-item slot="header" color="light">

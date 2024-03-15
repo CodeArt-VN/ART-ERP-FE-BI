@@ -44,6 +44,7 @@ export class DynamicReportPage extends PageBase {
     public location: Location,
   ) {
     super();
+    this.isFeatureAsMain = true;
     this.pageConfig.isShowFeature = true;
   }
 
@@ -83,6 +84,7 @@ export class DynamicReportPage extends PageBase {
   }
 
   onGroupChange(g) {
+    this.isSubActive = true;
     this.groupControl.selectedGroup = g;
     if (g) {
       this.query.Type = g.Id;
