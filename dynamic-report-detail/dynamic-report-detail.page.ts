@@ -147,6 +147,7 @@ export class DynamicReportDetailPage extends PageBase {
           },
         };
         this.items = resp['Data'];
+        this.isSubActive = false; 
       },
       (error) => {
         console.log(error);

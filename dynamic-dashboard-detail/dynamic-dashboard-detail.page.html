@@ -7,14 +7,14 @@
 </ion-header> -->
 
 <ion-header [translucent]="true">
-  <app-detail-toolbar BackHref="dynamic-dashboard" [page]="this" [ShowFeature]="true">
+  <app-toolbar BackHref="dynamic-dashboard" [page]="this" [ShowFeature]="true">
     <ion-button (click)="toggleDesign()" class="ion-hide-sm-down" *ngIf="options">
       <ion-icon
         slot="icon-only"
         [name]="options.draggable.enabled? 'color-palette': 'color-palette-outline'"
       ></ion-icon>
     </ion-button>
-  </app-detail-toolbar>
+  </app-toolbar>
 </ion-header>
 
 <ion-content id="dashboard" [fullscreen]="true" appScrollbarTheme [ngClass]="{withFeature: pageConfig.isShowFeature}">
