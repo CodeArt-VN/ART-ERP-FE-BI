@@ -1,6 +1,5 @@
 <ion-header>
   <app-toolbar
-    pageTitle="Danh sách"
     [page]="this"
     [pageConfig]="pageConfig"
     [selectedItems]="selectedItems"
@@ -85,6 +84,7 @@
       <ion-item [color]="!groupControl.selectedGroup? 'primary': '' " lines="full" button (click)="onGroupChange(null)">
         <ion-icon aria-hidden="true" name="layers" slot="start"></ion-icon>
         <ion-label>{{'All' | translate}}</ion-label>
+        <!-- <ion-note slot="end">{{items.length}}</ion-note> -->
       </ion-item>
       <ion-reorder-group [disabled]="!groupControl.showReorder" (ionItemReorder)="handleReorder($any($event))">
         <ion-item
@@ -114,7 +114,7 @@
   <div style="max-width: 1440px; margin: auto; width: 100%">
     <app-data-table
       style="width: fit-content; min-width: calc(100% - 32px)"
-      class="box-shadow"
+      class="box-shadow responsive"
       [rows]="items"
       [trackBy]="'Id'"
       [(selectedRows)]="selectedItems"
@@ -127,14 +127,13 @@
     >
       <datatable-column [checkbox]="true" name=""></datatable-column>
       <datatable-column class="col-id" name="#" property="Id"></datatable-column>
+      <datatable-column class="col-icon large" name="" property="Icon">
+        <ng-template let-i="row" datatable-cell-template>
+          <ion-icon [name]="i.Icon || 'bars'" [color]="i.Color || 'primary'" [routerLink]="['/'+pageConfig.pageName+'/'+i.Id]"></ion-icon>
+        </ng-template>
+      </datatable-column>
       <datatable-column class="col-name" name="Name" property="Name">
         <ng-template let-i="row" datatable-cell-template>
-          <ion-icon
-            class="rpt-icon"
-            [name]="i.Icon || 'bars'"
-            [color]="i.Color || 'primary'"
-            [routerLink]="['/'+pageConfig.pageName+'/'+i.Id]"
-          ></ion-icon>
           <div [routerLink]="['/'+pageConfig.pageName+'/'+i.Id]">
             <a class="bold">
               <ion-text color="dark">{{i.Name}}</ion-text>

@@ -1,6 +1,5 @@
-.rpt-icon {
-  min-width: calc(10/16 * 3rem);
-  max-width: calc(10/16 * 3rem);
-  height: calc(10/16 * 4rem);
-  margin-right: 8px;
+@media screen and (max-width: calc(1164px + 0px)) {
+  ::ng-deep .row {
+    padding: 16px 40px 16px 35px !important;
+  }
 }

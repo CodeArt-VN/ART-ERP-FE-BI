@@ -1,7 +1,6 @@
 <ion-header>
   <app-toolbar
     [page]="this"
-    pageTitle="Danh sách"
     [pageConfig]="pageConfig"
     [selectedItems]="selectedItems"
     [query]="query"
@@ -83,7 +82,7 @@
       <ion-item [color]="!groupControl.selectedGroup? 'primary': '' " [button]="true" (click)="onGroupChange(null)">
         <ion-icon aria-hidden="true" name="list-circle" color="success" slot="start" ></ion-icon>
         <ion-label>{{'All' | translate}}</ion-label>
-        <ion-note slot="end">{{items.length}}</ion-note>
+        <!-- <ion-note slot="end">{{items.length}}</ion-note> -->
       </ion-item>
       <ion-reorder-group [disabled]="!groupControl.showReorder" (ionItemReorder)="handleReorder($any($event))">
         <ion-item
@@ -138,7 +137,7 @@
               <ion-text color="dark">{{i.Name}}</ion-text>
             </a>
             <div *ngIf="i.Remark">
-              <ion-note>{{i.Remark}}</ion-note>
+              {{i.Remark}}
             </div>
           </div>
         </ng-template>
