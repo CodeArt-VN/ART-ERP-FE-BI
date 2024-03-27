@@ -31,6 +31,7 @@ interface Safe extends GridsterConfig {
   styleUrls: ['dynamic-dashboard-detail.page.scss'],
 })
 export class DynamicDashboardDetailPage extends PageBase {
+  code = '';
   @ViewChild('reportSearch') searchBar: IonSearchbar;
   options: Safe;
   items: Array<GridsterItem>;
@@ -53,6 +54,7 @@ export class DynamicDashboardDetailPage extends PageBase {
     public loadingController: LoadingController,
   ) {
     super();
+    this.code = this.route.snapshot.paramMap.get('code');
     this.pageConfig.isShowFeature = false;
     this.pageConfig.isDetailPage = true;
 
@@ -112,11 +114,13 @@ export class DynamicDashboardDetailPage extends PageBase {
         fixedRowHeight: 340, //162,
         keepFixedHeightInMobile: true,
         setGridSize: true,
+        scrollToNewItems: true,
+        disableWindowResize: true,
 
         //enableBoundaryControl: true,
         draggable: { enabled: false },
         resizable: { enabled: false },
-        pushItems: false,
+        pushItems: true,
         pushDirections: {
           north: true,
           east: true,
@@ -302,11 +306,15 @@ export class DynamicDashboardDetailPage extends PageBase {
   }
 
   onOpenReport(ev) {
-    if (ev.Code == 'demo' || !ev.Code) {
+    if (!this.options.draggable.enabled) {
       this.nav('dynamic-report/' + ev.Id);
-    } else {
-      this.nav(ev.Code);
     }
+
+    // if (ev.Code == 'demo' || !ev.Code) {
+    //   this.nav('dynamic-report/' + ev.Id);
+    // } else {
+    //   this.nav(ev.Code);
+    // }
   }
 
   showReportPicker() {

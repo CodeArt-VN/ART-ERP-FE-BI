@@ -16,6 +16,7 @@ import { SYS_FormProvider } from 'src/app/services/static/services.service';
 })
 export class DynamicReportDetailPage extends PageBase {
   viewDimension = '';
+  code = '';
 
   item: BIReport;
   groupList: [];
@@ -38,6 +39,7 @@ export class DynamicReportDetailPage extends PageBase {
     this.pageConfig.isSubActive = true;
     this.pageConfig.isDetailPage = true;
     this.id = this.route.snapshot.paramMap.get('id');
+    this.code = this.route.snapshot.paramMap.get('code');
 
     this.formGroup = formBuilder.group({
       Id: new FormControl({ value: '', disabled: true }),
@@ -72,19 +74,19 @@ export class DynamicReportDetailPage extends PageBase {
       this.pageConfig.canEditScript = true;
       this.pageConfig.canChangeReportConfig = true;
       this.formProvider
-      .read({ IDParent: 2, Type: 11 })
-      .then((res) => {
-        this.groupList = res['data'];
-        this.groupList.forEach((i:any) => {
-          i.Id = '' + i.Id;
+        .read({ IDParent: 2, Type: 11 })
+        .then((res) => {
+          this.groupList = res['data'];
+          this.groupList.forEach((i: any) => {
+            i.Id = '' + i.Id;
+          });
+        })
+        .catch((err) => {
+          this.env.showMessage(err, 'danger');
+        })
+        .finally(() => {
+          super.preLoadData(event);
         });
-      })
-      .catch((err) => {
-        this.env.showMessage(err, 'danger');
-      })
-      .finally(() => {
-        super.preLoadData(event);
-      });
     }
 
     if (this.pageConfig.pageName === 'dynamic-report') {
@@ -104,9 +106,11 @@ export class DynamicReportDetailPage extends PageBase {
   }
 
   loadData(event?: any): void {
-    this.item = this.pageProvider.getReport(this.id, this.pageConfig.pageName);
-
-    this.pageProvider.saveReportConfig(this.item);
+    if (this.id || this.code) {
+      this.item = this.pageProvider.getReport(this.id, this.code);
+      if (this.item) this.pageProvider.saveReportConfig(this.item);
+    }
+   
     this.loadedData(event);
   }
 
@@ -147,7 +151,7 @@ export class DynamicReportDetailPage extends PageBase {
           },
         };
         this.items = resp['Data'];
-        this.pageConfig.isSubActive = false; 
+        this.pageConfig.isSubActive = false;
       },
       (error) => {
         console.log(error);

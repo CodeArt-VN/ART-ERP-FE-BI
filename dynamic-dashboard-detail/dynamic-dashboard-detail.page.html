@@ -144,7 +144,7 @@
     [breakpoints]="[0, 0.25, 0.5, 0.75]"
   >
     <ng-template>
-      <ion-content>
+      <ion-content appScrollbarTheme>
         <ion-searchbar
           #reportSearch
           placeholder="Search"
@@ -165,6 +165,7 @@
             </ion-label>
           </ion-item>
         </ion-list>
+        <div style="padding-top: 25vh"></div>
       </ion-content>
     </ng-template>
   </ion-modal>
