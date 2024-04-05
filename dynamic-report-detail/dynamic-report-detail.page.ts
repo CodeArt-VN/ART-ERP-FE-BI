@@ -195,6 +195,34 @@ export class DynamicReportDetailPage extends PageBase {
     console.log(e);
   }
 
+
+  treeConfig = {
+    isLoading : false,
+    isTreeList: false,
+    treeColumn: '',
+    excludes:[]
+  };
+  onDataChange(e) {
+    console.log(e);
+
+    if (e.isTreeList) {
+
+      this.treeConfig.isTreeList = true;
+      this.treeConfig.treeColumn = e.treeColumn;  
+      this.treeConfig.excludes = e.excludes || [];
+
+    }
+    
+    this.items = [...e.data];
+
+    this.treeConfig.isLoading = true;
+    setTimeout(() => {
+      this.treeConfig.isLoading = false;
+    }, 100);
+    
+
+  }
+
   async saveChange() {
     super.saveChange2();
   }

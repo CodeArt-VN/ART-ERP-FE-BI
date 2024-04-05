@@ -1,22 +1,20 @@
+import { Location } from '@angular/common';
 import { Component, ViewChild } from '@angular/core';
 import {
-  NavController,
-  ModalController,
   AlertController,
-  LoadingController,
-  PopoverController,
   ItemReorderEventDetail,
+  LoadingController,
+  ModalController,
+  NavController,
+  PopoverController,
 } from '@ionic/angular';
-import { EnvService } from 'src/app/services/core/env.service';
 import { PageBase } from 'src/app/page-base';
+import { EnvService } from 'src/app/services/core/env.service';
 import {
   BI_DashboardProvider,
-  BI_ReportProvider,
   BRA_BranchProvider,
-  SYS_FormProvider,
-  WMS_ZoneProvider,
+  SYS_FormProvider
 } from 'src/app/services/static/services.service';
-import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-dynamic-dashboard',

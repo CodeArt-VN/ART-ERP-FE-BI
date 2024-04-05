@@ -3,7 +3,14 @@
 </ion-header>
 
 <ion-content appScrollbarTheme class="scrollx" [ngClass]="{withFeature: pageConfig.isShowFeature}">
-  <ion-fab *ngIf="pageConfig.isShowFeature && item" class="feature" vertical="top" horizontal="end" slot="fixed" [ngClass] = "{'ion-hide-md-down': !pageConfig.isSubActive}">
+  <ion-fab
+    *ngIf="pageConfig.isShowFeature && item"
+    class="feature"
+    vertical="top"
+    horizontal="end"
+    slot="fixed"
+    [ngClass]="{'ion-hide-md-down': !pageConfig.isSubActive}"
+  >
     <ion-accordion-group *ngIf="pageConfig.canEdit" [value]="item.Id? '':'first'">
       <ion-accordion value="first" style="background: transparent">
         <ion-item slot="header" color="light">
@@ -88,12 +95,13 @@
           [data]="runTestData"
           (changeViewDimension)="onViewDimensionChange($event)"
           (chartClick)="onChartClick($event)"
+          (dataChange)="onDataChange($event)"
         ></app-report-chart>
       </app-page-title>
     </div>
   </div>
 
-  <div style="max-width: 1440px; margin: auto; width: 100%; position: relative; z-index: 0" *ngIf="item">
+  <div style="max-width: 1440px; margin: auto; width: 100%; position: relative; z-index: 0" *ngIf="item && !treeConfig.isLoading">
     <app-data-table
       style="width: fit-content; min-width: calc(100% - 32px)"
       [rows]="items"
@@ -106,13 +114,39 @@
     >
       <datatable-column [checkbox]="true" name=""></datatable-column>
       <datatable-column class="col-id" name="#"></datatable-column>
-      <datatable-column
-        class="col-name"
-        [sticky]="true"
-        name="{{c.Property}}"
-        [property]="c.Property"
-        *ngFor="let c of item.DataConfig?.CompareBy"
-      ></datatable-column>
+      <ng-container *ngFor="let c of item.DataConfig?.CompareBy">
+        <datatable-column
+          class="col-name"
+          [sticky]="true"
+          name="{{c.Title || c.Property}}"
+          [property]="c.Property"
+          *ngIf="(!treeConfig.isTreeList || c.Property != treeConfig.treeColumn) && treeConfig.excludes.indexOf(c.Property) == -1"
+        ></datatable-column>
+
+        <datatable-column
+          class="col-name"
+          [sticky]="true"
+          name="{{c.Title || c.Property}}"
+          [property]="c.Property"
+          *ngIf="treeConfig.isTreeList && c.Property == treeConfig.treeColumn"
+        >
+          <ng-template let-i="row" datatable-cell-template>
+            <ng-container *ngFor="let w of i.levels; let k = index;"
+              ><span class="spacing" *ngIf="k>0"></span
+            ></ng-container>
+            <ion-icon
+              (click)="toggleRow(items, i, true);"
+              class="min-btn clickable"
+              [name]="!i.showdetail? 'chevron-forward-outline':'chevron-down-outline'"
+              *ngIf="i.HasChild"
+            ></ion-icon>
+            <ion-icon class="min-btn clickable" [name]="''" *ngIf="!i.HasChild"></ion-icon>
+            
+            <ion-text class="clickable" (click)="showModal(i)" [color]="i.Color">{{i[c.Property]}}</ion-text>
+          </ng-template>
+        </datatable-column>
+      </ng-container>
+
       <datatable-column
         class="col-date"
         *ngIf="item.DataConfig?.Interval?.Property"
