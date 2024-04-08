@@ -43,11 +43,10 @@ export class ApInvoicePage extends PageBase {
         fromDate: data.fromDate,
         toDate: data.toDate,
         IDBranch: data.IDBranch,
-        IDOwner: data.saleman?.Id,
-        IDContact: data.outlet?.Id,
-        IsCalcShippedOnly: data.isCalcShippedOnly,
+        IDOwner: data.vendor?.Id,
         saleman: data.saleman,
         outlet: data.outlet,
+        IDBuyer: data.buyer?.Id
       };
 
       if (data._cmd == 'exportSaleProductReport') {
