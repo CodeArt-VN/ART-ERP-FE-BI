@@ -62,10 +62,12 @@
     <app-report-config
       *ngIf="item.Id"
       [canEdit]="pageConfig.canEdit"
+      [canExport]="pageConfig.canExport"
       [canChangeReportConfig]="pageConfig.canChangeReportConfig"
       [canEditScript]="pageConfig.canEditScript"
       [reportId]="item.Id"
       (runReport)="onRunReport($event)"
+      (exportReport)="onExportReport()"
       (save)="onSave($event)"
     ></app-report-config>
   </ion-fab>
