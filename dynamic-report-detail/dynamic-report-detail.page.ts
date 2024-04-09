@@ -151,7 +151,7 @@ export class DynamicReportDetailPage extends PageBase {
           },
         };
         this.items = resp['Data'];
-                this.pageConfig.isSubActive = false;
+        this.pageConfig.isSubActive = false;
       },
       (error) => {
         console.log(error);
@@ -172,7 +172,7 @@ export class DynamicReportDetailPage extends PageBase {
       || this.treeConfig.isTreeList && c == this.treeConfig.treeColumn);
 
     const headerKeys = [...compareByHeader, intervalByHeader, ...measureByHeader];
-    
+
     const headerRow = headerKeys.join(",");
        csvContent += headerRow + "\r\n";
         // Add data rows
