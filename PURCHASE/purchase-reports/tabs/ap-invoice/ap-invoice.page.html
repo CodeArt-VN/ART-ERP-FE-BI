@@ -59,7 +59,7 @@
                           <img [src]="b.BranchLogoURL" (error)="$event.src='assets/logos/logo-codeart.png'" />
                         </td>
                         <!-- <td colspan="2" class="bol title">{{'Payment detail listings' | translate}}</td> -->
-                        <td colspan="2"  class="bol title">BẢNG KÊ HOÁ ĐƠN, CHỨNG TỪ HÀNG HOÁ, DỊCH VỤ MUA VÀO</td>
+                        <td colspan="2"  class="bol title">BẢNG KÊ HOÁ ĐƠN MUA VÀO</td>
                         <td rowspan="7" class="topQR">
                           <!-- <div *ngIf="o.Code">SO:{{o.Id}}</div>
                           <a [href]="'#/'+'sale-order/'+o.Id" (click)="nav('sale-order/'+o.Id,'forward')">
@@ -92,23 +92,23 @@
                         </tr>
                         <tr class="head">
                           <td class="cen">{{'No.' | translate}}</td>
-                          <td class="cen bol inv-no">Số hóa đơn</td>
-                          <td class="cen bol inv-date">Ngày, tháng,<br />năm lập hóa đơn</td>
-                          <td class="cen bol name">Nhà cung cấp</td>
+                          <td class="num">Số HĐ</td>
+                          <td class="cen">Ngày lập HĐ</td>
+                          <td class="name">Nhà cung cấp</td>
                           <td class="num">Tiền hàng</td>
-                          <td class="cen bol tax">Chiết khấu</td>
-                          <td class="cen bol tax-amount">Thuế GTGT</td>
+                          <td class="num">Chiết khấu</td>
+                          <td class="num">Thuế GTGT</td>
                         </tr>
                         <ng-container>
                           <tr *ngFor="let i of b.itemList; let idx = index; ">
                             <td class="cen">{{idx+1}}</td>
                             <td>
-                              <div class="cen inv-no">{{i.InvoiceNo}}</div>
+                              <div class="num">{{i.InvoiceNo}}</div>
                             </td>
-                            <td class="cen inv-date">
+                            <td class="cen">
                               <span> {{i.InvoiceDateText}} </span>
                             </td>
-                            <td class="cen name">
+                            <td class="name">
                               <span> {{i.SellerName}} </span>
                             </td>
                             <td class="num">
