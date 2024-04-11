@@ -1,5 +1,5 @@
 <ion-content appScrollbarTheme appPrintFix class="A4 left">
-  <app-page-message [itemsLength]="items.length" [showSpinner]="pageConfig.showSpinner"></app-page-message>
+  <app-page-message [itemsLength]="warehouses.length" [showSpinner]="pageConfig.showSpinner"></app-page-message>
 
   <div style="overflow: auto">
     <ng-container *ngIf="!reportQuery.IDOwner">
@@ -55,45 +55,34 @@
                   <table class="rpt-header" cellpadding="0" cellspacing="0">
                     <tbody>
                       <tr>
-                        <td class="head-c3 solid-box" rowspan="4">
-                          Mẫu số: <b>01- 2/GTGT</b><br />
-                          <em
-                            >(Ban hành kèm theo Thông tư<br />số 119/2014/TT-BTC ngày<br />25/8/2014 của Bộ Tài
-                            chính)<br />&#8205;</em
-                          >
+                        <td rowspan="7" class="logo">
+                          <img [src]="b.BranchLogoURL" (error)="$event.src='assets/logos/logo-codeart.png'" />
                         </td>
-                        <td>&#8205;</td>
+                        <!-- <td colspan="2" class="bol title">{{'Payment detail listings' | translate}}</td> -->
+                        <td colspan="2"  class="bol title">BẢNG KÊ HOÁ ĐƠN, CHỨNG TỪ HÀNG HOÁ, DỊCH VỤ MUA VÀO</td>
+                        <td rowspan="7" class="topQR">
+                          <!-- <div *ngIf="o.Code">SO:{{o.Id}}</div>
+                          <a [href]="'#/'+'sale-order/'+o.Id" (click)="nav('sale-order/'+o.Id,'forward')">
+                            <img class="qrc" [src]="o.QRC" />
+                          </a> -->
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td class="head-c1">Đơn vị:</td>
+                        <td class="bol">{{b.Name}}</td>
+                        <!-- <td class="bol num" colspan="2">{{o.OrderDateText}}</td> -->
                       </tr>
                       <tr>
-                        <td>&#8205;</td>
+                        <td>{{'Date' | translate}}:</td>
+                        <td colspan="2">
+                          <span class="bol">{{reportQuery.fromDate | date: 'dd/MM/yyyy'}} - {{reportQuery.toDate | date: 'dd/MM/yyyy'}} </span>
+                        </td>
                       </tr>
-                      <tr>
-                        <td class="bol cen heading">BẢNG KÊ HOÁ ĐƠN, CHỨNG TỪ HÀNG HOÁ, DỊCH VỤ MUA VÀO</td>
-                      </tr>
-                      <tr>
-                        <td class="cen">(Kèm theo tờ khai thuế GTGT theo mẫu số 01/GTGT)</td>
-                      </tr>
-                      <tr>
-                        <td class="head-c3">&#8205;</td>
-                        <td class="cen">Kỳ tính thuế: Tháng....... Năm......./ Quý ....... Năm.......</td>
-                      </tr>
+                    
                     </tbody>
                   </table>
-
-                  <!-- Người nộp thuế + Mã số thuế -->
-                  <table class="rpt-header rpt-nvgh-header" cellpadding="0" cellspacing="0">
-                    <tbody>
-                      <tr>
-                        <td class="head-c2">Người nộp thuế:</td>
-                        <td class="bol">...................................................</td>
-                      </tr>
-                      <tr>
-                        <td class="head-c2">Mã số thuế:</td>
-                        <td class="bol">...................................................</td>
-                      </tr>
-                    </tbody>
-                  </table>
-
+                
                   <!-- Thông tin item -->
                   <div class="ds-san-pham">
                     <table cellpadding="0" cellspacing="0">
@@ -101,153 +90,60 @@
                         <tr>
                           <td colspan="8" class="currency">Đơn vị tiền: đồng Việt Nam</td>
                         </tr>
-                        <tr>
-                          <td class="cen bol idx">STT</td>
+                        <tr class="head">
+                          <td class="cen">{{'No.' | translate}}</td>
                           <td class="cen bol inv-no">Số hóa đơn</td>
                           <td class="cen bol inv-date">Ngày, tháng,<br />năm lập hóa đơn</td>
-                          <td class="cen bol name">Tên người bán</td>
-                          <td class="cen bol tax">Mã số thuế<br />người bán</td>
-                          <td class="cen bol revenue">Doanh số<br />mua chưa<br />có thuế</td>
-                          <td class="cen bol tax-amount">Thuế GTGT<br />đủ điều kiện<br />khấu trừ thuế</td>
-                          <td class="cen bol remark">Ghi chú</td>
+                          <td class="cen bol name">Nhà cung cấp</td>
+                          <td class="num">Tiền hàng</td>
+                          <td class="cen bol tax">Chiết khấu</td>
+                          <td class="cen bol tax-amount">Thuế GTGT</td>
                         </tr>
+                        <ng-container>
+                          <tr *ngFor="let i of b.itemList; let idx = index; ">
+                            <td class="cen">{{idx+1}}</td>
+                            <td>
+                              <div class="cen inv-no">{{i.InvoiceNo}}</div>
+                            </td>
+                            <td class="cen inv-date">
+                              <span> {{i.InvoiceDateText}} </span>
+                            </td>
+                            <td class="cen name">
+                              <span> {{i.SellerName}} </span>
+                            </td>
+                            <td class="num">
+                              <span> {{i.TotalBeforeDiscount }} </span>
+                            </td>
+                            <td class="num">
+                              <span> {{i.TotalDiscount  }} </span>
+                            </td>
+                            <!-- <td class="cen"> <span> {{i._serviceCharge}} </span> </td> -->
+                            <td class="num">
+                              <span> {{i.Tax  }} </span>
+                            </td>
+<!--                            
+                            <td class="num">
+                              <span> {{i.Tax | number: '1.0-0' }} </span>
+                            </td> -->
+                          </tr>
+                        </ng-container>
                         <tr>
-                          <td class="cen">[1]</td>
-                          <td class="cen">[2]</td>
-                          <td class="cen">[3]</td>
-                          <td class="cen">[4]</td>
-                          <td class="cen">[5]</td>
-                          <td class="cen">[6]</td>
-                          <td class="cen">[7]</td>
-                          <td class="cen">[8]</td>
-                        </tr>
-                      </tbody>
-
-                      <!-- 1 -->
-                      <tbody>
-                        <tr>
-                          <td colspan="8">
-                            1. Hàng hoá, dịch vụ dùng riêng cho SXKD chịu thuế GTGT và sử dụng cho các hoạt động cung
-                            cấp hàng hoá, dịch vụ
-                            <br />không kê khai, nộp thuế GTGT đủ điều kiện khấu trừ thuế:
+                          <td colspan="4" class="num" style="text-align: left !important">{{'Total' | translate}}</td>
+                          <td class="num">
+                            <b>{{b.TotalBeforeDiscount}}</b>
+                          </td>
+                          <!-- <td class="num"></td> -->
+                          <td class="num">
+                            <b>{{b.TotalDiscount }}</b>
+                          </td>
+                          <td class="num">
+                            <b>{{b.Tax}}</b>
                           </td>
                         </tr>
-                        <tr *ngFor="let i of b.itemList; let idx = index; ">
-                          <td class="cen idx">{{idx+1}}</td>
-                          <!--Mock-->
-                          <td class="cen inv-no">{{i.InvoiceNo}}</td>
-                          <td class="cen inv-date">{{i.InvoiceDateText}}</td>
-                          <td class="name">{{i.SellerName}}</td>
-                          <td class="cen tax">{{i.SellerTaxCode}}</td>
-                          <td class="num revenue">{{i.TotalAfterDiscount}}</td>
-                          <td class="num tax-amount">{{i.Tax}}</td>
-                          <td class="remark">{{i.Remark}}</td>
-                        </tr>
-                        <tr>
-                          <td class="bol" colspan="5">Tổng</td>
-                          <!--Mock-->
-                          <td class="num">{{b.TotalAfterDiscount}}</td>
-                          <td class="num">{{b.Tax}}</td>
-                          <td class="cen">&#8205;</td>
-                        </tr>
                       </tbody>
-
-                      <!-- 2 -->
-                      <tbody>
-                        <tr>
-                          <td colspan="8">
-                            2. Hàng hoá, dịch vụ dùng chung cho SXKD chịu thuế và không chịu thuế đủ điều kiện khấu trừ
-                            thuế:
-                          </td>
-                        </tr>
-                        <tr>
-                          <!-- *ngFor="let i of b.itemList; let idx = index; " -->
-                          <td class="cen idx">&#8205;</td>
-                          <!--Mock-->
-                          <td class="cen inv-no">&#8205;</td>
-                          <td class="cen inv-date">&#8205;</td>
-                          <td class="name">&#8205;</td>
-                          <td class="cen tax">&#8205;</td>
-                          <td class="num revenue">&#8205;</td>
-                          <td class="num tax-amount">&#8205;</td>
-                          <td class="remark">&#8205;</td>
-                        </tr>
-                        <tr>
-                          <td class="bol" colspan="5">Tổng</td>
-                          <!--Mock-->
-                          <td class="num">&#8205;</td>
-                          <td class="num">&#8205;</td>
-                          <td class="cen">&#8205;</td>
-                        </tr>
-                      </tbody>
-
-                      <!-- 3 -->
-                      <tbody>
-                        <tr>
-                          <td colspan="8">
-                            3. Hàng hóa, dịch vụ dùng cho dự án đầu tư đủ điều kiện được khấu trừ thuế (*):
-                          </td>
-                        </tr>
-                        <tr>
-                          <!-- *ngFor="let i of b.itemList; let idx = index; " -->
-                          <td class="cen idx">&#8205;</td>
-                          <!--Mock-->
-                          <td class="cen inv-no">&#8205;</td>
-                          <td class="cen inv-date">&#8205;</td>
-                          <td class="name">&#8205;</td>
-                          <td class="cen tax">&#8205;</td>
-                          <td class="num revenue">&#8205;</td>
-                          <td class="num tax-amount">&#8205;</td>
-                          <td class="remark">&#8205;</td>
-                        </tr>
-                        <tr>
-                          <td class="bol" colspan="5">Tổng</td>
-                          <!--Mock-->
-                          <td class="num">&#8205;</td>
-                          <td class="num">&#8205;</td>
-                          <td class="cen">&#8205;</td>
-                        </tr>
-                      </tbody>
-
-                      <!-- <tr *ngFor="let i of b.itemList; let idx = index; ">
-                                                <td class="cen" >{{idx+1}}</td>
-                                                <td >
-                                                    <div class="ten-sp min"><b *ngIf="i.ContactCode">{{i.ContactCode}}</b><b *ngIf="!i.ContactCode">{{i.IDContact}}</b> - {{i.ContactName}}</div>
-                                                </td>
-                                                <td class="cen">{{i.WorkPhone}}</td>
-                                                <td class="num tien">{{i.TotalBeforeDiscountText}}</td>
-                                                <td class="num tien">{{i.TotalDiscountText}}</td>
-                                                <td class="num tien">{{i.TotalAfterDiscountText}}</td>
-                                            </tr> -->
-
-                      <!-- <tbody>
-                                                <tr class="head">
-                                                    <td class="num" colspan="3">{{'Total' | translate}}</td>
-                                                    <td class="num tien">{{b.TotalBeforeDiscountText}}</td>
-                                                    <td class="num tien">{{b.TotalDiscountText}}</td>
-                                                    <td class="num tien">{{b.TotalAfterDiscountText}}</td>
-                                                </tr>
-                                            </tbody> -->
+            
                     </table>
                   </div>
-
-                  <!-- dòng sum tổng -->
-                  <table class="total-sum" cellpadding="0" cellspacing="0">
-                    <tbody>
-                      <tr>
-                        <td class="sign-box1">
-                          <div>Tổng giá trị HHDV mua vào phục vụ SXKD được khấu trừ thuế GTGT (**):</div>
-                        </td>
-                        <td class="sign-box2">...................................................</td>
-                      </tr>
-                      <tr>
-                        <td class="sign-box1">
-                          <div>Tổng số thuế GTGT của HHDV mua vào đủ điều kiện được khấu trừ (***):</div>
-                        </td>
-                        <td class="sign-box2">...................................................</td>
-                      </tr>
-                    </tbody>
-                  </table>
 
                   <!-- Chữ ký // Đã xong -->
                   <div class="no-break-page">
@@ -286,144 +182,5 @@
       </section>
     </ng-container>
 
-    <ng-container *ngFor="let b of items">
-      <section class="sheet rpt" *ngFor="let s of b.salemans">
-        <table>
-          <thead>
-            <tr>
-              <td>
-                <div class="page-header-space"></div>
-              </td>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>
-                <div class="top-zone">
-                  <table class="rpt-header" cellpadding="0" cellspacing="0">
-                    <tbody>
-                      <tr>
-                        <td class="head-c1">Công ty mua:</td>
-                        <td class="bol">{{b.Name}}</td>
-                        <td class="num"></td>
-                        <td class="bol"></td>
-                        <td class="num">{{'Printing date' | translate}}:</td>
-                        <td class="num bol ngay-hd">{{today}}</td>
-                      </tr>
-                      <tr>
-                        <td colspan="6" class="bol title">
-                          BÁO CÁO
-                          <span *ngIf="reportQuery.IsCalcShippedOnly">MUA HÀNG</span>
-                          <span *ngIf="!reportQuery.IsCalcShippedOnly">MUA HÀNG</span>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-
-                  <table class="rpt-header rpt-nvgh-header" cellpadding="0" cellspacing="0">
-                    <tbody>
-                      <tr>
-                        <td class="head-c1">NVMH:</td>
-                        <td class="bol">{{s.FullName}}</td>
-                      </tr>
-                      <tr>
-                        <td class="head-c1">{{'Time' | translate}}:</td>
-                        <td class="bol">
-                          {{reportQuery.fromDate}} - {{reportQuery.toDate}}
-                          <span *ngIf="reportQuery.IsCalcShippedOnly">{{'(deliverate date)' | translate}}</span>
-                          <span *ngIf="!reportQuery.IsCalcShippedOnly">{{'(order date)' | translate}}</span>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-
-                  <div class="ds-san-pham">
-                    <table cellpadding="0" cellspacing="0">
-                      <tbody>
-                        <tr class="head">
-                          <td rowspan="1" class="cen">{{'No.' | translate}}</td>
-                          <td rowspan="1">
-                            <div class="ten-sp min">Nhà cung cấp</div>
-                          </td>
-                          <td class="cen">Mã số thuế</td>
-                          <td class="num" rowspan="1">CK</td>
-                          <td class="num" rowspan="1">Tổng sau CK</td>
-                          <td class="num" rowspan="1">Thuế</td>
-                        </tr>
-                      </tbody>
-
-                      <tr *ngFor="let i of s.itemList; let idx = index; ">
-                        <td class="cen">{{idx+1}}</td>
-                        <td>
-                          <div class="ten-sp min">
-                            <b *ngIf="i.ContactCode">{{i.ContactCode}}</b><b *ngIf="!i.ContactCode">{{i.IDContact}}</b>
-                            - {{i.ContactName}}
-                          </div>
-                        </td>
-                        <td class="cen">{{i.SellerTaxCode}}</td>
-                        <td class="num tien">{{i.TotalDiscountText}}</td>
-                        <td class="num tien">{{i.TotalAfterDiscountText}}</td>
-                        <td class="num tien">{{i.TaxText}}</td>
-                      </tr>
-                      <tbody>
-                        <tr class="head">
-                          <td class="num" colspan="3">{{'Total' | translate}}</td>
-                          <td class="num tien">{{s.TotalDiscountText}}</td>
-                          <td class="num tien">{{s.TotalAfterDiscountText}}</td>
-                          <td class="num tien">{{s.TaxText}}</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-
-                  <div class="no-break-page">
-                    <!-- <table cellpadding="0" cellspacing="0">
-                                        <tbody>
-                                            <tr>
-                                                <td class="">
-                                                    <div class="line2">
-                                                        Đề nghị các bên vui lòng kiểm tra kỹ chứng từ &amp; hàng hóa trước khi rời kho. <br>
-                                                        Mọi khiếu nại về sau, NPP sẽ không chịu trách nhiệm giải quyết.
-                                                    </div>
-
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table> -->
-
-                    <table class="chu-ky" cellpadding="0" cellspacing="0">
-                      <tbody>
-                        <tr>
-                          <td>
-                            {{'Preparer' | translate}}
-                            <div class="line2">{{'Sign and write full name' | translate}}</div>
-                          </td>
-                          <td>
-                            {{'Chief accountant' | translate}}
-                            <div class="line2">{{'Sign and write full name' | translate}}</div>
-                          </td>
-                          <td>
-                            {{'General Director' | translate}}
-                            <div class="line2">{{'Sign and write full name' | translate}}</div>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-
-          <tfoot>
-            <tr>
-              <td>
-                <div class="page-footer-space"></div>
-              </td>
-            </tr>
-          </tfoot>
-        </table>
-      </section>
-    </ng-container>
   </div>
 </ion-content>
