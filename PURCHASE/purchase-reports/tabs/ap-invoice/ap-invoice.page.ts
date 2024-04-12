@@ -49,7 +49,7 @@ export class ApInvoicePage extends PageBase {
         IDBuyer: data.buyer?.Id
       };
 
-      if (data._cmd == 'exportSaleProductReport') {
+      if (data._cmd == 'ExportPurchaseOutletReport') {
         this.exportApInvoiceReport();
       } else if (data._cmd == 'runReport') {
         this.readApInvoiceReport();
@@ -110,7 +110,7 @@ export class ApInvoicePage extends PageBase {
             this.submitAttempt = false;
             if (loading) loading.dismiss();
             this.buildBranchesReport(resp);
-            this.buildSheets(resp);
+            // this.buildSheets(resp);
             super.loadedData();
           })
           .catch((err) => {
@@ -136,6 +136,7 @@ export class ApInvoicePage extends PageBase {
         warehouse = {
           Id: r.IDBranch,
           Name: r.BranchName,
+          BranchLogoURL : r.BranchLogoURL,
           count: 1,
           salemans: [],
           itemList: [],
@@ -147,117 +148,112 @@ export class ApInvoicePage extends PageBase {
         this.warehouses.push(warehouse);
       }
 
-      let saleitem = warehouse.itemList.find((d) => d.IDSeller == r.IDSeller);
+      let saleitem = warehouse.itemList.find((d) => d.IDBranch == r.IDBranch && d.InvoiceNo == r.InvoiceNo);
       if (!saleitem) {
         saleitem = {
+          IDBranch : r.IDBranch,
           IDContact: r.IDSeller,
-          SellerTaxCode: r.SellerTaxCode,
+          // SellerTaxCode: r.SellerTaxCode,
           SellerName: r.SellerName,
-          WorkPhone: r.WorkPhone,
           InvoiceNo: r.InvoiceNo,
           InvoiceDateText: lib.dateFormat(r.InvoiceDate, 'dd/mm/yyyy'),
-          TotalBeforeDiscount: 0.0,
-          TotalDiscount: 0.0,
-          TotalAfterDiscount: 0.0,
-          Tax: 0,
+          TotalDiscount:lib.currencyFormat(r.TotalDiscount),
+          TotalBeforeDiscount: lib.currencyFormat(r.TotalBeforeDiscount),
+          Tax: lib.currencyFormat(r.Tax),
           Remark: r.Remark,
         };
         warehouse.itemList.push(saleitem);
       }
 
-      saleitem.TotalBeforeDiscount += r.TotalBeforeDiscount;
-      saleitem.TotalDiscount += r.TotalDiscount;
-      saleitem.TotalAfterDiscount += r.TotalAfterDiscount;
-      saleitem.Tax += r.Tax;
-
-      saleitem.TotalBeforeDiscountText = lib.currencyFormat(saleitem.TotalBeforeDiscount);
-      saleitem.TotalDiscountText = lib.currencyFormat(saleitem.TotalDiscount);
-      saleitem.TotalAfterDiscountText = lib.currencyFormat(saleitem.TotalAfterDiscount);
-      saleitem.TaxText = lib.currencyFormat(saleitem.Tax);
-
       warehouse.TotalBeforeDiscount += r.TotalBeforeDiscount;
       warehouse.TotalDiscount += r.TotalDiscount;
-      warehouse.TotalAfterDiscount += r.TotalAfterDiscount;
       warehouse.Tax += r.Tax;
+      // warehouse.TotalAfterDiscount += r.TotalAfterDiscount;
     }
-    this.warehouses.forEach((w) => {
-      w.TotalBeforeDiscountText = lib.currencyFormat(w.TotalBeforeDiscount);
-      w.TotalDiscountText = lib.currencyFormat(w.TotalDiscount);
-      w.TotalAfterDiscountText = lib.currencyFormat(w.TotalAfterDiscount);
-      w.TaxText = lib.currencyFormat(w.Tax);
-      w.itemList.sort((a, b) => parseFloat(b.TotalAfterDiscount) - parseFloat(a.TotalAfterDiscount));
-    });
+    this.warehouses.forEach(w=>{
+      w.TotalBeforeDiscount = lib.currencyFormat(w.TotalBeforeDiscount);
+      w.TotalDiscount =lib.currencyFormat(w.TotalDiscount);
+      w.Tax = lib.currencyFormat(w.Tax);
+      // w.TotalAfterDiscount = lib.currencyFormatlib(w.TotalAfterDiscount);
+    })
+    // this.warehouses.forEach((w) => {
+    //   w.TotalBeforeDiscountText = lib.currencyFormat(w.TotalBeforeDiscount);
+    //   w.TotalDiscountText = lib.currencyFormat(w.TotalDiscount);
+    //   w.TotalAfterDiscountText = lib.currencyFormat(w.TotalAfterDiscount);
+    //   w.TaxText = lib.currencyFormat(w.Tax);
+    //   w.itemList.sort((a, b) => parseFloat(b.TotalAfterDiscount) - parseFloat(a.TotalAfterDiscount));
+    // });
   }
 
-  buildSheets(resp) {
-    this.items = [];
-    for (let i = 0; i < resp.length; i++) {
-      const r = resp[i];
+  // buildSheets(resp) {
+  //   this.items = [];
+  //   for (let i = 0; i < resp.length; i++) {
+  //     const r = resp[i];
 
-      let warehouse = this.items.find((d) => d.Id == r.IDBranch);
-      if (!warehouse) {
-        warehouse = {
-          Id: r.IDBranch,
-          Name: r.BranchName,
-          salemans: [],
-        };
-        this.items.push(warehouse);
-      }
+  //     let warehouse = this.items.find((d) => d.Id == r.IDBranch);
+  //     if (!warehouse) {
+  //       warehouse = {
+  //         Id: r.IDBranch,
+  //         Name: r.BranchName,
+  //         salemans: [],
+  //       };
+  //       this.items.push(warehouse);
+  //     }
 
-      let saleman = warehouse.salemans.find((d) => d.IDBuyer == r.IDBuyer);
-      if (!saleman) {
-        saleman = {
-          IDSaleman: r.IDBuyer,
-          FullName: r.FullName,
-          itemList: [],
-          TotalBeforeDiscount: 0,
-          TotalDiscount: 0,
-          TotalAfterDiscount: 0,
-          Tax: 0,
-        };
-        warehouse.salemans.push(saleman);
-      }
+  //     let saleman = warehouse.salemans.find((d) => d.IDBuyer == r.IDBuyer);
+  //     if (!saleman) {
+  //       saleman = {
+  //         IDSaleman: r.IDBuyer,
+  //         FullName: r.FullName,
+  //         itemList: [],
+  //         TotalBeforeDiscount: 0,
+  //         TotalDiscount: 0,
+  //         TotalAfterDiscount: 0,
+  //         Tax: 0,
+  //       };
+  //       warehouse.salemans.push(saleman);
+  //     }
 
-      let saleitem = saleman.itemList.find((d) => d.IDSeller == r.IDSeller);
-      if (!saleitem) {
-        saleitem = {
-          IDContact: r.IDSeller,
-          SellerTaxCode: r.SellerTaxCode,
-          ContactName: r.SellerName,
-          WorkPhone: r.WorkPhone,
-          TotalBeforeDiscount: 0.0,
-          TotalDiscount: 0.0,
-          TotalAfterDiscount: 0.0,
-          Tax: 0.0,
-        };
-        saleman.itemList.push(saleitem);
-      }
+  //     let saleitem = saleman.itemList.find((d) => d.IDSeller == r.IDSeller);
+  //     if (!saleitem) {
+  //       saleitem = {
+  //         IDContact: r.IDSeller,
+  //         SellerTaxCode: r.SellerTaxCode,
+  //         ContactName: r.SellerName,
+  //         WorkPhone: r.WorkPhone,
+  //         TotalBeforeDiscount: 0.0,
+  //         TotalDiscount: 0.0,
+  //         TotalAfterDiscount: 0.0,
+  //         Tax: 0.0,
+  //       };
+  //       saleman.itemList.push(saleitem);
+  //     }
 
-      saleitem.TotalBeforeDiscount += r.TotalBeforeDiscount;
-      saleitem.TotalDiscount += r.TotalDiscount;
-      saleitem.TotalAfterDiscount += r.TotalAfterDiscount;
-      saleitem.Tax += r.Tax;
+  //     saleitem.TotalBeforeDiscount += r.TotalBeforeDiscount;
+  //     saleitem.TotalDiscount += r.TotalDiscount;
+  //     saleitem.TotalAfterDiscount += r.TotalAfterDiscount;
+  //     saleitem.Tax += r.Tax;
 
-      saleitem.TotalBeforeDiscountText = lib.currencyFormat(saleitem.TotalBeforeDiscount);
-      saleitem.TotalDiscountText = lib.currencyFormat(saleitem.TotalDiscount);
-      saleitem.TotalAfterDiscountText = lib.currencyFormat(saleitem.TotalAfterDiscount);
-      saleitem.TaxText = lib.currencyFormat(saleitem.Tax);
+  //     saleitem.TotalBeforeDiscountText = lib.currencyFormat(saleitem.TotalBeforeDiscount);
+  //     saleitem.TotalDiscountText = lib.currencyFormat(saleitem.TotalDiscount);
+  //     saleitem.TotalAfterDiscountText = lib.currencyFormat(saleitem.TotalAfterDiscount);
+  //     saleitem.TaxText = lib.currencyFormat(saleitem.Tax);
 
-      saleman.TotalBeforeDiscount += r.TotalBeforeDiscount;
-      saleman.TotalDiscount += r.TotalDiscount;
-      saleman.TotalAfterDiscount += r.TotalAfterDiscount;
-      saleman.Tax += r.Tax;
-    }
+  //     saleman.TotalBeforeDiscount += r.TotalBeforeDiscount;
+  //     saleman.TotalDiscount += r.TotalDiscount;
+  //     saleman.TotalAfterDiscount += r.TotalAfterDiscount;
+  //     saleman.Tax += r.Tax;
+  //   }
 
-    this.items.forEach((s) => {
-      s.salemans.forEach((i) => {
-        i.TotalBeforeDiscountText = lib.currencyFormat(i.TotalBeforeDiscount);
-        i.TotalDiscountText = lib.currencyFormat(i.TotalDiscount);
-        i.TotalAfterDiscountText = lib.currencyFormat(i.TotalAfterDiscount);
-        i.TaxText = lib.currencyFormat(i.Tax);
-      });
-    });
-  }
+  //   this.items.forEach((s) => {
+  //     s.salemans.forEach((i) => {
+  //       i.TotalBeforeDiscountText = lib.currencyFormat(i.TotalBeforeDiscount);
+  //       i.TotalDiscountText = lib.currencyFormat(i.TotalDiscount);
+  //       i.TotalAfterDiscountText = lib.currencyFormat(i.TotalAfterDiscount);
+  //       i.TaxText = lib.currencyFormat(i.Tax);
+  //     });
+  //   });
+  // }
 
   exportApInvoiceReport() {
     let apiPath = {
