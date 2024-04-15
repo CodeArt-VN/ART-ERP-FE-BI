@@ -159,7 +159,7 @@ export class DynamicReportDetailPage extends PageBase {
     );
   }
 
-  onExportReport(){
+  onExportData(){
     if(this.items && this.items.length>0){
       // Create CSV content with BOM
       let csvContent = "\uFEFF"; // Byte Order Mark (BOM) for UTF-8
