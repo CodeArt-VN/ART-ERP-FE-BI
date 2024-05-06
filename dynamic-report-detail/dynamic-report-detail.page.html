@@ -103,25 +103,42 @@
     </div>
   </div>
 
-  <div style="max-width: 1440px; margin: auto; width: 100%; position: relative; z-index: 0" *ngIf="item && !treeConfig.isLoading">
+  <div
+    style="max-width: 1440px; margin: auto; width: 100%; position: relative; z-index: 0"
+    *ngIf="item && !treeConfig.isLoading"
+  >
     <app-data-table
       style="width: fit-content; min-width: calc(100% - 32px)"
       [rows]="items"
       [isQueryLocalOnly]="true"
+      [query]="query"
+      [isTreeList]="treeConfig.isTreeList"
       [trackBy]="'Count'"
       [(selectedRows)]="selectedItems"
+      [showFilter]="pageConfig.showFilter"
       [showSpinner]="pageConfig.showSpinner"
       class="box-shadow ion-margin-horizontal"
       (activate)="onActive($event)"
     >
       <datatable-column [checkbox]="true" name=""></datatable-column>
       <datatable-column class="col-id" name="#"></datatable-column>
+      <!-- <datatable-column
+          class="col-name"
+          name="levelSort"
+          [property]="levelSort" 
+        ></datatable-column>
+        <datatable-column
+          class="col-name"
+          name="cSort"
+          [property]="cSort" 
+        ></datatable-column> -->
+
       <ng-container *ngFor="let c of item.DataConfig?.CompareBy">
         <datatable-column
           class="col-name"
           [sticky]="true"
           name="{{c.Title || c.Property}}"
-          [property]="c.Property"
+          [property]="c.Title || c.Property"
           *ngIf="(!treeConfig.isTreeList || c.Property != treeConfig.treeColumn) && treeConfig.excludes.indexOf(c.Property) == -1"
         ></datatable-column>
 
@@ -129,9 +146,17 @@
           class="col-name"
           [sticky]="true"
           name="{{c.Title || c.Property}}"
-          [property]="c.Property"
+          [property]="c.Title || c.Property"
           *ngIf="treeConfig.isTreeList && c.Property == treeConfig.treeColumn"
         >
+          <ng-template datatable-header-template>
+            <ion-icon
+              class="min-btn"
+              [name]="!isAllRowOpened? 'add-circle-outline':'remove-circle-outline'"
+              (click)="toggleRowAll()"
+            ></ion-icon>
+            <span (click)="toggleRowAll()">{{c.Title || c.Property | translate}}</span>
+          </ng-template>
           <ng-template let-i="row" datatable-cell-template>
             <ng-container *ngFor="let w of i.levels; let k = index;"
               ><span class="spacing" *ngIf="k>0"></span
@@ -143,8 +168,10 @@
               *ngIf="i.HasChild"
             ></ion-icon>
             <ion-icon class="min-btn clickable" [name]="''" *ngIf="!i.HasChild"></ion-icon>
-            
-            <ion-text class="clickable" (click)="showModal(i)" [color]="i.Color">{{i[c.Property]}}</ion-text>
+
+            <ion-text class="clickable" [ngClass]="i.HasChild? ('bold ') : ('')" [color]="i.Color"
+              >{{i[c.Property]}}</ion-text
+            >
           </ng-template>
         </datatable-column>
       </ng-container>
@@ -155,15 +182,34 @@
         [name]="item.DataConfig?.Interval?.Title || item.DataConfig?.Interval?.Property"
         [property]="item.DataConfig?.Interval?.Title || item.DataConfig?.Interval?.Property"
       ></datatable-column>
-      <datatable-column
-        class="col-money"
-        [class]="viewDimension == (m.Title || m.Property) ? 'selected':'' "
-        name="{{(m.Title || m.Property)}}"
-        [property]="m.Title || m.Property"
-        *ngFor="let m of item.DataConfig?.MeasureBy"
-      >
-        <ng-template let-value="value" datatable-cell-template> {{ value | number}} </ng-template>
-      </datatable-column>
+
+      <ng-container *ngFor="let m of item.DataConfig?.MeasureBy">
+        <datatable-column
+          class="col-money"
+          [class]="viewDimension == (m.Title || m.Property) ? 'selected':'' "
+          name="{{(m.Title || m.Property)}}"
+          [property]="m.Title || m.Property"
+        >
+          <ng-template let-value="value" datatable-cell-template>{{ value | number: '1.0-0'}}</ng-template>
+        </datatable-column>
+
+        <datatable-column
+          [canFilter]="false"
+          class="col-money"
+          [class]="viewDimension == (m.Title || m.Property) ? 'selected':'' "
+          name="{{ 'Prev ' + (m.Title || m.Property)}}"
+          [property]="'Prev ' + (m.Title || m.Property)"
+          *ngIf="showComparitionData"
+        >
+          <ng-template let-i="row" datatable-cell-template>
+            <ion-text [color]="i['Percent ' + (m.Title || m.Property)] > 0 ? 'success' : 'danger'">
+              <small> {{ i['Percent ' + (m.Title || m.Property)] | number: '1.0-0'}}%</small>
+            </ion-text>
+            {{ i['Prev ' + (m.Title || m.Property)] | number: '1.0-0'}}
+          </ng-template>
+        </datatable-column>
+      </ng-container>
+
       <datatable-column class="col-remark" name=""></datatable-column>
     </app-data-table>
   </div>
