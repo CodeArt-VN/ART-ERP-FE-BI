@@ -154,8 +154,10 @@ export class DynamicReportDetailPage extends PageBase {
       data = [...resp.data];
     }
 
-    if (resp.ComparitionData || this.comparitionData.length > 0) {
-      if (resp.ComparitionData) this.comparitionData = [...resp.ComparitionData];
+    if (resp.ComparitionData || resp.comparitionData || this.comparitionData.length > 0) {
+      let comparitionData = resp.comparitionData || resp.ComparitionData;
+
+      if (comparitionData) this.comparitionData = [...comparitionData];
 
       let keys = this.item.DataConfig.CompareBy.map((m) => m.Title || m.Property);
       let interval = this.item.DataConfig.Interval?.Title || this.item.DataConfig.Interval?.Property;
@@ -169,39 +171,41 @@ export class DynamicReportDetailPage extends PageBase {
       );
       let timeSpan = startDate.getTime() - startCompareDate.getTime();
 
-      if (!interval) {
-        for (let item of data) {
-           //Find comparition data from comparitionData
-           let compareItem = this.comparitionData.find((m) => {
-            let isMatch = true;
-            for (let k of keys) {
-              if (item[k] != m[k]) {
-                isMatch = false;
-                break;
-              }
-            }
-            return isMatch;
-          });
-
-          
-          for (let m of measures) {
-            item['Prev ' + m] = compareItem? (compareItem[m] || 0) : 0;
+      for (let item of data) {
+        //Find comparition data from comparitionData
+        let compareItem = this.comparitionData.find((c) => {
+          if (interval) {
+            let d1 = new Date(item[interval]);
+            let d2 = new Date(c[interval]);
+            if (d1 && d2 && (d1.getTime() - timeSpan) != d2.getTime()) return false;
           }
-        }
-        
-        if (this.treeConfig.isTreeList) {
-          lib.sumTreeListByParentId(
-            data,
-            measures.map((m) => 'Prev ' + m),
-          );
-        }
-        for (let item of data)
-          for (let m of measures) 
-            item['Percent ' + m] = item['Prev ' + m]? (item[m] - item['Prev ' + m])*100 /item['Prev ' + m] : 100;
-        
 
-        this.showComparitionData = true;
+          let isMatch = true;
+          for (let k of keys) {
+            if (item[k] != c[k]) {
+              isMatch = false;
+              break;
+            }
+          }
+          return isMatch;
+        });
+
+        for (let m of measures) {
+          item['Prev ' + m] = compareItem ? compareItem[m] || 0 : 0;
+        }
       }
+
+      if (this.treeConfig.isTreeList) {
+        lib.sumTreeListByParentId(
+          data,
+          measures.map((m) => 'Prev ' + m),
+        );
+      }
+      for (let item of data)
+        for (let m of measures)
+          item['Percent ' + m] = item['Prev ' + m] ? ((item[m] - item['Prev ' + m]) * 100) / item['Prev ' + m] : 0;
+
+      this.showComparitionData = true;
 
       // for (let i of comparitionData) {
       //   //i[interval] = new Date(new Date(i[interval]).getTime() + timeSpan);
@@ -235,7 +239,6 @@ export class DynamicReportDetailPage extends PageBase {
     }
 
     this.items = data;
-    console.log(this.items);
   }
 
   runTestData: any = null;
@@ -446,8 +449,6 @@ export class DynamicReportDetailPage extends PageBase {
     excludes: [],
   };
   onDataChange(e) {
-    console.log(e);
-
     if (e.isTreeList) {
       this.treeConfig.isTreeList = true;
       this.treeConfig.treeColumn = e.treeColumn;

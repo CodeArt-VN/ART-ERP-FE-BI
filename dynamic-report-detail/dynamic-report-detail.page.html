@@ -194,7 +194,6 @@
         </datatable-column>
 
         <datatable-column
-          [canFilter]="false"
           class="col-money"
           [class]="viewDimension == (m.Title || m.Property) ? 'selected':'' "
           name="{{ 'Prev ' + (m.Title || m.Property)}}"
@@ -202,10 +201,21 @@
           *ngIf="showComparitionData"
         >
           <ng-template let-i="row" datatable-cell-template>
-            <ion-text [color]="i['Percent ' + (m.Title || m.Property)] > 0 ? 'success' : 'danger'">
-              <small> {{ i['Percent ' + (m.Title || m.Property)] | number: '1.0-0'}}%</small>
-            </ion-text>
             {{ i['Prev ' + (m.Title || m.Property)] | number: '1.0-0'}}
+          </ng-template>
+        </datatable-column>
+        <datatable-column
+          class="col-id"
+          [class]="viewDimension == (m.Title || m.Property) ? 'selected':'' "
+          name="%"
+          [property]="'Percent ' + (m.Title || m.Property)"
+          *ngIf="showComparitionData"
+        >
+          <ng-template let-i="row" datatable-cell-template>
+            <ion-text [color]="i['Percent ' + (m.Title || m.Property)] > 0 ? 'success' : i['Percent ' + (m.Title || m.Property)] < 0 ? 'danger' : 'warning'">
+              {{ i['Percent ' + (m.Title || m.Property)] | number: '1.0-0'}}%
+              <ion-icon [name]="i['Percent ' + (m.Title || m.Property)] > 0 ? 'caret-up' : i['Percent ' + (m.Title || m.Property)] < 0 ? 'caret-down' : 'warning'"></ion-icon>
+            </ion-text>
           </ng-template>
         </datatable-column>
       </ng-container>
