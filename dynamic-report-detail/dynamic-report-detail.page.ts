@@ -156,11 +156,16 @@ export class DynamicReportDetailPage extends PageBase {
 
     if (resp.ComparitionData || resp.comparitionData || this.comparitionData.length > 0) {
       let comparitionData = resp.comparitionData || resp.ComparitionData;
+      let comparedData = [];
 
       if (comparitionData) this.comparitionData = [...comparitionData];
 
       let keys = this.item.DataConfig.CompareBy.map((m) => m.Title || m.Property);
       let interval = this.item.DataConfig.Interval?.Title || this.item.DataConfig.Interval?.Property;
+      let intervalType = this.item.DataConfig.Interval.Type;
+      if (intervalType == 'Week' || intervalType == 'Month' || intervalType == 'Quater' || intervalType == 'Year')
+        return;
+
       let measures = this.item.DataConfig.MeasureBy.map((m) => m.Title || m.Property);
 
       let startDate: Date = this.pageProvider.calcTimeValue(this.item.DataConfig.TimeFrame.From);
@@ -174,10 +179,19 @@ export class DynamicReportDetailPage extends PageBase {
       for (let item of data) {
         //Find comparition data from comparitionData
         let compareItem = this.comparitionData.find((c) => {
-          if (interval) {
+          if (intervalType == 'Hour' || intervalType == 'Day') {
             let d1 = new Date(item[interval]);
             let d2 = new Date(c[interval]);
-            if (d1 && d2 && (d1.getTime() - timeSpan) != d2.getTime()) return false;
+            if (d1 && d2 && d1.getTime() - timeSpan != d2.getTime()) return false;
+          } else if (intervalType == 'HourOfDay' || intervalType == 'DayOfWeek') {
+            if (item[interval] != c[interval]) return false;
+          } else if (
+            intervalType == 'Week' ||
+            intervalType == 'Month' ||
+            intervalType == 'Quater' ||
+            intervalType == 'Year'
+          ) {
+            return false;
           }
 
           let isMatch = true;
@@ -191,8 +205,24 @@ export class DynamicReportDetailPage extends PageBase {
         });
 
         for (let m of measures) {
-          item['Prev ' + m] = compareItem ? compareItem[m] || 0 : 0;
+          item['Prev ' + m] = compareItem ? compareItem[m] || 0 : null;
         }
+
+        if (compareItem) comparedData.push(compareItem);
+      }
+
+      //Add not compared data to data
+      for (let c of this.comparitionData
+        .filter((d) => !comparedData.includes(d))
+        .map((m) => {
+          let rs = m;
+          for (let m of measures) {
+            rs['Prev ' + m] = rs[m];
+            rs[m] = null;
+          }
+          return rs;
+        })) {
+        data.push(c);
       }
 
       if (this.treeConfig.isTreeList) {
