@@ -2,12 +2,12 @@ gridster {
   background-color: transparent;
 
   ::ng-deep .gridster-column {
-    border-left: 1px solid var(--menu-right-border-color);
-    border-right: 1px solid var(--menu-right-border-color);
+    border-left: 1px solid  rgba(var(--ion-color-primary-rgb, 0, 0, 0), 0.2);
+    border-right: 1px solid rgba(var(--ion-color-primary-rgb, 0, 0, 0), 0.2);
   }
   ::ng-deep .gridster-row {
-    border-top: 1px solid var(--menu-right-border-color);
-    border-bottom: 1px solid var(--menu-right-border-color);
+    border-top: 1px solid rgba(var(--ion-color-primary-rgb, 0, 0, 0), 0.2);
+    border-bottom: 1px solid rgba(var(--ion-color-primary-rgb, 0, 0, 0), 0.2);
   }
 
   gridster-item {

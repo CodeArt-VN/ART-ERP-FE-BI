@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, Type, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { AlertController, LoadingController, ModalController, NavController, PopoverController } from '@ionic/angular';
 import { BIReport } from 'src/app/models/options-interface';
@@ -103,6 +103,16 @@ export class DynamicDashboardDetailPage extends PageBase {
 
   loadedData(event?: any, ignoredFromGroup?: boolean): void {
     if (this.item?.Id) {
+      // Grid size config
+      // this.item.Config = {
+      //   Layout: [
+      //     { Breakpoint: 'sm', BreakWidth: 576, Cols: 12, Active: true, RowHeight: 340 },
+      //     { Breakpoint: 'md', BreakWidth: 768, Cols: 12, Active: true, RowHeight: 340 },
+      //     { Breakpoint: 'lg', BreakWidth: 992, Cols: 12, Active: true, RowHeight: 340 },
+      //     { Breakpoint: 'xl', BreakWidth: 1200, Cols: 12, Active: true, RowHeight: 340 },
+      //   ],
+      // };
+
       this.options = {
         itemChangeCallback: this.itemChange.bind(this),
         //initCallback: DynamicDashboardDetailPage.initCallback,
@@ -141,19 +151,38 @@ export class DynamicDashboardDetailPage extends PageBase {
           if (resp) {
             this.items = resp['data'].map((i) => {
               return {
+                // Calculated properties from layout and dashboard element width
                 x: i.X,
                 y: i.Y,
                 cols: i.Cols,
                 rows: i.Rows,
+
+                // Other properties
                 IDReport: i.IDReport,
                 Id: i.Id,
                 Type: i.Type,
                 IDDashboard: i.IDDashboard,
+
+                // Widget Config
+                Config: {
+                  Type: 'Chart', //Chart, Table, SummaryCard
+                  ChartDimension: 'OriginalTotalAfterTax', //Data to draw chart
+                  SummaryCards: ['Count', 'OriginalTotalAfterTax', 'TotalAfterTax'], //Show statistics
+
+                  // Layout config
+                  Layout: {
+                    sm: { x: 0, y: 0, cols: 1, rows: 1 },
+                    md: { x: 0, y: 0, cols: 1, rows: 1 },
+                    lg: { x: 0, y: 0, cols: 1, rows: 1 },
+                    xl: { x: 0, y: 0, cols: 1, rows: 1 },
+                  },
+                },
+
               };
             });
           }
 
-          //this.items[0].WidgetConfig= { ViewDimension: 'OriginalTotalAfterTax', Statistics_: ['Count', 'OriginalTotalAfterTax', 'TotalAfterTax']},
+          //this.items[0].Config= { ViewDimension: 'OriginalTotalAfterTax', Statistics_: ['Count', 'OriginalTotalAfterTax', 'TotalAfterTax']},
 
           super.loadedData(event, ignoredFromGroup);
         })
