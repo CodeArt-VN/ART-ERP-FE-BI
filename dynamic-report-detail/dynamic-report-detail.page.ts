@@ -143,6 +143,19 @@ export class DynamicReportDetailPage extends PageBase {
   }
 
   loadItems(resp) {
+
+    if (resp.isTreeList) {
+      this.treeConfig.isTreeList = true;
+      this.treeConfig.treeColumn = resp.treeColumn;
+      this.treeConfig.excludes = resp.excludes || [];
+    }
+    else {
+      this.treeConfig.isTreeList = false;
+      this.treeConfig.treeColumn = '';
+      this.treeConfig.excludes = [];
+    }
+
+
     let data: any[] = [];
 
     if (!resp) return;
@@ -155,7 +168,7 @@ export class DynamicReportDetailPage extends PageBase {
     }
 
     if (resp.ComparitionData || resp.comparitionData || this.comparitionData.length > 0) {
-      let comparitionData = resp.comparitionData || resp.ComparitionData;
+      let comparitionData = JSON.parse(JSON.stringify(resp.comparitionData || resp.ComparitionData));
       let comparedData = [];
 
       if (comparitionData) this.comparitionData = [...comparitionData];
@@ -230,7 +243,9 @@ export class DynamicReportDetailPage extends PageBase {
           data,
           measures.map((m) => 'Prev ' + m),
         );
+     
       }
+
       for (let item of data)
         for (let m of measures)
           item['Percent ' + m] = item['Prev ' + m] ? ((item[m] - item['Prev ' + m]) * 100) / item['Prev ' + m] : 0;
@@ -268,7 +283,7 @@ export class DynamicReportDetailPage extends PageBase {
       // console.log(keysValue);
     }
 
-    this.items = data;
+    this.items = [...data];
   }
 
   runTestData: any = null;
@@ -378,8 +393,6 @@ export class DynamicReportDetailPage extends PageBase {
   }
 
   onChartClick(e) {
-    console.log(e);
-
     //switch on series type
     switch (e.seriesType) {
       case 'bar':
@@ -460,7 +473,7 @@ export class DynamicReportDetailPage extends PageBase {
   openParents(item) {
     return new Promise((resolve) => {
       let parent = this.items.find((d) => d.Id == item.IDParent);
-      if (parent) {
+      if (parent && item.IDParent!= null) {
         parent.showdetail = false;
         this.toggleRow(this.items, parent, true);
         this.openParents(parent).then(() => {
@@ -479,14 +492,7 @@ export class DynamicReportDetailPage extends PageBase {
     excludes: [],
   };
   onDataChange(e) {
-    if (e.isTreeList) {
-      this.treeConfig.isTreeList = true;
-      this.treeConfig.treeColumn = e.treeColumn;
-      this.treeConfig.excludes = e.excludes || [];
-    }
-
     this.loadItems(e);
-
     this.treeConfig.isLoading = true;
     setTimeout(() => {
       this.treeConfig.isLoading = false;
