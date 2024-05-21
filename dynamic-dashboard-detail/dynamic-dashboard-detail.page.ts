@@ -163,26 +163,25 @@ export class DynamicDashboardDetailPage extends PageBase {
                 Type: i.Type,
                 IDDashboard: i.IDDashboard,
 
-                // Widget Config
-                Config: {
-                  Type: 'Chart', //Chart, Table, SummaryCard
-                  ChartDimension: 'OriginalTotalAfterTax', //Data to draw chart
-                  SummaryCards: ['Count', 'OriginalTotalAfterTax', 'TotalAfterTax'], //Show statistics
+                Config:
+                  i.Config == null
+                    ? {
+                        Type: 'Chart', //Chart, Data table, Summary card
+                        ChartDimension: '', //Data to draw chart
+                        SummaryCards: [], //Show statistics
 
-                  // Layout config
-                  Layout: {
-                    sm: { x: 0, y: 0, cols: 1, rows: 1 },
-                    md: { x: 0, y: 0, cols: 1, rows: 1 },
-                    lg: { x: 0, y: 0, cols: 1, rows: 1 },
-                    xl: { x: 0, y: 0, cols: 1, rows: 1 },
-                  },
-                },
-
+                        Layout: {
+                          // Layout config
+                          sm: { x: 0, y: 0, cols: 1, rows: 1 },
+                          md: { x: 0, y: 0, cols: 1, rows: 1 },
+                          lg: { x: 0, y: 0, cols: 1, rows: 1 },
+                          xl: { x: 0, y: 0, cols: 1, rows: 1 },
+                        },
+                      }
+                    : JSON.parse(i.Config),
               };
             });
           }
-
-          //this.items[0].Config= { ViewDimension: 'OriginalTotalAfterTax', Statistics_: ['Count', 'OriginalTotalAfterTax', 'TotalAfterTax']},
 
           super.loadedData(event, ignoredFromGroup);
         })
@@ -236,7 +235,7 @@ export class DynamicDashboardDetailPage extends PageBase {
    * @param item Report item
    * @param itemComponent The component
    */
-  itemChange(item, itemComponent) {
+  itemChange(item) {
     if (this.options.draggable.enabled || item.Id == 0) {
       let widget = {
         Id: item.Id,
@@ -249,21 +248,40 @@ export class DynamicDashboardDetailPage extends PageBase {
         IDDashboard: this.item.Id,
       };
 
+      this.saveWidgetConfig(widget).then((resp) => {
+        if (item.Id == 0) {
+          item.Id = resp['Id'];
+        }
+      });
+    }
+  }
+
+  onWidgetConfigChange(item) {
+    let dtoItem = {
+      Id: item.Id,
+      IDDashboard: this.item.Id,
+      Config: JSON.stringify(item.Config),
+    };
+    this.saveWidgetConfig(dtoItem).then((resp) => {
+      console.log(resp);
+    });
+  }
+
+  //Promise to save widget config
+  saveWidgetConfig(item) {
+    return new Promise((resolve, reject) => {
       this.dashboardDetailProvider
-        .save(widget)
+        .save(item)
         .then((resp) => {
-          if (item.Id == 0) {
-            item.Id = resp['Id'];
-          }
           this.env.showTranslateMessage('Saving completed!', 'success');
+          resolve(resp);
         })
         .catch((err) => {
-          console.log(err);
           this.env.showTranslateMessage('Cannot save, please try again', 'danger');
+          console.log(err);
+          reject(err);
         });
-    }
-
-    //console.info('itemChanged', item, itemComponent);
+    });
   }
 
   static initCallback(ev) {

@@ -124,6 +124,7 @@
         [gridItem]="i"
         (delete)="removeItem(i)"
         (openReport)="onOpenReport($event)"
+        (widgetConfigChange)="onWidgetConfigChange($event)"
       ></app-report-chart>
     </gridster-item>
   </gridster>
