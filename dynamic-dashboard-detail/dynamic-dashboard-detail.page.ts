@@ -6,24 +6,10 @@ import { PageBase } from 'src/app/page-base';
 import { EnvService } from 'src/app/services/core/env.service';
 import { ReportService } from 'src/app/services/report.service';
 
-import { IonSearchbar } from '@ionic/angular';
-import {
-  DisplayGrid,
-  Draggable,
-  GridType,
-  GridsterConfig,
-  GridsterItem,
-  PushDirections,
-  Resizable,
-} from 'angular-gridster2';
-import { BI_DashboardDetailProvider, BI_DashboardProvider } from 'src/app/services/static/services.service';
 import { ActivatedRoute } from '@angular/router';
-
-interface Safe extends GridsterConfig {
-  draggable: Draggable;
-  resizable: Resizable;
-  pushDirections: PushDirections;
-}
+import { IonSearchbar } from '@ionic/angular';
+import { DisplayGrid, GridType, GridsterItem } from 'angular-gridster2';
+import { BI_DashboardDetailProvider, BI_DashboardProvider } from 'src/app/services/static/services.service';
 
 @Component({
   selector: 'app-dynamic-dashboard-detail',
@@ -33,7 +19,7 @@ interface Safe extends GridsterConfig {
 export class DynamicDashboardDetailPage extends PageBase {
   code = '';
   @ViewChild('reportSearch') searchBar: IonSearchbar;
-  options: Safe;
+  options: any;
   items: Array<GridsterItem>;
   isAddReportModalOpen = false;
 
@@ -102,48 +88,23 @@ export class DynamicDashboardDetailPage extends PageBase {
   }
 
   loadedData(event?: any, ignoredFromGroup?: boolean): void {
+    this.segmentView = null;
     if (this.item?.Id) {
-      // Grid size config
-      // this.item.Config = {
-      //   Layout: [
-      //     { Breakpoint: 'sm', BreakWidth: 576, Cols: 12, Active: true, RowHeight: 340 },
-      //     { Breakpoint: 'md', BreakWidth: 768, Cols: 12, Active: true, RowHeight: 340 },
-      //     { Breakpoint: 'lg', BreakWidth: 992, Cols: 12, Active: true, RowHeight: 340 },
-      //     { Breakpoint: 'xl', BreakWidth: 1200, Cols: 12, Active: true, RowHeight: 340 },
-      //   ],
-      // };
+      //Grid size config
 
-      this.options = {
-        itemChangeCallback: this.itemChange.bind(this),
-        //initCallback: DynamicDashboardDetailPage.initCallback,
-
-        displayGrid: DisplayGrid.None,
-        margin: 16,
-        mobileBreakpoint: 640,
-        gridType: GridType.VerticalFixed,
-        fixedRowHeight: 340, //162,
-        keepFixedHeightInMobile: true,
-        setGridSize: true,
-        scrollToNewItems: true,
-        disableWindowResize: true,
-
-        //enableBoundaryControl: true,
-        draggable: { enabled: false },
-        resizable: { enabled: false },
-        pushItems: true,
-        pushDirections: {
-          north: true,
-          east: true,
-          south: true,
-          west: true,
-        },
-        swap: true,
-
-        minCols: this.item.MinCols,
-        maxCols: this.item.MaxCols,
-        minRows: this.item.MinRows,
-        maxRows: this.item.MaxRows,
-      };
+      if (!this.item.Config) {
+        this.item.Config = {
+          Layout: [
+            { Code: 'xs', Name: 'Mobile S', Value: 320, Cols: 2, Active: true, RowHeight: 380 },
+            { Code: 'sm', Name: 'Mobile L', Value: 576, Cols: 4, Active: true, RowHeight: 380 },
+            { Code: 'md', Name: 'Tablet', Value: 768, Cols: 6, Active: true, RowHeight: 380 },
+            { Code: 'lg', Name: 'Laptop', Value: 992, Cols: 8, Active: true, RowHeight: 380 },
+            { Code: 'xl', Name: 'Desktop', Value: 1200, Cols: 12, Active: true, RowHeight: 380 },
+          ],
+        };
+      } else {
+        this.item.Config = JSON.parse(this.item.Config);
+      }
 
       this.dashboardDetailProvider
         .read({ IdDashboard: this.id })
@@ -151,75 +112,30 @@ export class DynamicDashboardDetailPage extends PageBase {
           if (resp) {
             this.items = resp['data'].map((i) => {
               return {
-                // Calculated properties from layout and dashboard element width
-                x: i.X,
-                y: i.Y,
-                cols: i.Cols,
-                rows: i.Rows,
-
                 // Other properties
                 IDReport: i.IDReport,
                 Id: i.Id,
                 Type: i.Type,
                 IDDashboard: i.IDDashboard,
 
-                Config:
-                  i.Config == null
-                    ? {
-                        Type: 'Chart', //Chart, Data table, Summary card
-                        ChartDimension: '', //Data to draw chart
-                        SummaryCards: [], //Show statistics
-
-                        Layout: {
-                          // Layout config
-                          sm: { x: 0, y: 0, cols: 1, rows: 1 },
-                          md: { x: 0, y: 0, cols: 1, rows: 1 },
-                          lg: { x: 0, y: 0, cols: 1, rows: 1 },
-                          xl: { x: 0, y: 0, cols: 1, rows: 1 },
-                        },
-                      }
-                    : JSON.parse(i.Config),
+                Config: i.Config == null ? this.newWidgetConfig() : JSON.parse(i.Config),
               };
             });
           }
 
+          this.setSegmentView();
           super.loadedData(event, ignoredFromGroup);
         })
         .catch((err) => {
           console.log(err);
+
+          this.setSegmentView();
           super.loadedData(event, ignoredFromGroup);
         });
-
-      // IDDashboard	int	Unchecked
-      // IDReport	int	Unchecked
-      // Id	int	Unchecked
-      // X	int	Checked
-      // Y	int	Checked
-      // Cols	int	Checked
-      // Rows	int	Checked
-
-      // Type	nvarchar(256)	Unchecked
-      // Code	nvarchar(256)	Checked
-      // Name	nvarchar(512)	Checked
-      // Remark	nvarchar(MAX)	Checked
-      // Sort	int	Checked
-      // IsDisabled	bit	Unchecked
-      // IsDeleted	bit	Unchecked
-      // CreatedBy	nvarchar(256)	Unchecked
-      // CreatedDate	datetime	Unchecked
-      // ModifiedBy	nvarchar(256)	Unchecked
-      // ModifiedDate	datetime	Unchecked
     } else {
+      this.setSegmentView();
       super.loadedData(event, ignoredFromGroup);
     }
-
-    // this.items = [
-    //     { "x": 0, "y": 0, "cols": 1, "rows": 1, "IDReport": 3, "Id": 0 },
-    //     // { cols: 2, rows: 2, y: 2, x: 0, minItemRows: 2, minItemCols: 2, maxItemRows: 3, maxItemCols: 4, label: 'Min rows & cols = 2', Id: 1 },
-    // {"x":1,"y":0,"cols":1,"rows":1,"IDReport":5,"Id":0},
-    //{"x":1,"y":0,"cols":1,"rows":1,"IDReport":5,"Id":0, WidgetConfig: { ViewDimension: 'CalcTotal', Statistics: ['Count', 'Guests', 'Total']}},
-
-    // ];
   }
 
   ionViewDidEnter() {
@@ -227,7 +143,7 @@ export class DynamicDashboardDetailPage extends PageBase {
 
     //Resize grid when parent dom resize
     var chartDom = document.getElementById('dashboard');
-    new ResizeObserver(() => this.options?.api?.resize()).observe(chartDom);
+    new ResizeObserver(() => this.setSegmentView()).observe(chartDom);
   }
 
   /**
@@ -240,13 +156,14 @@ export class DynamicDashboardDetailPage extends PageBase {
       let widget = {
         Id: item.Id,
         IDReport: item.IDReport,
-        X: item.x,
-        Y: item.y,
-        Cols: item.cols,
-        Rows: item.rows,
-        Type: item.Type,
         IDDashboard: this.item.Id,
+        Type: item.Type,
+        Config: '',
       };
+
+      let config = item.Config ? item.Config : { Layout: {} };
+      config.Layout[this.segmentView.Code] = { x: item.x, y: item.y, cols: item.cols, rows: item.rows };
+      widget.Config = JSON.stringify(config);
 
       this.saveWidgetConfig(widget).then((resp) => {
         if (item.Id == 0) {
@@ -262,9 +179,7 @@ export class DynamicDashboardDetailPage extends PageBase {
       IDDashboard: this.item.Id,
       Config: JSON.stringify(item.Config),
     };
-    this.saveWidgetConfig(dtoItem).then((resp) => {
-      console.log(resp);
-    });
+    this.saveWidgetConfig(dtoItem).then((resp) => {});
   }
 
   //Promise to save widget config
@@ -298,6 +213,117 @@ export class DynamicDashboardDetailPage extends PageBase {
       this.options.displayGrid = this.options.resizable.enabled ? DisplayGrid.Always : DisplayGrid.None;
       this.options.api.optionsChanged();
     }
+
+    if (!this.options.draggable.enabled) {
+      this.setSegmentView();
+    }
+  }
+
+  segmentView;
+  segmentChanged(ev: any) {
+    this.setSegmentView(ev.detail.value);
+    let element = document.getElementById('grid-layout');
+    // Set element width
+    if (element) {
+      element.style.width = this.segmentView.Value;
+    }
+  }
+
+  setSegmentView(layout = null) {
+    let l = layout;
+    let element = document.getElementById('grid-layout');
+
+    if (l) {
+      element.style.width = 'calc(' + l.Value + 'px + 16px)';
+    } else if (!l && this.item?.Config?.Layout.length > 0 && !this.options?.draggable?.enabled) {
+      //Get layout from item config layouts by #grid-layout width
+      element.style.width = '100%';
+      let width = element.offsetWidth;
+
+      let layouts = this.item.Config.Layout;
+      if (width < 576) {
+        l = layouts.find((x) => x.Code == 'xs');
+      } else if (width < 768) {
+        l = layouts.find((x) => x.Code == 'sm');
+      } else if (width < 992) {
+        l = layouts.find((x) => x.Code == 'md');
+      } else if (width < 1200) {
+        l = layouts.find((x) => x.Code == 'lg');
+      } else {
+        l = layouts.find((x) => x.Code == 'xl');
+      }
+    }
+
+    if (!l) {
+      return;
+    }
+
+    if (!this.segmentView || this.segmentView.Code != l.Code) {
+      this.segmentView = l;
+
+      if (!this.options) {
+        this.initGridOptionn();
+      }
+
+      this.options.fixedRowHeight = l.RowHeight;
+      this.options.minCols = l.Cols;
+      this.options.maxCols = l.Cols;
+
+      this.calcWigetPosition();
+
+      this.options.api?.optionsChanged();
+      
+    }
+
+    this.options.api?.resize();
+  }
+
+  calcWigetPosition() {
+    //Get item position from item config layouts by segmentView.Code
+    let layout = this.segmentView.Code;
+    this.items.forEach((item) => {
+      if (item.Config?.Layout && item.Config.Layout[layout]) {
+        item.x = item.Config.Layout[layout].x;
+        item.y = item.Config.Layout[layout].y;
+        item.cols = item.Config.Layout[layout].cols;
+        item.rows = item.Config.Layout[layout].rows;
+      }
+    });
+  }
+
+  initGridOptionn() {
+    this.options = {
+      itemChangeCallback: this.itemChange.bind(this),
+
+      displayGrid: DisplayGrid.None,
+      margin: 16,
+      mobileBreakpoint: 50,
+      gridType: GridType.VerticalFixed,
+      allowMultiLayer: false,
+
+      keepFixedHeightInMobile: true,
+      setGridSize: true,
+      scrollToNewItems: true,
+      disableWindowResize: true,
+
+      draggable: { enabled: false },
+      resizable: { enabled: false },
+      pushItems: true,
+      pushDirections: {
+        north: true,
+        east: true,
+        south: true,
+        west: true,
+      },
+      swap: true,
+
+      fixedRowHeight: 380, //162,
+
+      minCols: 12,
+      maxCols: 12,
+      minRows: 0,
+      maxRows: 99,
+    };
   }
 
   /**
@@ -343,6 +369,7 @@ export class DynamicDashboardDetailPage extends PageBase {
       Id: 0,
       Type: 'Report',
       IDDashboard: this.item.Id,
+      Config: this.newWidgetConfig(),
     });
 
     setTimeout(() => {
@@ -350,6 +377,22 @@ export class DynamicDashboardDetailPage extends PageBase {
         this.toggleDesign();
       }
     }, 10);
+  }
+
+  newWidgetConfig() {
+    return {
+      Type: 'Chart', //Chart, Data table, Summary card
+      ChartDimension: '', //Data to draw chart
+      SummaryCards: [], //Show statistics
+
+      Layout: {
+        // Layout config
+        sm: { x: null, y: null, cols: 1, rows: 1 },
+        md: { x: null, y: null, cols: 1, rows: 1 },
+        lg: { x: null, y: null, cols: 1, rows: 1 },
+        xl: { x: null, y: null, cols: 1, rows: 1 },
+      },
+    };
   }
 
   onOpenReport(ev) {

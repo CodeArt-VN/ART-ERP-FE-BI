@@ -1,14 +1,6 @@
-<!-- <ion-header [translucent]="true">
-	<app-detail-toolbar [page]="this">
-		<ion-button (click)="toggleDesign()">
-			<ion-icon slot="icon-only" [name]="options.draggable.enabled? 'color-palette': 'color-palette-outline'"></ion-icon>
-		</ion-button>
-	</app-detail-toolbar>
-</ion-header> -->
-
 <ion-header [translucent]="true">
   <app-toolbar BackHref="dynamic-dashboard" [page]="this" [ShowFeature]="true">
-    <ion-button (click)="toggleDesign()" class="ion-hide-sm-down" *ngIf="options">
+    <ion-button (click)="toggleDesign()" *ngIf="options">
       <ion-icon
         slot="icon-only"
         [name]="options.draggable.enabled? 'color-palette': 'color-palette-outline'"
@@ -17,8 +9,15 @@
   </app-toolbar>
 </ion-header>
 
-<ion-content id="dashboard" [fullscreen]="true" appScrollbarTheme [ngClass]="{withFeature: pageConfig.isShowFeature}">
-  <ion-fab *ngIf="pageConfig.isShowFeature && item" class="feature" vertical="top" [ngClass] = "{'ion-hide-md-down': !pageConfig.isSubActive}" horizontal="end" slot="fixed" >
+<ion-content id="dashboard" [fullscreen]="true" appScrollbarTheme [ngClass]="{'withFeature': pageConfig.isShowFeature, 'scrollx':options?.draggable?.enabled }">
+  <ion-fab
+    *ngIf="pageConfig.isShowFeature && item"
+    class="feature"
+    vertical="top"
+    [ngClass]="{'ion-hide-md-down': !pageConfig.isSubActive}"
+    horizontal="end"
+    slot="fixed"
+  >
     <ion-accordion-group *ngIf="pageConfig.canEdit" [value]="'first'">
       <ion-accordion value="first" style="background: transparent">
         <ion-item slot="header" color="light">
@@ -46,23 +45,6 @@
           ></app-form-control>
 
           <app-form-control
-            [field]="{id:'MinCols', type : 'number', form : formGroup }"
-            (change)="saveChange()"
-          ></app-form-control>
-          <app-form-control
-            [field]="{id:'MaxCols', type : 'number', form : formGroup }"
-            (change)="saveChange()"
-          ></app-form-control>
-          <app-form-control
-            [field]="{id:'MinRows', type : 'number', form : formGroup }"
-            (change)="saveChange()"
-          ></app-form-control>
-          <app-form-control
-            [field]="{id:'MaxRows', type : 'number', form : formGroup }"
-            (change)="saveChange()"
-          ></app-form-control>
-
-          <app-form-control
             [field]="{id:'Remark', type : 'textarea', form : formGroup }"
             (change)="saveChange()"
           ></app-form-control>
@@ -83,7 +65,7 @@
     </ion-accordion-group>
   </ion-fab>
 
-  <div class="ion-padding ion-hide-sm-down">
+  <div class="ion-padding">
     <app-page-title
       [icon]="formGroup.get('Icon').value"
       [color]="formGroup.get('Color').value"
@@ -91,13 +73,6 @@
       [remark]="formGroup.get('Remark').value"
     >
     </app-page-title>
-
-    <!-- <app-page-title [icon]="pageConfig.pageIcon" [title]="pageConfig.pageTitle" [remark]="pageConfig.pageRemark">
-			<ion-button>
-				<ion-icon slot="start" name="add"></ion-icon>
-				{{'Save' | translate}}
-			</ion-button>
-		</app-page-title> -->
   </div>
   <app-page-message
     [itemsLength]="items.length"
@@ -115,19 +90,29 @@
     </div>
   </app-page-message>
 
-  <gridster [options]="options" *ngIf="items.length && pageConfig.showSpinner==false">
-    <gridster-item [item]="i" *ngFor="let i of items">
-      <app-report-chart
-        class="fullfill"
-        viewMode="dashboard"
-        [reportId]="i.IDReport"
-        [gridItem]="i"
-        (delete)="removeItem(i)"
-        (openReport)="onOpenReport($event)"
-        (widgetConfigChange)="onWidgetConfigChange($event)"
-      ></app-report-chart>
-    </gridster-item>
-  </gridster>
+  <ion-toolbar color="primary" *ngIf="options?.draggable?.enabled">
+    <ion-segment scrollable="true" (ionChange)="segmentChanged($event)" [value]="segmentView">
+      <ion-segment-button [value]="l" *ngFor="let l of item.Config?.Layout">
+        <ion-label>{{l.Name | translate}}</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+
+  <div id="grid-layout" style="margin: auto; overflow: visible;">
+    <gridster [options]="options" *ngIf="items.length && pageConfig.showSpinner==false">
+      <gridster-item [item]="i" *ngFor="let i of items">
+        <app-report-chart
+          class="fullfill"
+          viewMode="dashboard"
+          [reportId]="i.IDReport"
+          [gridItem]="i"
+          (delete)="removeItem(i)"
+          (openReport)="onOpenReport($event)"
+          (widgetConfigChange)="onWidgetConfigChange($event)"
+        ></app-report-chart>
+      </gridster-item>
+    </gridster>
+  </div>
 
   <div class="ion-text-center" *ngIf="pageConfig.canEdit && items.length > 0">
     <ion-button size="small" (click)="showReportPicker()">

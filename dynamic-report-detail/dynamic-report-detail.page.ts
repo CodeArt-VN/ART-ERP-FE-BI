@@ -38,8 +38,7 @@ export class DynamicReportDetailPage extends PageBase {
     public loadingController: LoadingController,
   ) {
     super();
-    this.pageConfig.isShowFeature = true;
-    this.pageConfig.isSubActive = true;
+
     this.pageConfig.isDetailPage = true;
     this.id = this.route.snapshot.paramMap.get('id');
     this.code = this.route.snapshot.paramMap.get('code');
@@ -168,7 +167,7 @@ export class DynamicReportDetailPage extends PageBase {
     }
 
     if (resp.ComparitionData || resp.comparitionData || this.comparitionData.length > 0) {
-      let comparitionData = JSON.parse(JSON.stringify(resp.comparitionData || resp.ComparitionData));
+      let comparitionData = lib.cloneObject(resp.comparitionData || resp.ComparitionData);
       let comparedData = [];
 
       if (comparitionData) this.comparitionData = [...comparitionData];

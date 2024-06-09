@@ -5,6 +5,7 @@ import { PageBase } from 'src/app/page-base';
 import { AC_CaseProvider, BI_HRM_PayrollPerBranchProvider } from 'src/app/services/static/services.service';
 import { Location } from '@angular/common';
 import { environment } from 'src/environments/environment';
+import { lib } from 'src/app/services/static/global-functions';
 
 @Component({
   selector: 'app-branch-payroll-report',
@@ -53,7 +54,7 @@ export class BranchPayrollReportPage extends PageBase {
 
   preLoadData(event?: any): void {
     this.env.getBranch(this.env.selectedBranch, true).then((ls) => {
-      this.itemsState = JSON.parse(JSON.stringify(ls));
+      this.itemsState = lib.cloneObject(ls);
     });
 
     this.caseProvider.read().then((result) => {

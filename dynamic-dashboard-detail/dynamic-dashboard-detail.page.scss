@@ -115,3 +115,7 @@ gridster {
     opacity: 0.5;
   }
 }
+
+ion-content.scrollx::part(scroll) {
+  overflow-x: auto !important;
+}
