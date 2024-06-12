@@ -140,7 +140,7 @@ export class DynamicDashboardDetailPage extends PageBase {
 
   ionViewDidEnter() {
     super.ionViewDidEnter();
-
+    this.setSegmentView();
     //Resize grid when parent dom resize
     var chartDom = document.getElementById('dashboard');
     new ResizeObserver(() => this.setSegmentView()).observe(chartDom);
