@@ -9,7 +9,12 @@
   </app-toolbar>
 </ion-header>
 
-<ion-content id="dashboard" [fullscreen]="true" appScrollbarTheme [ngClass]="{'withFeature': pageConfig.isShowFeature, 'scrollx':options?.draggable?.enabled }">
+<ion-content
+  id="dashboard"
+  [fullscreen]="true"
+  appScrollbarTheme
+  [ngClass]="{'withFeature': pageConfig.isShowFeature, 'scrollx':options?.draggable?.enabled }"
+>
   <ion-fab
     *ngIf="pageConfig.isShowFeature && item"
     class="feature"
@@ -30,20 +35,14 @@
           ></app-form-control>
           <app-form-control [field]="{id:'Code', form : formGroup }" (change)="saveChange()"></app-form-control>
           <app-form-control [field]="{id:'Name', form : formGroup }" (change)="saveChange()"></app-form-control>
-
           <app-form-control
-            [field]="{id:'Color', type : 'color', form : formGroup }"
-            (change)="saveChange()"
-          ></app-form-control>
-          <app-form-control
-            [field]="{id:'Icon', type : 'icon', form : formGroup, color: formGroup.controls.Color.value }"
+            [field]="{id:'Icon', secondaryId: 'Color', label: 'Icon',  type : 'icon-color', form : formGroup }"
             (change)="saveChange()"
           ></app-form-control>
           <app-form-control
             [field]="{id:'Type', type : 'number', form : formGroup }"
             (change)="saveChange()"
           ></app-form-control>
-
           <app-form-control
             [field]="{id:'Remark', type : 'textarea', form : formGroup }"
             (change)="saveChange()"
@@ -98,7 +97,7 @@
     </ion-segment>
   </ion-toolbar>
 
-  <div id="grid-layout" style="margin: auto; overflow: visible;">
+  <div id="grid-layout" style="margin: auto; overflow: visible">
     <gridster [options]="options" *ngIf="items.length && pageConfig.showSpinner==false">
       <gridster-item [item]="i" *ngFor="let i of items">
         <app-report-chart

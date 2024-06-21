@@ -233,9 +233,9 @@ export class DynamicDashboardDetailPage extends PageBase {
     let l = layout;
     let element = document.getElementById('grid-layout');
 
-    if (l) {
+    if (l && element) {
       element.style.width = 'calc(' + l.Value + 'px + 16px)';
-    } else if (!l && this.item?.Config?.Layout.length > 0 && !this.options?.draggable?.enabled) {
+    } else if (!l && element && this.item?.Config?.Layout.length > 0 && !this.options?.draggable?.enabled) {
       //Get layout from item config layouts by #grid-layout width
       element.style.width = '100%';
       let width = element.offsetWidth;
