@@ -38,12 +38,11 @@ export class ApInvoicePage extends PageBase {
     this.today = lib.dateFormat(new Date(), 'hh:MM dd/mm/yyyy');
 
     this.pageConfig.subscribeReport = this.rpt.Tracking().subscribe((data) => {
-      console.log('subscribeReport');
       this.reportQuery = {
         fromDate: data.fromDate,
         toDate: data.toDate,
         IDBranch: data.IDBranch,
-        IDOwner: data.vendor?.Id,
+        IDSeller: data.vendor?.Id,
         saleman: data.saleman,
         outlet: data.outlet,
         IDBuyer: data.buyer?.Id
