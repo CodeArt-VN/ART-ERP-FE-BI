@@ -1,10 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { PageBase } from 'src/app/page-base';
 import { EnvService } from 'src/app/services/core/env.service';
 import { ReportService } from 'src/app/services/report.service';
-import { CRM_ContactProvider, HRM_StaffProvider, SALE_OrderProvider } from 'src/app/services/static/services.service';
-import { NgSelectConfig } from '@ng-select/ng-select';
+import { CRM_ContactProvider, HRM_StaffProvider } from 'src/app/services/static/services.service';
 import { concat, of, Subject } from 'rxjs';
 import { catchError, distinctUntilChanged, switchMap, tap } from 'rxjs/operators';
 import { lib } from 'src/app/services/static/global-functions';
@@ -22,9 +21,9 @@ export class PurchaseReportsPage extends PageBase {
     frequency: 1,
     fromDate: '',
     toDate: '',
-    buyer: null,
-    vendor: null,
     isCalcShippedOnly: false,
+    IDOwner: null,
+    IDSeller: null,
   };
 
   constructor(
@@ -43,8 +42,10 @@ export class PurchaseReportsPage extends PageBase {
   }
 
   loadData(event) {
-    this.buyerSearch();
-    this.vendorSearch();
+    this.IDOwnerDataSource.initSearch();
+    this.IDSellerDataSource.initSearch();
+    //this.buyerSearch();
+    // this.vendorSearch();
     super.loadedData(event);
 
     setTimeout(() => {
@@ -120,8 +121,8 @@ export class PurchaseReportsPage extends PageBase {
     this.rpt.rptGlobal.query.frequency = this.filter.frequency;
     this.rpt.rptGlobal.query.fromDate = this.filter.fromDate;
     this.rpt.rptGlobal.query.toDate = this.filter.toDate;
-    this.rpt.rptGlobal.query.buyer = this.filter.buyer;
-    this.rpt.rptGlobal.query.vendor = this.filter.vendor;
+    this.rpt.rptGlobal.query.IDOwner = this.filter.IDOwner;
+    this.rpt.rptGlobal.query.IDSeller = this.filter.IDSeller;
     this.rpt.rptGlobal.query.isCalcShippedOnly = this.filter.isCalcShippedOnly;
     this.filter.type == 'set';
     this.rpt.rptGlobal.query.isShowFeature = this.pageConfig.isShowFeature;
@@ -190,4 +191,68 @@ export class PurchaseReportsPage extends PageBase {
   changeFrequency(f) {
     this.filter.frequency = f.Id;
   }
+
+  IDOwnerDataSource = {
+    searchProvider: this.staffProvider,
+    loading: false,
+    input$: new Subject<string>(),
+    selected: [],
+    items$: null,
+    initSearch() {
+      this.loading = false;
+      this.items$ = concat(
+        of(this.selected),
+        this.input$.pipe(
+          distinctUntilChanged(),
+          tap(() => (this.loading = true)),
+          switchMap((term) =>
+            this.searchProvider
+              .search({
+                SortBy: ['Id_desc'],
+                Take: 20,
+                Skip: 0,
+                Term: term,
+              })
+              .pipe(
+                catchError(() => of([])), // empty list on error
+                tap(() => (this.loading = false)),
+              ),
+          ),
+        ),
+      );
+    },
+  };
+
+  IDSellerDataSource = {
+    searchProvider: this.contactProvider,
+    loading: false,
+    input$: new Subject<string>(),
+    selected: [],
+    items$: null,
+    initSearch() {
+      this.loading = false;
+      this.items$ = concat(
+        of(this.selected),
+        this.input$.pipe(
+          distinctUntilChanged(),
+          tap(() => (this.loading = true)),
+          switchMap((term) =>
+            this.searchProvider
+              .search({
+                SortBy: ['Id_desc'],
+                Take: 20,
+                Skip: 0,
+                Term: term,
+                IsVendor: true,
+                SkipAddress: true,
+              })
+              .pipe(
+                catchError(() => of([])), // empty list on error
+                tap(() => (this.loading = false)),
+              ),
+          ),
+        ),
+      );
+    },
+  };
 }

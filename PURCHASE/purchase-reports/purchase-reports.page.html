@@ -228,17 +228,18 @@
 			</div> -->
 
       <div class="c-control">
-        <label class="c-label" for="IDBuyer">NVMH</label>
+        <label class="c-label" for="IDOwner">NVMH</label>
         <ng-select
-          [(ngModel)]="filter.buyer"
+          [(ngModel)]="filter.IDOwner"
           class="c-input no-check-dirty"
-          #IDBuyer
-          labelForId="IDBuyer"
-          [items]="buyerList$ | async"
-          [typeahead]="buyerListInput$"
-          [loading]="buyerListLoading"
+          #IDOwner
+          labelForId="IDOwner"
+          [items]="IDOwnerDataSource.items$ | async"
+          [typeahead]="IDOwnerDataSource.input$"
+          [loading]="IDOwnerDataSource.loading"
           [virtualScroll]="true"
           bindLabel="FullName"
+          bindValue="Id"
           placeholder="{{'Search for name, code or phone number' | translate}}"
         >
           <ng-template ng-option-tmp let-i="item" let-search="searchTerm">
@@ -259,17 +260,18 @@
       </div>
 
       <div class="c-control">
-        <label class="c-label" for="IDVendor">Nhà cung cấp</label>
+        <label class="c-label" for="IDSeller">Nhà cung cấp</label>
         <ng-select
-          [(ngModel)]="filter.vendor"
+          [(ngModel)]="filter.IDSeller"
           class="c-input no-check-dirty"
-          #IDVendor
-          labelForId="IDVendor"
-          [items]="vendorList$ | async"
-          [typeahead]="vendorListInput$"
-          [loading]="vendorListLoading"
+          #IDSeller
+          labelForId="IDSeller"
+          [items]="IDSellerDataSource.items$ | async"
+          [typeahead]="IDSellerDataSource.input$"
+          [loading]="IDSellerDataSource.loading"
           [virtualScroll]="true"
           bindLabel="Name"
+          bindValue="Id"
           placeholder="{{'Search for name, code or phone number' | translate}}"
         >
           <ng-template ng-label-tmp let-i="item" let-a="item.Address">

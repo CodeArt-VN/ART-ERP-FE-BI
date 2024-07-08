@@ -1,17 +1,9 @@
-import { Component, ViewChild } from '@angular/core';
-import {
-  ActionSheetController,
-  AlertController,
-  LoadingController,
-  PopoverController,
-  NavController,
-  Platform,
-} from '@ionic/angular';
+import { Component } from '@angular/core';
+import { ActionSheetController, AlertController, LoadingController, NavController } from '@ionic/angular';
 import { EnvService } from 'src/app/services/core/env.service';
 import { PageBase } from 'src/app/page-base';
 import { ReportService } from 'src/app/services/report.service';
 import { lib } from 'src/app/services/static/global-functions';
-import { CustomService } from 'src/app/services/custom.service';
 import { ApiSetting } from 'src/app/services/static/api-setting';
 import { CommonService } from 'src/app/services/core/common.service';
 
@@ -31,7 +23,6 @@ export class PurchaseVendorPage extends PageBase {
     public loadingController: LoadingController,
     public env: EnvService,
     public navCtrl: NavController,
-    private platform: Platform,
     public rpt: ReportService,
   ) {
     super();
@@ -43,11 +34,9 @@ export class PurchaseVendorPage extends PageBase {
         fromDate: data.fromDate,
         toDate: data.toDate,
         IDBranch: data.IDBranch,
-        IDBuyer: data.buyer?.Id,
-        IDVendor: data.vendor?.Id,
         IsCalcShippedOnly: data.isCalcShippedOnly,
-        buyer: data.buyer,
-        vendor: data.vendor,
+        IDSeller: data.IDSeller, // nhà cung cấp
+        IDOwner: data.IDOwner, //nhân viên mua hàng
       };
       if (data._cmd == 'ExportPurchaseOutletReport') {
         this.ExportPurchaseOutletReport();
