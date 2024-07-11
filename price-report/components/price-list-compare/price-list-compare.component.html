@@ -47,10 +47,14 @@
       <input (click)="changeSelection(i, $event)" class="c-checkbox" [(ngModel)]="i.checked" type="checkbox" />
     </div>
 
-    <div class="col-name cell">
-      <span
-        ><b>{{ i.ItemCode }}</b> - {{ i.ItemName }}</span
-      >
+    <div class="col-name cell" [ngClass]="{disabled: i.IsDisabled}">
+      
+      <span [title]="i.ItemName">
+        <a [routerLink]="'/item/' + i.ItemId" class="clickable"> 
+          <ion-icon color="warning" *ngIf="i.IsDisabled" name="archive"></ion-icon>
+          <span *ngIf="!i.IsDisabled">#</span>{{ i.ItemId }}&nbsp;</a>
+        <b>{{ i.ItemCode }}</b> {{ i.ItemName }}
+      </span>
     </div>
     <div class="col-id cell">
       <b>{{ i.UoM }}</b>
