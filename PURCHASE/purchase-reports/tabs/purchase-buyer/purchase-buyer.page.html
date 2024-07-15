@@ -68,11 +68,11 @@
                         <td class="cen">{{idx+1}}</td>
                         <td>
                           <div class="ten-sp min">
-                            <b *ngIf="i.BuyerCode">{{i.BuyerCode}}</b><b *ngIf="!i.BuyerCode">{{i.IDBuyer}}</b>
-                            - {{i.BuyerName}}
+                            <b *ngIf="i.OwnerCode">{{i.OwnerCode}}</b><b *ngIf="!i.OwnerCode">{{i.IDOwner}}</b>
+                            - {{i.OwnerName}}
                           </div>
                         </td>
-                        <td class="cen">{{i.BuyerWorkPhone}}</td>
+                        <td class="cen">{{i.OwnerWorkPhone}}</td>
                         <td class="num tien">{{i.TotalBeforeDiscountText}}</td>
                         <td class="num tien">{{i.TotalDiscountText}}</td>
                         <td class="num tien">{{i.TotalAfterDiscountText}}</td>
