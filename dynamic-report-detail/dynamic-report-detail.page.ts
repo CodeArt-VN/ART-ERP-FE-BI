@@ -38,7 +38,6 @@ export class DynamicReportDetailPage extends PageBase {
     public loadingController: LoadingController,
   ) {
     super();
-
     this.pageConfig.isDetailPage = true;
     this.id = this.route.snapshot.paramMap.get('id');
     this.code = this.route.snapshot.paramMap.get('code');
@@ -72,9 +71,8 @@ export class DynamicReportDetailPage extends PageBase {
   }
 
   preLoadData(event?: any): void {
+    this.getPagePermission('dynamic-report');
     if (this.pageConfig.canEdit) {
-      this.pageConfig.canEditScript = true;
-      this.pageConfig.canChangeReportConfig = true;
       this.formProvider
         .read({ IDParent: 2, Type: 11 })
         .then((res) => {
@@ -87,24 +85,25 @@ export class DynamicReportDetailPage extends PageBase {
           this.env.showMessage(err, 'danger');
         })
         .finally(() => {
+          this.pageProvider
+            .readReports()
+            .then(() => {
+              super.preLoadData(event);
+            })
+            .catch((err) => {
+              super.loadedData();
+            });
+        });
+    } else {
+      this.pageProvider
+        .readReports()
+        .then(() => {
           super.preLoadData(event);
+        })
+        .catch((err) => {
+          super.loadedData();
         });
     }
-
-    if (this.pageConfig.pageName === 'dynamic-report') {
-      console.log('dynamic-report');
-    }
-
-    //Check pageProvider is ready
-    this.pageProvider
-      .readReports()
-      .then(() => {
-        super.preLoadData(event);
-      })
-      .catch((err) => {
-        console.log(err);
-        super.loadedData();
-      });
   }
 
   loadData(event?: any): void {
@@ -142,18 +141,15 @@ export class DynamicReportDetailPage extends PageBase {
   }
 
   loadItems(resp) {
-
     if (resp.isTreeList) {
       this.treeConfig.isTreeList = true;
       this.treeConfig.treeColumn = resp.treeColumn;
       this.treeConfig.excludes = resp.excludes || [];
-    }
-    else {
+    } else {
       this.treeConfig.isTreeList = false;
       this.treeConfig.treeColumn = '';
       this.treeConfig.excludes = [];
     }
-
 
     let data: any[] = [];
 
@@ -242,7 +238,6 @@ export class DynamicReportDetailPage extends PageBase {
           data,
           measures.map((m) => 'Prev ' + m),
         );
-     
       }
 
       for (let item of data)
@@ -472,7 +467,7 @@ export class DynamicReportDetailPage extends PageBase {
   openParents(item) {
     return new Promise((resolve) => {
       let parent = this.items.find((d) => d.Id == item.IDParent);
-      if (parent && item.IDParent!= null) {
+      if (parent && item.IDParent != null) {
         parent.showdetail = false;
         this.toggleRow(this.items, parent, true);
         this.openParents(parent).then(() => {

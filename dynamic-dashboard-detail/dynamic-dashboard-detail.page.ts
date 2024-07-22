@@ -272,7 +272,6 @@ export class DynamicDashboardDetailPage extends PageBase {
       this.calcWigetPosition();
 
       this.options.api?.optionsChanged();
-      
     }
 
     this.options.api?.resize();
@@ -397,14 +396,14 @@ export class DynamicDashboardDetailPage extends PageBase {
 
   onOpenReport(ev) {
     if (!this.options.draggable.enabled) {
-      this.nav('dynamic-report/' + ev.Id);
+      console.log(ev);
+      
+      if (!ev.Code) {
+        this.nav('dynamic-report/' + ev.Id);
+      } else {
+        this.nav('reports/' + ev.Code);
+      }
     }
-
-    // if (ev.Code == 'demo' || !ev.Code) {
-    //   this.nav('dynamic-report/' + ev.Id);
-    // } else {
-    //   this.nav(ev.Code);
-    // }
   }
 
   showReportPicker() {
