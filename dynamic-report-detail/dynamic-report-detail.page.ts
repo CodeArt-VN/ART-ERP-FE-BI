@@ -16,7 +16,7 @@ import { SYS_FormProvider } from 'src/app/services/static/services.service';
 })
 export class DynamicReportDetailPage extends PageBase {
   viewDimension = '';
-  code = '';
+  code = null;
 
   item: BIReport;
   comparitionData: any[] = [];
@@ -41,6 +41,17 @@ export class DynamicReportDetailPage extends PageBase {
     this.pageConfig.isDetailPage = true;
     this.id = this.route.snapshot.paramMap.get('id');
     this.code = this.route.snapshot.paramMap.get('code');
+
+    this.route.paramMap.subscribe((param) => {
+      let id = param.get('id') != 'null' ? parseInt(param.get('id')) : null;
+      let code = param.get('code') != 'null' ? parseInt(param.get('code')) : null;
+
+      if (id != this.id || code != this.code) {
+        this.id = id;
+        this.code = code;
+        this.refresh();
+      }
+    });
 
     this.formGroup = formBuilder.group({
       Id: new FormControl({ value: '', disabled: true }),
