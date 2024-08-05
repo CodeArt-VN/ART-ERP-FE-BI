@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start" class="ion-hide-sm-down_">
-      <ion-button color="dark" class="ion-hide-sm-down"> Finance statements </ion-button>
+      <ion-button color="dark" class="ion-hide-sm-down"> {{'Finance statements' | translate}} </ion-button>
     </ion-buttons>
 
     <ion-buttons slot="end">
@@ -27,52 +27,52 @@
   >
     <div class="ion-padding">
       <div>
-        <div class="title">Loại báo cáo</div>
+        <div class="title">{{'Loại báo cáo' | translate}}</div>
 
         <ion-button
           (click)="changeTypeFillter('MTD')"
           [fill]="rpt.rptGlobal.query.reportType=='MTD'? 'solid': 'outline'"
           size="small"
-          >MTD</ion-button
+          >{{'MTD' | translate}}</ion-button
         >
         <ion-button
           (click)="changeTypeFillter('YTD')"
           [fill]="rpt.rptGlobal.query.reportType=='YTD'? 'solid': 'outline'"
           size="small"
-          >YTD</ion-button
+          >{{'YTD' | translate}}</ion-button
         >
 
-        <div class="title">Thời gian</div>
+        <div class="title">{{'Thời gian' | translate}}</div>
 
         <ion-button
           (click)="changeDateFillter('day')"
           [fill]="rpt.rptGlobal.query.type=='day'? 'solid': 'outline'"
           size="small"
-          >1d</ion-button
+          >{{'1d' | translate}}</ion-button
         >
         <ion-button
           (click)="changeDateFillter('week')"
           [fill]="rpt.rptGlobal.query.type=='week'? 'solid': 'outline'"
           size="small"
-          >7d</ion-button
+          >{{'7d' | translate}}</ion-button
         >
         <ion-button
           (click)="changeDateFillter('month')"
           [fill]="rpt.rptGlobal.query.type=='month'? 'solid': 'outline'"
           size="small"
-          >1m</ion-button
+          >{{'1m' | translate}}</ion-button
         >
         <ion-button
           (click)="changeDateFillter('3m')"
           [fill]="rpt.rptGlobal.query.type=='3m'? 'solid': 'outline'"
           size="small"
-          >3m</ion-button
+          >{{'3m' | translate}}</ion-button
         >
         <ion-button
           (click)="changeDateFillter('set')"
           [fill]="rpt.rptGlobal.query.type=='set'? 'solid': 'outline'"
           size="small"
-          >Tùy chọn...</ion-button
+          >{{'Tùy chọn...' | translate}}</ion-button
         >
 
         <div *ngIf="rpt.rptGlobal.query.type=='set'" class="date-pick">
@@ -134,16 +134,16 @@
           <table class="data-table fix-height">
             <tr>
               <td class="data-code">
-                <div>Mã số</div>
+                <div>{{'Mã số' | translate}}</div>
               </td>
               <td>
-                <div class="data-title">TÀI SẢN</div>
+                <div class="data-title">{{'TÀI SẢN' | translate}}</div>
               </td>
               <td>
-                <div class="value">Đầu kỳ</div>
+                <div class="value">{{'Đầu kỳ' | translate}}</div>
               </td>
               <td>
-                <div class="value">Cuối kỳ</div>
+                <div class="value">{{'Cuối kỳ' | translate}}</div>
               </td>
             </tr>
             <ng-container *ngFor="let i of dataBalanceSheet">
@@ -180,7 +180,7 @@
       </div>
 
       <div class="chart-box" style="width: 100%">
-        <div class="title">Income Statements</div>
+        <div class="title">{{'Income Statements' | translate}}</div>
         <div class="chart-contain">
           <table class="data-table fix-height">
             <tr>
@@ -191,13 +191,13 @@
 								</div>
 							</td> -->
               <td>
-                <div class="data-title">Chỉ tiêu</div>
+                <div class="data-title">{{'Chỉ tiêu' | translate}}</div>
               </td>
               <td>
-                <div class="value">Kỳ này</div>
+                <div class="value">{{'Kỳ này' | translate}}</div>
               </td>
               <td>
-                <div class="value">Kỳ trước</div>
+                <div class="value">{{'Kỳ trước' | translate}}</div>
               </td>
             </tr>
             <ng-container *ngFor="let i of dataIncomeStatement">
@@ -232,7 +232,7 @@
       </div>
 
       <div class="chart-box" style="width: 100%">
-        <div class="title">Cash Flow</div>
+        <div class="title">{{'Cash Flow' | translate}}</div>
         <div class="chart-contain">
           <table class="data-table fix-height">
             <tr>
@@ -243,7 +243,7 @@
 								</div>
 							</td> -->
               <td>
-                <div class="data-title">Chỉ tiêu</div>
+                <div class="data-title">{{'Chỉ tiêu' | translate}}</div>
               </td>
               <!-- <td>
 								<div class="data-title ">
@@ -252,10 +252,10 @@
 								</div>
 							</td> -->
               <td>
-                <div class="value">Kỳ này</div>
+                <div class="value">{{'Kỳ này' | translate}}</div>
               </td>
               <td>
-                <div class="value">Kỳ trước</div>
+                <div class="value">{{'Kỳ trước' | translate}}</div>
               </td>
             </tr>
             <ng-container *ngFor="let i of dataCashFlow">

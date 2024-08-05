@@ -2,19 +2,19 @@
   <div class="table-contain">
     <ion-grid class="table" style="min-width: 1140px">
       <ion-row class="row-header">
-        <ion-col size="2">CreatedOn</ion-col>
-        <ion-col size="1">ReceiptsID</ion-col>
-        <ion-col size="1">Total Price</ion-col>
-        <ion-col size="0.5">Status</ion-col>
-        <ion-col size="0.5">Payment</ion-col>
-        <ion-col size="0.5">Type</ion-col>
-        <ion-col size="1">CreatedBy</ion-col>
-        <ion-col size="1">Payment By</ion-col>
-        <ion-col size="1">Table</ion-col>
-        <ion-col size="1">Customer</ion-col>
-        <ion-col size="1">Cust</ion-col>
-        <ion-col size="1">modifiedOn</ion-col>
-        <ion-col size="0.5">Action</ion-col>
+        <ion-col size="2">{{'CreatedOn' | translate}}</ion-col>
+        <ion-col size="1">{{'ReceiptsID' | translate}}</ion-col>
+        <ion-col size="1">{{'Total Price' | translate}}</ion-col>
+        <ion-col size="0.5">{{'Status' | translate}}</ion-col>
+        <ion-col size="0.5">{{'Payment' | translate}}</ion-col>
+        <ion-col size="0.5">{{'Type' | translate}}</ion-col>
+        <ion-col size="1">{{'CreatedBy' | translate}}</ion-col>
+        <ion-col size="1">{{'Payment By' | translate}}</ion-col>
+        <ion-col size="1">{{'Table' | translate}}</ion-col>
+        <ion-col size="1">{{'Customer' | translate}}</ion-col>
+        <ion-col size="1">{{'Cust' | translate}}</ion-col>
+        <ion-col size="1">{{'modifiedOn' | translate}}</ion-col>
+        <ion-col size="0.5">{{'Action' | translate}}</ion-col>
       </ion-row>
 
       <ion-row *ngFor="let i of items; let j = index" class="row-content">

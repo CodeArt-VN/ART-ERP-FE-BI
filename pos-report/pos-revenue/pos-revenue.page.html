@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start" class="ion-hide-sm-down_">
-      <ion-button color="dark" class="ion-hide-sm-down"> Revenue Reports </ion-button>
+      <ion-button color="dark" class="ion-hide-sm-down"> {{'Revenue Reports' | translate}} </ion-button>
     </ion-buttons>
 
     <ion-buttons slot="end">
@@ -46,19 +46,19 @@
               <ion-col size="12" size-sm="12" size-md="12" size-xl="12">
                 <div class="table">
                   <div class="row">
-                    <div class="col-code cell">Total Revenue</div>
+                    <div class="col-code cell">{{'Total Revenue' | translate}}</div>
                     <div class="col-number cell money">{{summaryInfo.TotalRevenueText}}</div>
                   </div>
                   <div class="row">
-                    <div class="col-code cell">Average revenue per receipt</div>
+                    <div class="col-code cell">{{'Average revenue per receipt' | translate}}</div>
                     <div class="col-number cell money">{{summaryInfo.AveragePerReceiptText}}</div>
-                    <div class="col-code cell">Number of receipts</div>
+                    <div class="col-code cell">{{'Number of receipts' | translate}}</div>
                     <div class="col-number cell money">{{summaryInfo.TotalReceipt}}</div>
                   </div>
                   <div class="row">
-                    <div class="col-code cell">Average revenue per customer</div>
+                    <div class="col-code cell">{{'Average revenue per customer' | translate}}</div>
                     <div class="col-number cell money">{{summaryInfo.AveragePerCustomerText}}</div>
-                    <div class="col-code cell">Number of customers</div>
+                    <div class="col-code cell">{{'Number of customers' | translate}}</div>
                     <div class="col-number cell money">{{summaryInfo.TotalCustomer}}</div>
                   </div>
                 </div>
@@ -66,10 +66,10 @@
               <ion-col size="12" size-sm="12" size-md="4" size-xl="4">
                 <ion-segment (ionChange)="segmentChanged($event)" [value]="segmentView">
                   <ion-segment-button value="Item">
-                    <ion-label>Item</ion-label>
+                    <ion-label>{{'Item' | translate}}</ion-label>
                   </ion-segment-button>
                   <ion-segment-button value="ItemGroup">
-                    <ion-label>ItemGroup</ion-label>
+                    <ion-label>{{'ItemGroup' | translate}}</ion-label>
                   </ion-segment-button>
                 </ion-segment>
               </ion-col>

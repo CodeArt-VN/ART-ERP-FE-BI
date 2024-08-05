@@ -24,16 +24,16 @@
   <ion-toolbar style="--padding-start: 4px" color="primary">
     <ion-segment scrollable="true" (ionChange)="segmentChanged($event)" [value]="segmentView">
       <ion-segment-button value="purchase-reports/purchase-buyer">
-        <ion-label>NVMH</ion-label>
+        <ion-label>{{'NVMH' | translate}}</ion-label>
       </ion-segment-button>
       <ion-segment-button value="purchase-reports/purchase-product">
-        <ion-label>Sản phẩm</ion-label>
+        <ion-label>{{'Sản phẩm' | translate}}</ion-label>
       </ion-segment-button>
       <ion-segment-button value="purchase-reports/purchase-vendor">
-        <ion-label>Nhà cung cấp</ion-label>
+        <ion-label>{{'Nhà cung cấp' | translate}}</ion-label>
       </ion-segment-button>
       <ion-segment-button value="purchase-reports/ap-invoice">
-        <ion-label>Hóa đơn</ion-label>
+        <ion-label>{{'Hóa đơn' | translate}}</ion-label>
       </ion-segment-button>
       <!-- <ion-segment-button value="purchase-reports/sale-shipping">
 				<ion-label>Giao hàng</ion-label>
@@ -228,7 +228,7 @@
 			</div> -->
 
       <div class="c-control">
-        <label class="c-label" for="IDOwner">NVMH</label>
+        <label class="c-label" for="IDOwner">{{'NVMH' | translate}}</label>
         <ng-select
           [(ngModel)]="filter.IDOwner"
           class="c-input no-check-dirty"
@@ -260,7 +260,7 @@
       </div>
 
       <div class="c-control">
-        <label class="c-label" for="IDSeller">Nhà cung cấp</label>
+        <label class="c-label" for="IDSeller">{{'Nhà cung cấp' | translate}}</label>
         <ng-select
           [(ngModel)]="filter.IDSeller"
           class="c-input no-check-dirty"
