@@ -87,7 +87,7 @@ export class BranchPayrollReportPage extends PageBase {
 
   syncFromHR() {
     this.env
-      .showLoading(
+      .showLoading2(
         'Đang đồng bộ dữ liệu, xin vui lòng chờ',
         this.pageProvider.commonService
           .connect('GET', environment.appDomain + 'api/JOBS/SyncHRPayrollPerBranch', {
@@ -104,7 +104,7 @@ export class BranchPayrollReportPage extends PageBase {
 
   syncToSAP() {
     this.env
-      .showLoading(
+      .showLoading2(
         'Đang đồng bộ dữ liệu, xin vui lòng chờ',
         this.pageProvider.commonService
           .connect('GET', environment.appDomain + 'api/JOBS/SyncHRPayrollPerBranchToSAP', {
