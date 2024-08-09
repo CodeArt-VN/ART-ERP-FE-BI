@@ -319,7 +319,7 @@ export class SaleSummaryMobilePage extends PageBase {
       })
       .catch((err) => {
         if (err.message != null) {
-          this.env.showMessage(err.message, 'danger');
+          this.env.showTranslateMessage(err.message, 'danger');
         } else {
           this.env.showTranslateMessage('Cannot extract data', 'danger');
         }
@@ -440,7 +440,7 @@ export class SaleSummaryMobilePage extends PageBase {
       })
       .catch((err) => {
         if (err.message != null) {
-          this.env.showMessage(err.message, 'danger');
+          this.env.showTranslateMessage(err.message, 'danger');
         } else {
           this.env.showTranslateMessage('Cannot extract data', 'danger');
         }

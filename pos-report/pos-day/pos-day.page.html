@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start" class="ion-hide-sm-down_">
-      <ion-button color="dark" class="ion-hide-sm-down"> Day Reports </ion-button>
+      <ion-button color="dark" class="ion-hide-sm-down"> {{'Day Reports' | translate}} </ion-button>
     </ion-buttons>
 
     <ion-buttons slot="end">
@@ -82,7 +82,7 @@
           <section class="table">
             <header class="bold">
               <div class="col-code cell" (click)="sortToggle('Name')">
-                Date
+                {{'Date' | translate}}
                 <ion-icon
                   class="min-btn"
                   *ngIf="sort.Name"
@@ -104,7 +104,7 @@
 							</div> -->
 
               <div class="col-code cell" (click)="sortToggle('Name')">
-                Starts At
+                {{'Starts At' | translate}}
                 <ion-icon
                   class="min-btn"
                   *ngIf="sort.Name"
@@ -120,7 +120,7 @@
               </div>
 
               <div class="col-name cell" (click)="sortToggle('Name')">
-                Ends At
+               {{'Ends At' | translate}}
                 <ion-icon
                   class="min-btn"
                   *ngIf="sort.Name"
@@ -136,7 +136,7 @@
               </div>
 
               <div class="col-code cell" (click)="sortToggle('Code')">
-                Receipts
+                {{'Receipts' | translate}}
                 <ion-icon
                   class="min-btn"
                   *ngIf="sort.Code"
@@ -152,7 +152,7 @@
               </div>
 
               <div class="col-code cell" (click)="sortToggle('Code')">
-                Customers
+                {{'Customers' | translate}}
                 <ion-icon
                   class="min-btn"
                   *ngIf="sort.Code"
@@ -168,7 +168,7 @@
               </div>
 
               <div class="col-code cell" (click)="sortToggle('Code')">
-                Revenue
+                {{'Revenue' | translate}}
                 <ion-icon
                   class="min-btn"
                   *ngIf="sort.Code"
@@ -184,7 +184,7 @@
               </div>
 
               <div class="col-code cell" (click)="sortToggle('Code')">
-                Payments
+                {{'Payments' | translate}}
                 <ion-icon
                   class="min-btn"
                   *ngIf="sort.Code"
@@ -200,7 +200,7 @@
               </div>
 
               <div class="col-code cell" (click)="sortToggle('Code')">
-                The change
+                {{'The change' | translate}}
                 <ion-icon
                   class="min-btn"
                   *ngIf="sort.Code"
@@ -216,7 +216,7 @@
               </div>
 
               <div class="col-code cell" (click)="sortToggle('Code')">
-                Tax
+                {{'Tax' | translate}}
                 <ion-icon
                   class="min-btn"
                   *ngIf="sort.Code"

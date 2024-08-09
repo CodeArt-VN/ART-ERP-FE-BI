@@ -93,7 +93,7 @@ export class DynamicReportDetailPage extends PageBase {
           });
         })
         .catch((err) => {
-          this.env.showMessage(err, 'danger');
+          this.env.showTranslateMessage(err, 'danger');
         })
         .finally(() => {
           this.pageProvider
