@@ -188,11 +188,11 @@ export class DynamicDashboardDetailPage extends PageBase {
       this.dashboardDetailProvider
         .save(item)
         .then((resp) => {
-          this.env.showTranslateMessage('Saving completed!', 'success');
+          this.env.showMessage('Saving completed!', 'success');
           resolve(resp);
         })
         .catch((err) => {
-          this.env.showTranslateMessage('Cannot save, please try again', 'danger');
+          this.env.showMessage('Cannot save, please try again', 'danger');
           console.log(err);
           reject(err);
         });
@@ -345,11 +345,11 @@ export class DynamicDashboardDetailPage extends PageBase {
             }
           }, 10);
 
-          this.env.showTranslateMessage('Deleted completed!', 'success');
+          this.env.showMessage('Deleted completed!', 'success');
         })
         .catch((err) => {
           console.log(err);
-          this.env.showTranslateMessage('Cannot delete, please try again', 'danger');
+          this.env.showMessage('Cannot delete, please try again', 'danger');
         });
     }
   }
@@ -415,5 +415,9 @@ export class DynamicDashboardDetailPage extends PageBase {
 
   onSearchReports(event) {
     this.reportSearchKeyword = event.target.value.toLowerCase();
+  }
+
+  async saveChange(publishEventCode?: any) {
+      this.saveChange2(publishEventCode);
   }
 }

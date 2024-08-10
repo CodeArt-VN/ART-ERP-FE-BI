@@ -87,8 +87,8 @@ export class BranchPayrollReportPage extends PageBase {
 
   syncFromHR() {
     this.env
-      .showLoading2(
-        'Đang đồng bộ dữ liệu, xin vui lòng chờ',
+      .showLoading(
+        'Please wait for a few moments',
         this.pageProvider.commonService
           .connect('GET', environment.appDomain + 'api/JOBS/SyncHRPayrollPerBranch', {
             Month: this.selectedCycle.Month,
@@ -104,8 +104,8 @@ export class BranchPayrollReportPage extends PageBase {
 
   syncToSAP() {
     this.env
-      .showLoading2(
-        'Đang đồng bộ dữ liệu, xin vui lòng chờ',
+      .showLoading(
+        'Please wait for a few moments',
         this.pageProvider.commonService
           .connect('GET', environment.appDomain + 'api/JOBS/SyncHRPayrollPerBranchToSAP', {
             Month: this.selectedCycle.Month,
@@ -114,7 +114,7 @@ export class BranchPayrollReportPage extends PageBase {
           .toPromise(),
       )
       .then((resp) => {
-        this.env.showTranslateMessage('Đã đồng bộ xong.');
+        this.env.showMessage('Đã đồng bộ xong.');
       })
       .catch((err) => {});
   }

@@ -60,7 +60,7 @@ export class DynamicReportPage extends PageBase {
         this.groupControl.groupList = res['data'];
       })
       .catch((err) => {
-        this.env.showTranslateMessage(err, 'danger');
+        this.env.showMessage(err, 'danger');
       })
       .finally(() => {
         super.preLoadData(event);

@@ -232,9 +232,9 @@ export class FinanceDailyReportPage extends PageBase {
         .catch((err) => {
           console.log(err);
           if (err.message != null) {
-            this.env.showTranslateMessage(err.message, 'danger');
+            this.env.showMessage(err.message, 'danger');
           } else {
-            this.env.showTranslateMessage('Không thể lấy được dữ liệu!', 'danger');
+            this.env.showMessage('Không thể lấy được dữ liệu!', 'danger');
           }
         });
     });
@@ -366,9 +366,9 @@ export class FinanceDailyReportPage extends PageBase {
         .catch((err) => {
           console.log(err);
           if (err.message != null) {
-            this.env.showTranslateMessage(err.message, 'danger');
+            this.env.showMessage(err.message, 'danger');
           } else {
-            this.env.showTranslateMessage('Không thể lấy được dữ liệu!', 'danger');
+            this.env.showMessage('Không thể lấy được dữ liệu!', 'danger');
           }
         });
     });
@@ -448,9 +448,9 @@ export class FinanceDailyReportPage extends PageBase {
         .catch((err) => {
           console.log(err);
           if (err.message != null) {
-            this.env.showTranslateMessage(err.message, 'danger');
+            this.env.showMessage(err.message, 'danger');
           } else {
-            this.env.showTranslateMessage('Không thể lấy được dữ liệu!', 'danger');
+            this.env.showMessage('Không thể lấy được dữ liệu!', 'danger');
           }
         });
     });
@@ -527,9 +527,9 @@ export class FinanceDailyReportPage extends PageBase {
         .catch((err) => {
           console.log(err);
           if (err.message != null) {
-            this.env.showTranslateMessage(err.message, 'danger');
+            this.env.showMessage(err.message, 'danger');
           } else {
-            this.env.showTranslateMessage('Không thể lấy được dữ liệu!', 'danger');
+            this.env.showMessage('Không thể lấy được dữ liệu!', 'danger');
           }
         });
     });
@@ -606,9 +606,9 @@ export class FinanceDailyReportPage extends PageBase {
         .catch((err) => {
           console.log(err);
           if (err.message != null) {
-            this.env.showTranslateMessage(err.message, 'danger');
+            this.env.showMessage(err.message, 'danger');
           } else {
-            this.env.showTranslateMessage('Không thể lấy được dữ liệu!', 'danger');
+            this.env.showMessage('Không thể lấy được dữ liệu!', 'danger');
           }
         });
     });

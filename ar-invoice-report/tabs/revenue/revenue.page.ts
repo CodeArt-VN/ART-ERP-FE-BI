@@ -98,7 +98,7 @@ export class RevenuePage extends PageBase {
     this.loadingController
       .create({
         cssClass: 'my-custom-class',
-        message: 'Đang tạo bảng kê, xin vui lòng chờ giây lát...',
+        message: 'Please wait for a few moments',
       })
       .then((loading) => {
         loading.present();
@@ -114,9 +114,9 @@ export class RevenuePage extends PageBase {
           })
           .catch((err) => {
             if (err.message != null) {
-              this.env.showTranslateMessage(err.message, 'danger');
+              this.env.showMessage(err.message, 'danger');
             } else {
-              this.env.showTranslateMessage('Cannot extract data', 'danger');
+              this.env.showMessage('Cannot extract data', 'danger');
             }
             this.submitAttempt = false;
             if (loading) loading.dismiss();
@@ -188,7 +188,7 @@ export class RevenuePage extends PageBase {
     this.loadingController
       .create({
         cssClass: 'my-custom-class',
-        message: 'Đang tạo bảng kê, xin vui lòng chờ giây lát...',
+        message: 'Please wait for a few moments',
       })
       .then((loading) => {
         loading.present();
@@ -201,9 +201,9 @@ export class RevenuePage extends PageBase {
           })
           .catch((err) => {
             if (err.message != null) {
-              this.env.showTranslateMessage(err.message, 'danger');
+              this.env.showMessage(err.message, 'danger');
             } else {
-              this.env.showTranslateMessage('Cannot extract data', 'danger');
+              this.env.showMessage('Cannot extract data', 'danger');
             }
             this.submitAttempt = false;
             if (loading) loading.dismiss();
