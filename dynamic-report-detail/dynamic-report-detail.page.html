@@ -5,7 +5,7 @@
 <ion-content appScrollbarTheme class="scrollx" [ngClass]="{withFeature: pageConfig.isShowFeature}">
   <ion-fab
     *ngIf="pageConfig.isShowFeature && item"
-    class="feature" 
+    class="feature"
     vertical="top"
     horizontal="end"
     slot="fixed"
@@ -23,16 +23,10 @@
           ></app-form-control>
           <app-form-control [field]="{id:'Code', form : formGroup }" (change)="saveChange()"></app-form-control>
           <app-form-control [field]="{id:'Name', form : formGroup }" (change)="saveChange()"></app-form-control>
-
           <app-form-control
-            [field]="{id:'Color', type : 'color', form : formGroup }"
+            [field]="{id:'Icon', secondaryId: 'Color', label: 'Icon',  type : 'icon-color', form : formGroup }"
             (change)="saveChange()"
           ></app-form-control>
-          <app-form-control
-            [field]="{id:'Icon', type : 'icon', form : formGroup, color: formGroup.controls.Color.value }"
-            (change)="saveChange()"
-          ></app-form-control>
-
           <app-form-control
             *ngIf="pageConfig.canEdit"
             [field]="{id:'Type', type : 'ng-select', form : formGroup,  dataSource: groupList,  bindLabel: 'Name',  bindValue: 'Id' }"
@@ -212,9 +206,13 @@
           *ngIf="showComparitionData"
         >
           <ng-template let-i="row" datatable-cell-template>
-            <ion-text [color]="i['Percent ' + (m.Title || m.Property)] > 0 ? 'success' : i['Percent ' + (m.Title || m.Property)] < 0 ? 'danger' : 'warning'">
+            <ion-text
+              [color]="i['Percent ' + (m.Title || m.Property)] > 0 ? 'success' : i['Percent ' + (m.Title || m.Property)] < 0 ? 'danger' : 'warning'"
+            >
               {{ i['Percent ' + (m.Title || m.Property)] | number: '1.0-0'}}%
-              <ion-icon [name]="i['Percent ' + (m.Title || m.Property)] > 0 ? 'caret-up' : i['Percent ' + (m.Title || m.Property)] < 0 ? 'caret-down' : 'warning'"></ion-icon>
+              <ion-icon
+                [name]="i['Percent ' + (m.Title || m.Property)] > 0 ? 'caret-up' : i['Percent ' + (m.Title || m.Property)] < 0 ? 'caret-down' : 'warning'"
+              ></ion-icon>
             </ion-text>
           </ng-template>
         </datatable-column>
