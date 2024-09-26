@@ -254,7 +254,7 @@ export class SaleSummaryMobilePage extends PageBase {
   translateResult;
   currentPopover = null;
   async presentPopover(ev: any) {
-    this.translate.get('date-range-label').subscribe((message: string) => {
+    this.translate.get('Time').subscribe((message: string) => {
       this.translateResult = message;
     });
     let popover = await this.popoverCtrl.create({
