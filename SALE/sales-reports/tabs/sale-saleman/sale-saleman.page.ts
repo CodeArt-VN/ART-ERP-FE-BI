@@ -16,9 +16,10 @@ import { ApiSetting } from 'src/app/services/static/api-setting';
 import { CommonService } from 'src/app/services/core/common.service';
 
 @Component({
-  selector: 'app-sale-saleman',
-  templateUrl: 'sale-saleman.page.html',
-  styleUrls: ['sale-saleman.page.scss'],
+    selector: 'app-sale-saleman',
+    templateUrl: 'sale-saleman.page.html',
+    styleUrls: ['sale-saleman.page.scss'],
+    standalone: false
 })
 export class SaleSalemanPage extends PageBase {
   today = '';

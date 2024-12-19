@@ -17,9 +17,10 @@ import {
 } from 'src/app/services/static/services.service';
 
 @Component({
-  selector: 'app-dynamic-dashboard',
-  templateUrl: 'dynamic-dashboard.page.html',
-  styleUrls: ['dynamic-dashboard.page.scss'],
+    selector: 'app-dynamic-dashboard',
+    templateUrl: 'dynamic-dashboard.page.html',
+    styleUrls: ['dynamic-dashboard.page.scss'],
+    standalone: false
 })
 export class DynamicDashboardPage extends PageBase {
   @ViewChild('toolPopover') toolPopover;

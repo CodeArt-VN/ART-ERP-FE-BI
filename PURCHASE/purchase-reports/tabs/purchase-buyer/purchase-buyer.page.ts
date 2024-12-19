@@ -8,9 +8,10 @@ import { ApiSetting } from 'src/app/services/static/api-setting';
 import { CommonService } from 'src/app/services/core/common.service';
 
 @Component({
-  selector: 'app-purchase-buyer',
-  templateUrl: 'purchase-buyer.page.html',
-  styleUrls: ['purchase-buyer.page.scss'],
+    selector: 'app-purchase-buyer',
+    templateUrl: 'purchase-buyer.page.html',
+    styleUrls: ['purchase-buyer.page.scss'],
+    standalone: false
 })
 export class PurchaseBuyerPage extends PageBase {
   today = '';

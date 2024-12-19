@@ -13,9 +13,10 @@ import { catchError, distinctUntilChanged, switchMap, tap } from 'rxjs/operators
 import { lib } from 'src/app/services/static/global-functions';
 
 @Component({
-  selector: 'app-price-report',
-  templateUrl: 'price-report.page.html',
-  styleUrls: ['price-report.page.scss'],
+    selector: 'app-price-report',
+    templateUrl: 'price-report.page.html',
+    styleUrls: ['price-report.page.scss'],
+    standalone: false
 })
 export class PriceReportPage extends PageBase {
   priceVersionList = [];

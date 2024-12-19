@@ -6,9 +6,10 @@ import { CustomService } from 'src/app/services/custom.service';
 import { ReportService } from 'src/app/services/report.service';
 
 @Component({
-  selector: 'app-sale-overview',
-  templateUrl: 'sale-overview.page.html',
-  styleUrls: ['sale-overview.page.scss'],
+    selector: 'app-sale-overview',
+    templateUrl: 'sale-overview.page.html',
+    styleUrls: ['sale-overview.page.scss'],
+    standalone: false
 })
 export class SaleOverviewPage extends PageBase {
   constructor(

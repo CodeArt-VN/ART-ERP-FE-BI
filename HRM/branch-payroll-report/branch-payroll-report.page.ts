@@ -8,9 +8,10 @@ import { environment } from 'src/environments/environment';
 import { lib } from 'src/app/services/static/global-functions';
 
 @Component({
-  selector: 'app-branch-payroll-report',
-  templateUrl: 'branch-payroll-report.page.html',
-  styleUrls: ['branch-payroll-report.page.scss'],
+    selector: 'app-branch-payroll-report',
+    templateUrl: 'branch-payroll-report.page.html',
+    styleUrls: ['branch-payroll-report.page.scss'],
+    standalone: false
 })
 export class BranchPayrollReportPage extends PageBase {
   itemsState = [];

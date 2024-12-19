@@ -16,9 +16,10 @@ import { ApiSetting } from 'src/app/services/static/api-setting';
 import { CommonService } from 'src/app/services/core/common.service';
 
 @Component({
-  selector: 'app-ap-invoice',
-  templateUrl: 'ap-invoice.page.html',
-  styleUrls: ['ap-invoice.page.scss'],
+    selector: 'app-ap-invoice',
+    templateUrl: 'ap-invoice.page.html',
+    styleUrls: ['ap-invoice.page.scss'],
+    standalone: false
 })
 export class ApInvoicePage extends PageBase {
   today = '';

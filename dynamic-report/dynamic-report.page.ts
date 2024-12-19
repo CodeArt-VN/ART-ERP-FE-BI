@@ -18,9 +18,10 @@ import {
 import { Location } from '@angular/common';
 
 @Component({
-  selector: 'app-dynamic-report',
-  templateUrl: 'dynamic-report.page.html',
-  styleUrls: ['dynamic-report.page.scss'],
+    selector: 'app-dynamic-report',
+    templateUrl: 'dynamic-report.page.html',
+    styleUrls: ['dynamic-report.page.scss'],
+    standalone: false
 })
 export class DynamicReportPage extends PageBase {
   @ViewChild('toolPopover') toolPopover;

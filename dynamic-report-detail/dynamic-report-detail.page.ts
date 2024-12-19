@@ -10,9 +10,10 @@ import { lib } from 'src/app/services/static/global-functions';
 import { SYS_FormProvider } from 'src/app/services/static/services.service';
 
 @Component({
-  selector: 'app-dynamic-report-detail',
-  templateUrl: 'dynamic-report-detail.page.html',
-  styleUrls: ['dynamic-report-detail.page.scss'],
+    selector: 'app-dynamic-report-detail',
+    templateUrl: 'dynamic-report-detail.page.html',
+    styleUrls: ['dynamic-report-detail.page.scss'],
+    standalone: false
 })
 export class DynamicReportDetailPage extends PageBase {
   viewDimension = '';

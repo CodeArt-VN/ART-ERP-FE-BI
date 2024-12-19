@@ -10,9 +10,10 @@ import { catchError, distinctUntilChanged, switchMap, tap } from 'rxjs/operators
 import { lib } from 'src/app/services/static/global-functions';
 
 @Component({
-  selector: 'app-ar-invoice-report',
-  templateUrl: './ar-invoice-report.page.html',
-  styleUrls: ['./ar-invoice-report.page.scss'],
+    selector: 'app-ar-invoice-report',
+    templateUrl: './ar-invoice-report.page.html',
+    styleUrls: ['./ar-invoice-report.page.scss'],
+    standalone: false
 })
 export class ARInvoiceReportPage extends PageBase {
   segmentView = 'ar-invoice-report/revenue';

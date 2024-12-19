@@ -1,12 +1,11 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component } from '@angular/core';
 import {
   ActionSheetController,
   AlertController,
   LoadingController,
-  PopoverController,
   NavController,
   NavParams,
-  Platform,
+  PopoverController
 } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { PageBase } from 'src/app/page-base';
@@ -19,10 +18,11 @@ import { BRA_BranchProvider } from 'src/app/services/static/services.service';
 import { PopoverPage } from '../../../SYS/popover/popover.page';
 
 @Component({
-  selector: 'app-sale-summary-mobile',
-  templateUrl: './sale-summary-mobile.page.html',
-  styleUrls: ['./sale-summary-mobile.page.scss'],
-  providers: [PopoverPage, NavParams],
+    selector: 'app-sale-summary-mobile',
+    templateUrl: './sale-summary-mobile.page.html',
+    styleUrls: ['./sale-summary-mobile.page.scss'],
+    providers: [PopoverPage, NavParams],
+    standalone: false
 })
 export class SaleSummaryMobilePage extends PageBase {
   segmentView = {
@@ -178,7 +178,7 @@ export class SaleSummaryMobilePage extends PageBase {
     '#CC00CC',
     '#CC0066',
   ];
-  pieChartOption: echarts.EChartsOption = {
+  pieChartOption = {
     color: this.colorArray,
     legend: { show: false },
     series: [

@@ -16,9 +16,10 @@ import { ApiSetting } from 'src/app/services/static/api-setting';
 import { CommonService } from 'src/app/services/core/common.service';
 
 @Component({
-  selector: 'app-revenue',
-  templateUrl: 'revenue.page.html',
-  styleUrls: ['revenue.page.scss'],
+    selector: 'app-revenue',
+    templateUrl: 'revenue.page.html',
+    styleUrls: ['revenue.page.scss'],
+    standalone: false
 })
 export class RevenuePage extends PageBase {
   today = '';

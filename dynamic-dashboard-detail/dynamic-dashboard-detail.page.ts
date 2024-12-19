@@ -12,9 +12,10 @@ import { DisplayGrid, GridType, GridsterItem } from 'angular-gridster2';
 import { BI_DashboardDetailProvider, BI_DashboardProvider } from 'src/app/services/static/services.service';
 
 @Component({
-  selector: 'app-dynamic-dashboard-detail',
-  templateUrl: 'dynamic-dashboard-detail.page.html',
-  styleUrls: ['dynamic-dashboard-detail.page.scss'],
+    selector: 'app-dynamic-dashboard-detail',
+    templateUrl: 'dynamic-dashboard-detail.page.html',
+    styleUrls: ['dynamic-dashboard-detail.page.scss'],
+    standalone: false
 })
 export class DynamicDashboardDetailPage extends PageBase {
   code = '';

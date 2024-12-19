@@ -9,9 +9,10 @@ import { catchError, distinctUntilChanged, switchMap, tap } from 'rxjs/operators
 import { lib } from 'src/app/services/static/global-functions';
 
 @Component({
-  selector: 'app-purchase-reports',
-  templateUrl: './purchase-reports.page.html',
-  styleUrls: ['./purchase-reports.page.scss'],
+    selector: 'app-purchase-reports',
+    templateUrl: './purchase-reports.page.html',
+    styleUrls: ['./purchase-reports.page.scss'],
+    standalone: false
 })
 export class PurchaseReportsPage extends PageBase {
   segmentView = 'purchase-reports/purchase-buyer';

@@ -9,9 +9,10 @@ import { ApiSetting } from 'src/app/services/static/api-setting';
 import { lib } from 'src/app/services/static/global-functions';
 
 @Component({
-  selector: 'app-price-list-compare',
-  templateUrl: './price-list-compare.component.html',
-  styleUrls: ['./price-list-compare.component.scss'],
+    selector: 'app-price-list-compare',
+    templateUrl: './price-list-compare.component.html',
+    styleUrls: ['./price-list-compare.component.scss'],
+    standalone: false
 })
 export class PriceListCompareComponent extends PageBase {
   columns = [];
