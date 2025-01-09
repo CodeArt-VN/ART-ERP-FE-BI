@@ -75,7 +75,9 @@
     <div class="row-1" *ngIf="(items.length && segmentView.Page == 's2')">
       <div class="col-1">
         <div class="c-box">
-          <app-pie-chart [chartOption]="pieChartOption" [dataset]="pieChartDataset"></app-pie-chart>
+          <app-e-chart *ngIf="!chartLoading" [chartOption]="chartOption" chartType="manual"></app-e-chart>
+          
+          
         </div>
       </div>
       <div class="col-2">
@@ -132,7 +134,7 @@
       <ng-container *ngFor="let i of items; let j = index;">
         <div *ngIf="myHeaderFn(i, j, items); let header" class="row header">
           <div class="col-id cell">#{{header.IDSaleOrder}}</div>
-          <div class="col-name cell">{{header.ContactName}} ({{header.ContactCode}})</div>
+          <div class="col-name cell">{{header.ContactName}} <span *ngIf="header.ContactCode"> ({{header.ContactCode}})</span></div>
           <div class="col-OrderDate cell">{{header.OrderDate}}</div>
           <div class="col-money cell">{{header.OriginalTotalAfterDiscountText}}</div>
         </div>

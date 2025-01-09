@@ -30,8 +30,6 @@ export class SaleSummaryMobilePage extends PageBase {
     ShowSpinner: true,
   };
 
-  pieChartDataset = { source: [] };
-
   colorArray = [
     '#FF3333',
     '#FF9933',
@@ -178,21 +176,6 @@ export class SaleSummaryMobilePage extends PageBase {
     '#CC00CC',
     '#CC0066',
   ];
-  pieChartOption = {
-    color: this.colorArray,
-    legend: { show: false },
-    series: [
-      {
-        type: 'pie',
-        name: '',
-        encode: {
-          itemName: 'name',
-          value: 'value',
-        },
-        label: { show: false },
-      },
-    ],
-  };
 
   reportQuery: any = {
     selectedBTNDate: 'today',
@@ -246,8 +229,6 @@ export class SaleSummaryMobilePage extends PageBase {
   }
 
   reload(ev: any) {
-    this.pieChartDataset.source = [];
-    this.pieChartDataset = { ...this.pieChartDataset };
     this.preLoadData(ev);
   }
 
@@ -463,8 +444,22 @@ export class SaleSummaryMobilePage extends PageBase {
     this.buildtotalPieChart();
   }
 
+  chartOption = {
+    tooltip: { trigger: 'item' },
+    series: [
+      {
+        type: 'pie',
+        radius: ['40%', '70%'],
+        avoidLabelOverlap: false,
+        label: { show: false },
+        color: this.colorArray,
+        data: [],
+      },
+    ],
+  };
+  chartLoading = false;
   async buildtotalPieChart() {
-    console.log('buildtotalPieChart');
+    this.chartLoading = true;
     let dataArray = [];
     let labelsArray = [];
 
@@ -480,13 +475,16 @@ export class SaleSummaryMobilePage extends PageBase {
       }
     }
 
-    this.pieChartDataset.source = [];
+    let data = [];
     for (let idx = 0; idx < dataArray.length; idx++) {
       let tempData = { value: dataArray[idx], name: labelsArray[idx] };
-      this.pieChartDataset.source.push(tempData);
+      data.push(tempData);
     }
-
-    this.pieChartDataset = { ...this.pieChartDataset };
+    this.chartOption.series[0].data = data;
+    
+    setTimeout(() => {
+      this.chartLoading = false;
+    }, 1);
   }
 
   myHeaderFn(record, recordIndex, records) {
@@ -521,5 +519,5 @@ export class SaleSummaryMobilePage extends PageBase {
     // }
   }
 
-  //colorArray = ['#FF9999', '#FFCC99', '#FFFF99', '#CCFF99', '#99FF99', '#99FFCC', '#99FFFF', '#99CCFF', '#9999FF', '#CC99FF', '#FF99FF', '#FF99CC', '#FF3333', '#FF9933', '#FFFF33', '#99FF33', '#33FF33', '#33FF99', '#33FFFF', '#3399FF', '#3333FF', '#9933FF', '#FF33FF', '#FF3399', '#CC0000', '#CC6600', '#CCCC00', '#66CC00', '#00CC00', '#00CC66', '#00CCCC', '#006600', '#0000CC', '#6600CC', '#CC00CC', '#CC0066', '#FF9999', '#FFCC99', '#FFFF99', '#CCFF99', '#99FF99', '#99FFCC', '#99FFFF', '#99CCFF', '#9999FF', '#CC99FF', '#FF99FF', '#FF99CC', '#FF3333', '#FF9933', '#FFFF33', '#99FF33', '#33FF33', '#33FF99', '#33FFFF', '#3399FF', '#3333FF', '#9933FF', '#FF33FF', '#FF3399', '#CC0000', '#CC6600', '#CCCC00', '#66CC00', '#00CC00', '#00CC66', '#00CCCC', '#006600', '#0000CC', '#6600CC', '#CC00CC', '#CC0066', '#FF9999', '#FFCC99', '#FFFF99', '#CCFF99', '#99FF99', '#99FFCC', '#99FFFF', '#99CCFF', '#9999FF', '#CC99FF', '#FF99FF', '#FF99CC', '#FF3333', '#FF9933', '#FFFF33', '#99FF33', '#33FF33', '#33FF99', '#33FFFF', '#3399FF', '#3333FF', '#9933FF', '#FF33FF', '#FF3399', '#CC0000', '#CC6600', '#CCCC00', '#66CC00', '#00CC00', '#00CC66', '#00CCCC', '#006600', '#0000CC', '#6600CC', '#CC00CC', '#CC0066', '#FF9999', '#FFCC99', '#FFFF99', '#CCFF99', '#99FF99', '#99FFCC', '#99FFFF', '#99CCFF', '#9999FF', '#CC99FF', '#FF99FF', '#FF99CC', '#FF3333', '#FF9933', '#FFFF33', '#99FF33', '#33FF33', '#33FF99', '#33FFFF', '#3399FF', '#3333FF', '#9933FF', '#FF33FF', '#FF3399', '#CC0000', '#CC6600', '#CCCC00', '#66CC00', '#00CC00', '#00CC66', '#00CCCC', '#006600', '#0000CC', '#6600CC', '#CC00CC', '#CC0066',]
+  
 }
