@@ -20,6 +20,7 @@ import { BI_DashboardDetailProvider, BI_DashboardProvider } from 'src/app/servic
 export class DynamicDashboardDetailPage extends PageBase {
   code = '';
   @ViewChild('reportSearch') searchBar: IonSearchbar;
+   observer = null;
   options: any;
   items: Array<GridsterItem>;
   isAddReportModalOpen = false;
@@ -90,6 +91,7 @@ export class DynamicDashboardDetailPage extends PageBase {
 
   loadedData(event?: any, ignoredFromGroup?: boolean): void {
     this.segmentView = null;
+    this.items = [];
     if (this.item?.Id) {
       //Grid size config
 
@@ -123,8 +125,10 @@ export class DynamicDashboardDetailPage extends PageBase {
               };
             });
           }
-
-          this.setSegmentView();
+          setTimeout(() => {
+            this.setSegmentView();
+          }, 0);
+          
           super.loadedData(event, ignoredFromGroup);
         })
         .catch((err) => {
@@ -140,11 +144,19 @@ export class DynamicDashboardDetailPage extends PageBase {
   }
 
   ionViewDidEnter() {
+    console.log('ionViewDidEnter');
     super.ionViewDidEnter();
-    this.setSegmentView();
     //Resize grid when parent dom resize
     var chartDom = document.getElementById('dashboard');
-    new ResizeObserver(() => this.setSegmentView()).observe(chartDom);
+    this.observer = new ResizeObserver(() => this.setSegmentView());
+    this.observer.observe(chartDom);
+  }
+
+  ionViewWillLeave() {
+    super.ionViewWillLeave();
+    if (this.observer) {
+      this.observer.disconnect();
+    }
   }
 
   /**
@@ -231,6 +243,8 @@ export class DynamicDashboardDetailPage extends PageBase {
   }
 
   setSegmentView(layout = null) {
+    if(this.items.length == 0) return;
+    
     let l = layout;
     let element = document.getElementById('grid-layout');
 
@@ -254,7 +268,8 @@ export class DynamicDashboardDetailPage extends PageBase {
         l = layouts.find((x) => x.Code == 'xl');
       }
     }
-
+    console.log(layout, l);
+    
     if (!l) {
       return;
     }
