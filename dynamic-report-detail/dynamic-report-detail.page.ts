@@ -40,6 +40,7 @@ export class DynamicReportDetailPage extends PageBase {
   ) {
     super();
     this.pageConfig.isDetailPage = true;
+    this.pageConfig.ShowFeature = true;
     this.id = this.route.snapshot.paramMap.get('id');
     this.code = this.route.snapshot.paramMap.get('code');
 
