@@ -44,6 +44,7 @@ export class DynamicDashboardDetailPage extends PageBase {
     super();
     this.code = this.route.snapshot.paramMap.get('code');
     this.pageConfig.isShowFeature = false;
+    this.pageConfig.ShowFeature = true;
     this.pageConfig.isDetailPage = true;
 
     this.formGroup = formBuilder.group({
