@@ -8,13 +8,7 @@ import { ShareModule } from 'src/app/share.module';
 import { PipesModule } from 'src/app/pipes/pipes.module';
 
 @NgModule({
-  imports: [
-    IonicModule,
-    CommonModule,
-    FormsModule,
-    ShareModule,
-    RouterModule.forChild([{ path: '', component: DynamicReportDetailPage }]),
-  ],
-  declarations: [DynamicReportDetailPage],
+	imports: [IonicModule, CommonModule, FormsModule, ShareModule, RouterModule.forChild([{ path: '', component: DynamicReportDetailPage }])],
+	declarations: [DynamicReportDetailPage],
 })
 export class DynamicReportDetailPageModule {}

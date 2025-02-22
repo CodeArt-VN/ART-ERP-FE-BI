@@ -8,15 +8,15 @@ import { ShareModule } from 'src/app/share.module';
 import { PriceReportComponentsModule } from './components/price-report-components.module';
 
 @NgModule({
-  imports: [
-    CommonModule,
-    FormsModule,
-    IonicModule,
-    ReactiveFormsModule,
-    PriceReportComponentsModule,
-    ShareModule,
-    RouterModule.forChild([{ path: '', component: PriceReportPage }]),
-  ],
-  declarations: [PriceReportPage],
+	imports: [
+		CommonModule,
+		FormsModule,
+		IonicModule,
+		ReactiveFormsModule,
+		PriceReportComponentsModule,
+		ShareModule,
+		RouterModule.forChild([{ path: '', component: PriceReportPage }]),
+	],
+	declarations: [PriceReportPage],
 })
 export class PriceReportPageModule {}

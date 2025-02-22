@@ -7,13 +7,7 @@ import { DynamicReportPage } from './dynamic-report.page';
 import { ShareModule } from 'src/app/share.module';
 
 @NgModule({
-  imports: [
-    IonicModule,
-    CommonModule,
-    FormsModule,
-    ShareModule,
-    RouterModule.forChild([{ path: '', component: DynamicReportPage }]),
-  ],
-  declarations: [DynamicReportPage],
+	imports: [IonicModule, CommonModule, FormsModule, ShareModule, RouterModule.forChild([{ path: '', component: DynamicReportPage }])],
+	declarations: [DynamicReportPage],
 })
 export class DynamicReportPageModule {}

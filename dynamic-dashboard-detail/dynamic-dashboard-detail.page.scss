@@ -1,121 +1,121 @@
 gridster {
-  background-color: transparent;
+	background-color: transparent;
 
-  ::ng-deep .gridster-column {
-    border-left: 1px solid  rgba(var(--ion-color-primary-rgb, 0, 0, 0), 0.2);
-    border-right: 1px solid rgba(var(--ion-color-primary-rgb, 0, 0, 0), 0.2);
-  }
-  ::ng-deep .gridster-row {
-    border-top: 1px solid rgba(var(--ion-color-primary-rgb, 0, 0, 0), 0.2);
-    border-bottom: 1px solid rgba(var(--ion-color-primary-rgb, 0, 0, 0), 0.2);
-  }
+	::ng-deep .gridster-column {
+		border-left: 1px solid rgba(var(--ion-color-primary-rgb, 0, 0, 0), 0.2);
+		border-right: 1px solid rgba(var(--ion-color-primary-rgb, 0, 0, 0), 0.2);
+	}
+	::ng-deep .gridster-row {
+		border-top: 1px solid rgba(var(--ion-color-primary-rgb, 0, 0, 0), 0.2);
+		border-bottom: 1px solid rgba(var(--ion-color-primary-rgb, 0, 0, 0), 0.2);
+	}
 
-  gridster-item {
-    background-color: transparent;
-    overflow: visible;
+	gridster-item {
+		background-color: transparent;
+		overflow: visible;
 
-    &:hover {
-      ::ng-deep .gridster-item-resizable-handler.handle-e
+		&:hover {
+			::ng-deep .gridster-item-resizable-handler.handle-e
             //,::ng-deep .gridster-item-resizable-handler.handle-w
-      {
-        visibility: visible;
-      }
+			{
+				visibility: visible;
+			}
 
-      ::ng-deep .gridster-item-resizable-handler.handle-se {
-        border-color: transparent transparent var(--ion-color-primary);
-      }
-    }
-    ::ng-deep .gridster-item-resizable-handler.handle-e,
+			::ng-deep .gridster-item-resizable-handler.handle-se {
+				border-color: transparent transparent var(--ion-color-primary);
+			}
+		}
+		::ng-deep .gridster-item-resizable-handler.handle-e,
         //::ng-deep .gridster-item-resizable-handler.handle-w,
         ::ng-deep .gridster-item-resizable-handler.handle-s
         //::ng-deep .gridster-item-resizable-handler.handle-n
-    {
-      position: absolute;
+		{
+			position: absolute;
 
-      top: 50%;
-      background: var(--table-header-background);
-      height: 64px;
-      width: 16px;
+			top: 50%;
+			background: var(--table-header-background);
+			height: 64px;
+			width: 16px;
 
-      border-radius: 8px;
-      flex-direction: row;
-      -webkit-box-align: center;
-      align-items: center;
-      -webkit-box-pack: center;
-      justify-content: center;
-      padding: 0px;
-      box-shadow: rgba(0, 0, 0, 0.3) 0px 0px 3px;
-      visibility: visible; // hidden;
-      display: flex;
+			border-radius: 8px;
+			flex-direction: row;
+			-webkit-box-align: center;
+			align-items: center;
+			-webkit-box-pack: center;
+			justify-content: center;
+			padding: 0px;
+			box-shadow: rgba(0, 0, 0, 0.3) 0px 0px 3px;
+			visibility: visible; // hidden;
+			display: flex;
 
-      &::before {
-        content: '';
-        position: initial;
-        border-top: 4px solid transparent;
-        border-right-width: 4px;
-        border-bottom: 4px solid transparent;
-        border-right-style: solid;
-        border-image: initial;
-        border-left: none;
-        border-right-color: var(--ion-color-primary);
-      }
+			&::before {
+				content: '';
+				position: initial;
+				border-top: 4px solid transparent;
+				border-right-width: 4px;
+				border-bottom: 4px solid transparent;
+				border-right-style: solid;
+				border-image: initial;
+				border-left: none;
+				border-right-color: var(--ion-color-primary);
+			}
 
-      &::after {
-        content: '';
-        position: initial;
-        border-top: 4px solid transparent;
-        border-bottom: 4px solid transparent;
-        border-left-width: 4px;
-        border-left-style: solid;
-        border-image: initial;
-        border-right: none;
-        border-left-color: var(--ion-color-primary);
-        margin-left: 2px;
-      }
-    }
+			&::after {
+				content: '';
+				position: initial;
+				border-top: 4px solid transparent;
+				border-bottom: 4px solid transparent;
+				border-left-width: 4px;
+				border-left-style: solid;
+				border-image: initial;
+				border-right: none;
+				border-left-color: var(--ion-color-primary);
+				margin-left: 2px;
+			}
+		}
 
-    ::ng-deep .gridster-item-resizable-handler.handle-s
+		::ng-deep .gridster-item-resizable-handler.handle-s
         // ,::ng-deep .gridster-item-resizable-handler.handle-n
-    {
-      rotate: 90deg;
-      left: 50%;
-      margin-left: -8px;
-    }
+		{
+			rotate: 90deg;
+			left: 50%;
+			margin-left: -8px;
+		}
 
-    ::ng-deep .gridster-item-resizable-handler.handle-e {
-      right: 0px;
-      left: auto;
-      margin: -32px -8px 0px 0px;
-    }
+		::ng-deep .gridster-item-resizable-handler.handle-e {
+			right: 0px;
+			left: auto;
+			margin: -32px -8px 0px 0px;
+		}
 
-    // ::ng-deep .gridster-item-resizable-handler.handle-w {
-    //     right: auto;
-    //     left: 0;
-    //     margin: -32px 0px 0px -8px;
-    // }
+		// ::ng-deep .gridster-item-resizable-handler.handle-w {
+		//     right: auto;
+		//     left: 0;
+		//     margin: -32px 0px 0px -8px;
+		// }
 
-    ::ng-deep .gridster-item-resizable-handler.handle-s {
-      top: auto;
-      bottom: -32px;
-    }
-    // ::ng-deep .gridster-item-resizable-handler.handle-n{
-    //     top: -32px;
-    // }
+		::ng-deep .gridster-item-resizable-handler.handle-s {
+			top: auto;
+			bottom: -32px;
+		}
+		// ::ng-deep .gridster-item-resizable-handler.handle-n{
+		//     top: -32px;
+		// }
 
-    &.gridster-item-resizing,
-    &.gridster-item-moving {
-      z-index: 20;
-      box-shadow: none; // 0 0 5px 5px var(--ion-color-primary);
-    }
-  }
+		&.gridster-item-resizing,
+		&.gridster-item-moving {
+			z-index: 20;
+			box-shadow: none; // 0 0 5px 5px var(--ion-color-primary);
+		}
+	}
 
-  ::ng-deep gridster-preview {
-    border-radius: 10px;
-    background: var(--menu-right-border-color);
-    opacity: 0.5;
-  }
+	::ng-deep gridster-preview {
+		border-radius: 10px;
+		background: var(--menu-right-border-color);
+		opacity: 0.5;
+	}
 }
 
 ion-content.scrollx::part(scroll) {
-  overflow-x: auto !important;
+	overflow-x: auto !important;
 }

@@ -9,16 +9,16 @@ import { GridsterComponent, GridsterItemComponent } from 'angular-gridster2';
 import { PipesModule } from 'src/app/pipes/pipes.module';
 
 @NgModule({
-  imports: [
-    IonicModule,
-    CommonModule,
-    FormsModule,
-    ShareModule,
-    PipesModule,
-    RouterModule.forChild([{ path: '', component: DynamicDashboardDetailPage }]),
-    GridsterComponent,
-    GridsterItemComponent,
-  ],
-  declarations: [DynamicDashboardDetailPage],
+	imports: [
+		IonicModule,
+		CommonModule,
+		FormsModule,
+		ShareModule,
+		PipesModule,
+		RouterModule.forChild([{ path: '', component: DynamicDashboardDetailPage }]),
+		GridsterComponent,
+		GridsterItemComponent,
+	],
+	declarations: [DynamicDashboardDetailPage],
 })
 export class DynamicDashboardDetailPageModule {}

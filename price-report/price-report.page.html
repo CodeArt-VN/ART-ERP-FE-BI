@@ -1,181 +1,167 @@
 <ion-header>
-  <app-list-toolbar
-    pageTitle="{{'Price reports' | translate}}"
-    [pageConfig]="pageConfig"
-    [ShowSearch]="true"
-    [selectedItems]="selectedItems"
-    [query]="query"
-    (add)="add()"
-    (refresh)="refresh()"
-    (export)="export()"
-    (import)="import($event)"
-    (help)="help()"
-    (unselect)="unselect()"
-    (archiveItems)="archiveItems()"
-    (deleteItems)="deleteItems()"
-    (changeBranch)="changeBranch($event)"
-  ></app-list-toolbar>
+	<app-list-toolbar
+		pageTitle="{{'Price reports' | translate}}"
+		[pageConfig]="pageConfig"
+		[ShowSearch]="true"
+		[selectedItems]="selectedItems"
+		[query]="query"
+		(add)="add()"
+		(refresh)="refresh()"
+		(export)="export()"
+		(import)="import($event)"
+		(help)="help()"
+		(unselect)="unselect()"
+		(archiveItems)="archiveItems()"
+		(deleteItems)="deleteItems()"
+		(changeBranch)="changeBranch($event)"
+	></app-list-toolbar>
 </ion-header>
 
-<ion-content
-  appScrollbarTheme
-  class="left scrollx"
-  [ngClass]="{withFeature: pageConfig.isShowFeature}"
-  forceOverscroll="false"
->
-  <ion-fab *ngIf="pageConfig.isShowFeature" class="feature no-print" vertical="bottom" horizontal="start" slot="fixed">
-    <div id="order-detail-page" style="position: absolute"></div>
-    <app-page-message [itemsLength]="1" [showSpinner]="pageConfig.showSpinner"></app-page-message>
-    <div *ngIf="pageConfig.showSpinner==false">
-      <div>
-        <ion-list-header lines="full">
-          <ion-label color="dark">{{'Detail listing' | translate}}</ion-label>
-        </ion-list-header>
-        <ion-list lines="full">
-          <ion-item
-            *ngFor="let i of optionGroup"
-            [color]="segmentView == i.Code? 'primary': '' "
-            button
-            detail="true"
-            class="clickable"
-            (click)="loadNode(i)"
-          >
-            <ion-label class="ion-text-wrap">
-              <h3>{{i.Name}}</h3>
-              <p *ngIf="i.Remark">{{i.Remark}}</p>
-            </ion-label>
-          </ion-item>
-        </ion-list>
-        <div class="ion-padding"></div>
-      </div>
+<ion-content appScrollbarTheme class="left scrollx" [ngClass]="{withFeature: pageConfig.isShowFeature}" forceOverscroll="false">
+	<ion-fab *ngIf="pageConfig.isShowFeature" class="feature no-print" vertical="bottom" horizontal="start" slot="fixed">
+		<div id="order-detail-page" style="position: absolute"></div>
+		<app-page-message [itemsLength]="1" [showSpinner]="pageConfig.showSpinner"></app-page-message>
+		<div *ngIf="pageConfig.showSpinner==false">
+			<div>
+				<ion-list-header lines="full">
+					<ion-label color="dark">{{'Detail listing' | translate}}</ion-label>
+				</ion-list-header>
+				<ion-list lines="full">
+					<ion-item *ngFor="let i of optionGroup" [color]="segmentView == i.Code? 'primary': '' " button detail="true" class="clickable" (click)="loadNode(i)">
+						<ion-label class="ion-text-wrap">
+							<h3>{{i.Name}}</h3>
+							<p *ngIf="i.Remark">{{i.Remark}}</p>
+						</ion-label>
+					</ion-item>
+				</ion-list>
+				<div class="ion-padding"></div>
+			</div>
 
-      <div *ngIf="segmentView == 'price-list-compare' ">
-        <ion-list-header lines="full">
-          <ion-label color="dark">{{'Select price list' | translate}}</ion-label>
-          <ion-button size="small" (click)="selectAllPriceList()">
-            {{'All' | translate}}
-            <!-- <ion-icon slot="icon-only" [name]="isSelectedAllPriceList ? 'checkmark-circle-outline' : 'ellipse-outline'"></ion-icon> -->
-          </ion-button>
-        </ion-list-header>
-        <ion-list>
-          <ion-item lines="full" *ngFor="let i of items">
-            <ion-checkbox slot="start" [(ngModel)]="i.isChecked" (ionChange)="priceListSelectedChange()"></ion-checkbox>
-            <ion-label class="ion-text-wrap">
-              <ion-text>
-                <h3>{{i.Name}}</h3>
-              </ion-text>
-            </ion-label>
-          </ion-item>
-          <ion-item lines="full" *ngIf="selectedPriceList.length>1">
-            <div class="c-control">
-              <label class="c-label" for="compareTo">{{'Compared to' | translate}}</label>
-              <ng-select
-                class="c-input no-check-dirty"
-                appendTo="#order-detail-page"
-                [(ngModel)]="compareWithPriceList"
-                labelForId="compareTo"
-                [items]="selectedPriceList"
-                bindLabel="Name"
-                bindValue=""
-                placeholder="{{'Select price list' | translate}}"
-              >
-                <ng-template ng-option-tmp let-i="item" let-search="searchTerm">
-                  <div *ngIf="i">
-                    <div>
-                      <span *ngFor="let l of i.levels">&nbsp;&nbsp;&nbsp;</span>
-                      <span [ngOptionHighlight]="search">{{i.Name}}</span>
-                    </div>
-                  </div>
-                </ng-template>
-              </ng-select>
-            </div>
-          </ion-item>
-        </ion-list>
-        <div class="ion-padding">
-          <div class="c-control">
-            <ion-button (click)="loadNode(null)" expand="block" [disabled]="submitAttempt">
-              {{'View price list' | translate}}
-            </ion-button>
-          </div>
-        </div>
-      </div>
+			<div *ngIf="segmentView == 'price-list-compare' ">
+				<ion-list-header lines="full">
+					<ion-label color="dark">{{'Select price list' | translate}}</ion-label>
+					<ion-button size="small" (click)="selectAllPriceList()">
+						{{'All' | translate}}
+						<!-- <ion-icon slot="icon-only" [name]="isSelectedAllPriceList ? 'checkmark-circle-outline' : 'ellipse-outline'"></ion-icon> -->
+					</ion-button>
+				</ion-list-header>
+				<ion-list>
+					<ion-item lines="full" *ngFor="let i of items">
+						<ion-checkbox slot="start" [(ngModel)]="i.isChecked" (ionChange)="priceListSelectedChange()"></ion-checkbox>
+						<ion-label class="ion-text-wrap">
+							<ion-text>
+								<h3>{{i.Name}}</h3>
+							</ion-text>
+						</ion-label>
+					</ion-item>
+					<ion-item lines="full" *ngIf="selectedPriceList.length>1">
+						<div class="c-control">
+							<label class="c-label" for="compareTo">{{'Compared to' | translate}}</label>
+							<ng-select
+								class="c-input no-check-dirty"
+								appendTo="#order-detail-page"
+								[(ngModel)]="compareWithPriceList"
+								labelForId="compareTo"
+								[items]="selectedPriceList"
+								bindLabel="Name"
+								bindValue=""
+								placeholder="{{'Select price list' | translate}}"
+							>
+								<ng-template ng-option-tmp let-i="item" let-search="searchTerm">
+									<div *ngIf="i">
+										<div>
+											<span *ngFor="let l of i.levels">&nbsp;&nbsp;&nbsp;</span>
+											<span [ngOptionHighlight]="search">{{i.Name}}</span>
+										</div>
+									</div>
+								</ng-template>
+							</ng-select>
+						</div>
+					</ion-item>
+				</ion-list>
+				<div class="ion-padding">
+					<div class="c-control">
+						<ion-button (click)="loadNode(null)" expand="block" [disabled]="submitAttempt"> {{'View price list' | translate}} </ion-button>
+					</div>
+				</div>
+			</div>
 
-      <div *ngIf="segmentView == 'price-list-version-compare' ">
-        <ion-list-header lines="full">
-          <ion-label color="dark">{{'Select price list' | translate}}</ion-label>
-        </ion-list-header>
-        <ion-list>
-          <ion-item lines="full">
-            <div class="c-control">
-              <ng-select
-                class="c-input no-check-dirty"
-                (change)="selectPriceList();"
-                appendTo="#order-detail-page"
-                [(ngModel)]="item"
-                labelForId="IDBranch"
-                [items]="items"
-                bindLabel="Name"
-                bindValue=""
-                placeholder="{{'Select price list' | translate}}"
-              >
-                <ng-template ng-option-tmp let-i="item" let-search="searchTerm">
-                  <div *ngIf="i">
-                    <div>
-                      <span *ngFor="let l of i.levels">&nbsp;&nbsp;&nbsp;</span>
-                      <span [ngOptionHighlight]="search">{{i.Name}}</span>
-                    </div>
-                  </div>
-                </ng-template>
-              </ng-select>
-            </div>
-          </ion-item>
-          <ion-item lines="full" *ngFor="let i of priceVersionList">
-            <ion-checkbox slot="start" [(ngModel)]="i.isChecked" (ionChange)="selectPriceListVersion()"></ion-checkbox>
-            <ion-label class="ion-text-wrap">
-              <ion-text>
-                <h3>{{i.Name}}</h3>
-              </ion-text>
-              <p *ngIf="i.AppliedDate">
-                <b>
-                  <small>
-                    <ion-text color="primary">{{'Applied date' | translate}}: {{i.AppliedDateText}}</ion-text>
-                  </small>
-                </b>
-              </p>
-            </ion-label>
-          </ion-item>
-          <ion-item lines="full" *ngIf="selectedVersionList.length>1">
-            <div class="c-control">
-              <label class="c-label" for="compareTo">{{'Compared to' | translate}}</label>
-              <ng-select
-                class="c-input no-check-dirty"
-                appendTo="#order-detail-page"
-                [(ngModel)]="compareWithVersion"
-                labelForId="compareTo"
-                [items]="selectedVersionList"
-                bindLabel="Name"
-                bindValue=""
-                placeholder="{{'Select price list' | translate}}"
-              >
-                <ng-template ng-option-tmp let-i="item" let-search="searchTerm">
-                  <div *ngIf="i">
-                    <div>
-                      <span *ngFor="let l of i.levels">&nbsp;&nbsp;&nbsp;</span>
-                      <span [ngOptionHighlight]="search">{{i.Name}}</span>
-                    </div>
-                  </div>
-                </ng-template>
-              </ng-select>
-            </div>
-          </ion-item>
-        </ion-list>
+			<div *ngIf="segmentView == 'price-list-version-compare' ">
+				<ion-list-header lines="full">
+					<ion-label color="dark">{{'Select price list' | translate}}</ion-label>
+				</ion-list-header>
+				<ion-list>
+					<ion-item lines="full">
+						<div class="c-control">
+							<ng-select
+								class="c-input no-check-dirty"
+								(change)="selectPriceList();"
+								appendTo="#order-detail-page"
+								[(ngModel)]="item"
+								labelForId="IDBranch"
+								[items]="items"
+								bindLabel="Name"
+								bindValue=""
+								placeholder="{{'Select price list' | translate}}"
+							>
+								<ng-template ng-option-tmp let-i="item" let-search="searchTerm">
+									<div *ngIf="i">
+										<div>
+											<span *ngFor="let l of i.levels">&nbsp;&nbsp;&nbsp;</span>
+											<span [ngOptionHighlight]="search">{{i.Name}}</span>
+										</div>
+									</div>
+								</ng-template>
+							</ng-select>
+						</div>
+					</ion-item>
+					<ion-item lines="full" *ngFor="let i of priceVersionList">
+						<ion-checkbox slot="start" [(ngModel)]="i.isChecked" (ionChange)="selectPriceListVersion()"></ion-checkbox>
+						<ion-label class="ion-text-wrap">
+							<ion-text>
+								<h3>{{i.Name}}</h3>
+							</ion-text>
+							<p *ngIf="i.AppliedDate">
+								<b>
+									<small>
+										<ion-text color="primary">{{'Applied date' | translate}}: {{i.AppliedDateText}}</ion-text>
+									</small>
+								</b>
+							</p>
+						</ion-label>
+					</ion-item>
+					<ion-item lines="full" *ngIf="selectedVersionList.length>1">
+						<div class="c-control">
+							<label class="c-label" for="compareTo">{{'Compared to' | translate}}</label>
+							<ng-select
+								class="c-input no-check-dirty"
+								appendTo="#order-detail-page"
+								[(ngModel)]="compareWithVersion"
+								labelForId="compareTo"
+								[items]="selectedVersionList"
+								bindLabel="Name"
+								bindValue=""
+								placeholder="{{'Select price list' | translate}}"
+							>
+								<ng-template ng-option-tmp let-i="item" let-search="searchTerm">
+									<div *ngIf="i">
+										<div>
+											<span *ngFor="let l of i.levels">&nbsp;&nbsp;&nbsp;</span>
+											<span [ngOptionHighlight]="search">{{i.Name}}</span>
+										</div>
+									</div>
+								</ng-template>
+							</ng-select>
+						</div>
+					</ion-item>
+				</ion-list>
 
-        <!-- <ion-list-header lines="full">
+				<!-- <ion-list-header lines="full">
 					<ion-label color="dark">So với</ion-label>
 				</ion-list-header> -->
 
-        <div class="ion-padding">
-          <!-- <div class="c-control">
+				<div class="ion-padding">
+					<!-- <div class="c-control">
 						<ng-select class="c-input no-check-dirty" (change)="selectPriceList();" appendTo="#order-detail-page" [(ngModel)]="item" labelForId="IDBranch" [items]="items" bindLabel="Name" bindValue="" placeholder="{{'price-report-placeholder' | translate}}">
 							<ng-template ng-option-tmp let-i="item" let-search="searchTerm">
 								<div *ngIf="i">
@@ -184,28 +170,22 @@
 							</ng-template>
 						</ng-select>
 					</div> -->
-          <div class="c-control">
-            <ion-button (click)="loadNode(null)" expand="block" [disabled]="submitAttempt">
-              {{'View price list' | translate}}
-            </ion-button>
-          </div>
-        </div>
-      </div>
+					<div class="c-control">
+						<ion-button (click)="loadNode(null)" expand="block" [disabled]="submitAttempt"> {{'View price list' | translate}} </ion-button>
+					</div>
+				</div>
+			</div>
 
-      <div class="ion-padding" style="padding-bottom: 0"></div>
-    </div>
-  </ion-fab>
+			<div class="ion-padding" style="padding-bottom: 0"></div>
+		</div>
+	</ion-fab>
 
-  <div *ngIf="item && setQuery" style="min-width: 300px; height: calc(100vh - 65px)">
-    <app-price-list-compare
-      [showSearch]="pageConfig.isShowSearch"
-      [setQuery]="setQuery"
-      *ngIf="segmentView=='price-list-compare'"
-    ></app-price-list-compare>
-    <app-price-list-version-compare
-      [showSearch]="pageConfig.isShowSearch"
-      [setQuery]="setQuery"
-      *ngIf="segmentView=='price-list-version-compare'"
-    ></app-price-list-version-compare>
-  </div>
+	<div *ngIf="item && setQuery" style="min-width: 300px; height: calc(100vh - 65px)">
+		<app-price-list-compare [showSearch]="pageConfig.isShowSearch" [setQuery]="setQuery" *ngIf="segmentView=='price-list-compare'"></app-price-list-compare>
+		<app-price-list-version-compare
+			[showSearch]="pageConfig.isShowSearch"
+			[setQuery]="setQuery"
+			*ngIf="segmentView=='price-list-version-compare'"
+		></app-price-list-version-compare>
+	</div>
 </ion-content>

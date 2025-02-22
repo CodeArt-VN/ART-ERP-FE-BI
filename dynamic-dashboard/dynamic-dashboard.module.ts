@@ -7,13 +7,7 @@ import { DynamicDashboardPage } from './dynamic-dashboard.page';
 import { ShareModule } from 'src/app/share.module';
 
 @NgModule({
-  imports: [
-    IonicModule,
-    CommonModule,
-    FormsModule,
-    ShareModule,
-    RouterModule.forChild([{ path: '', component: DynamicDashboardPage }]),
-  ],
-  declarations: [DynamicDashboardPage],
+	imports: [IonicModule, CommonModule, FormsModule, ShareModule, RouterModule.forChild([{ path: '', component: DynamicDashboardPage }])],
+	declarations: [DynamicDashboardPage],
 })
 export class DynamicDashboardPageModule {}

@@ -1,134 +1,117 @@
 <ion-header>
-  <app-list-toolbar
-    [ShowRefresh]="false"
-    [ShowSearch]="false"
-    [pageConfig]="pageConfig"
-    [selectedItems]="selectedItems"
-    [query]="query"
-    (add)="add()"
-    (refresh)="refresh()"
-    (export)="export()"
-    (import)="import($event)"
-    (help)="help()"
-    (unselect)="unselect()"
-    (archiveItems)="archiveItems()"
-    (deleteItems)="deleteItems()"
-    (changeBranch)="changeBranch($event)"
-  >
-    <ng-container>
-      <ng-select
-        class="c-input no-check-dirty"
-        appendTo="#ng-select-holder"
-        [clearable]="false"
-        (change)="changeCycle()"
-        [(ngModel)]="selectedCycle"
-        [items]="cycles"
-        bindLabel="Name"
-        bindValue=""
-        placeholder="Chọn kỳ lương..."
-      >
-        <ng-template let-i="item" let-search="searchTerm">
-          <div *ngIf="i">
-            <div>
-              <span *ngFor="let l of i.levels">&nbsp;&nbsp;&nbsp;</span>
-              <span>{{i.Name}}</span>
-            </div>
-          </div>
-        </ng-template>
-      </ng-select>
+	<app-list-toolbar
+		[ShowRefresh]="false"
+		[ShowSearch]="false"
+		[pageConfig]="pageConfig"
+		[selectedItems]="selectedItems"
+		[query]="query"
+		(add)="add()"
+		(refresh)="refresh()"
+		(export)="export()"
+		(import)="import($event)"
+		(help)="help()"
+		(unselect)="unselect()"
+		(archiveItems)="archiveItems()"
+		(deleteItems)="deleteItems()"
+		(changeBranch)="changeBranch($event)"
+	>
+		<ng-container>
+			<ng-select
+				class="c-input no-check-dirty"
+				appendTo="#ng-select-holder"
+				[clearable]="false"
+				(change)="changeCycle()"
+				[(ngModel)]="selectedCycle"
+				[items]="cycles"
+				bindLabel="Name"
+				bindValue=""
+				placeholder="Chọn kỳ lương..."
+			>
+				<ng-template let-i="item" let-search="searchTerm">
+					<div *ngIf="i">
+						<div>
+							<span *ngFor="let l of i.levels">&nbsp;&nbsp;&nbsp;</span>
+							<span>{{i.Name}}</span>
+						</div>
+					</div>
+				</ng-template>
+			</ng-select>
 
-      <ion-button (click)="syncFromHR()" title="Đồng bộ từ HR về ERP" class="ion-hide-sm-down">
-        <ion-icon slot="icon-only" name="sync-outline"></ion-icon>
-      </ion-button>
-      <ion-button (click)="syncToSAP()" title="Đồng bộ về SAP" class="ion-hide-sm-down">
-        <ion-icon slot="icon-only" name="send-outline"></ion-icon>
-      </ion-button>
-    </ng-container>
-  </app-list-toolbar>
+			<ion-button (click)="syncFromHR()" title="Đồng bộ từ HR về ERP" class="ion-hide-sm-down">
+				<ion-icon slot="icon-only" name="sync-outline"></ion-icon>
+			</ion-button>
+			<ion-button (click)="syncToSAP()" title="Đồng bộ về SAP" class="ion-hide-sm-down">
+				<ion-icon slot="icon-only" name="send-outline"></ion-icon>
+			</ion-button>
+		</ng-container>
+	</app-list-toolbar>
 </ion-header>
 
 <ion-content appScrollbarTheme class="scrollx">
-  <ion-fab *ngIf="pageConfig.isShowFeature" class="feature" vertical="top" horizontal="end" slot="fixed">
-    <div class="ion-padding"></div>
-  </ion-fab>
-  <section class="table" [ngStyle]="{'min-width': 'calc(350px + '+columns.length+'*200px)'}">
-    <header class="bold">
-      <div class="col-name col-sticky cell" (click)="toggleRowAll()">
-        <ion-icon class="min-btn" [name]="!isAllRowOpened? 'add-circle-outline':'remove-circle-outline'"></ion-icon>
-        {{'Name' | translate}}
-        <ion-icon *ngIf="sort.Name" [name]="sort.Name == 'Name'?'arrow-down': 'arrow-up'"></ion-icon>
-        <ion-icon
-          (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch"
-          *ngIf="query.Keyword"
-          name="search"
-          color="primary"
-        ></ion-icon>
-      </div>
-      <div class="col-number cell" [class]="c.Code" *ngFor="let c of columns">{{c.Name}}</div>
-    </header>
-    <form (keydown.enter)="refresh()" (submit)="refresh()" action="#">
-      <header class="filter" *ngIf="pageConfig.isShowSearch">
-        <!-- <div class="col-code cell">
+	<ion-fab *ngIf="pageConfig.isShowFeature" class="feature" vertical="top" horizontal="end" slot="fixed">
+		<div class="ion-padding"></div>
+	</ion-fab>
+	<section class="table" [ngStyle]="{'min-width': 'calc(350px + '+columns.length+'*200px)'}">
+		<header class="bold">
+			<div class="col-name col-sticky cell" (click)="toggleRowAll()">
+				<ion-icon class="min-btn" [name]="!isAllRowOpened? 'add-circle-outline':'remove-circle-outline'"></ion-icon>
+				{{'Name' | translate}}
+				<ion-icon *ngIf="sort.Name" [name]="sort.Name == 'Name'?'arrow-down': 'arrow-up'"></ion-icon>
+				<ion-icon (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.Keyword" name="search" color="primary"></ion-icon>
+			</div>
+			<div class="col-number cell" [class]="c.Code" *ngFor="let c of columns">{{c.Name}}</div>
+		</header>
+		<form (keydown.enter)="refresh()" (submit)="refresh()" action="#">
+			<header class="filter" *ngIf="pageConfig.isShowSearch">
+				<!-- <div class="col-code cell">
 					<input (keydown.enter)="refresh()" placeholder="{{'Name' | translate}}" [ngModelOptions]="{standalone: true}" [(ngModel)]="query.Name" class="c-input" [ngClass]="{active: query.Name}" type="search">
 					<ion-icon class="min-btn" (click)="query.Name=''; refresh()" *ngIf="query.Name" name="close-circle-outline"></ion-icon>
 				</div> -->
-        <div class="col-date cell">
-          <input
-            (keydown.enter)="refresh()"
-            placeholder="Month"
-            [ngModelOptions]="{standalone: true}"
-            [(ngModel)]="query.Month"
-            class="c-input"
-            [ngClass]="{active: query.Month}"
-            type="number"
-          />
-          <ion-icon
-            class="min-btn"
-            (click)="query.Month=''; refresh()"
-            *ngIf="query.Month"
-            name="close-circle-outline"
-          ></ion-icon>
-        </div>
-        <div class="col-date cell">
-          <input
-            (keydown.enter)="refresh()"
-            placeholder="Year"
-            [ngModelOptions]="{standalone: true}"
-            [(ngModel)]="query.Year"
-            class="c-input"
-            [ngClass]="{active: query.Year}"
-            type="number"
-          />
-          <ion-icon
-            class="min-btn"
-            (click)="query.Year=''; refresh()"
-            *ngIf="query.Year"
-            name="close-circle-outline"
-          ></ion-icon>
-        </div>
-        <button mat-raised-button type="submit" style="display: none">Search</button>
-      </header>
-    </form>
-    <!-- <app-page-message [itemsLength]="itemsState.length" [showSpinner]="pageConfig.showSpinner"></app-page-message> -->
-    <ng-container *ngFor="let i of itemsState; let j = index;">
-      <div class="row" *ngIf="i.show" [ngClass]="{odd: j % 2 != 0}" [ngClass]="{selected: i.checked}">
-        <div [ngClass]="i.HasChild? ('bold ') : ('')" class="col-name col-sticky cell">
-          <ng-container *ngFor="let w of i.levels; let k = index;"
-            ><span class="spacing" *ngIf="k>0"></span
-          ></ng-container>
-          <ion-icon
-            (click)="toggleRow(itemsState, i, true);"
-            class="min-btn clickable"
-            [name]="i.HasChild? (!i.showdetail? 'chevron-forward-outline':'chevron-down-outline') : ''"
-          ></ion-icon>
-          <!-- <ion-icon class="min-btn" [color]="i.IsHeadOfDepartment?'primary':''" [name]="i.Icon"></ion-icon> -->
+				<div class="col-date cell">
+					<input
+						(keydown.enter)="refresh()"
+						placeholder="Month"
+						[ngModelOptions]="{standalone: true}"
+						[(ngModel)]="query.Month"
+						class="c-input"
+						[ngClass]="{active: query.Month}"
+						type="number"
+					/>
+					<ion-icon class="min-btn" (click)="query.Month=''; refresh()" *ngIf="query.Month" name="close-circle-outline"></ion-icon>
+				</div>
+				<div class="col-date cell">
+					<input
+						(keydown.enter)="refresh()"
+						placeholder="Year"
+						[ngModelOptions]="{standalone: true}"
+						[(ngModel)]="query.Year"
+						class="c-input"
+						[ngClass]="{active: query.Year}"
+						type="number"
+					/>
+					<ion-icon class="min-btn" (click)="query.Year=''; refresh()" *ngIf="query.Year" name="close-circle-outline"></ion-icon>
+				</div>
+				<button mat-raised-button type="submit" style="display: none">Search</button>
+			</header>
+		</form>
+		<!-- <app-page-message [itemsLength]="itemsState.length" [showSpinner]="pageConfig.showSpinner"></app-page-message> -->
+		<ng-container *ngFor="let i of itemsState; let j = index;">
+			<div class="row" *ngIf="i.show" [ngClass]="{odd: j % 2 != 0}" [ngClass]="{selected: i.checked}">
+				<div [ngClass]="i.HasChild? ('bold ') : ('')" class="col-name col-sticky cell">
+					<ng-container *ngFor="let w of i.levels; let k = index;"><span class="spacing" *ngIf="k>0"></span></ng-container>
+					<ion-icon
+						(click)="toggleRow(itemsState, i, true);"
+						class="min-btn clickable"
+						[name]="i.HasChild? (!i.showdetail? 'chevron-forward-outline':'chevron-down-outline') : ''"
+					></ion-icon>
+					<!-- <ion-icon class="min-btn" [color]="i.IsHeadOfDepartment?'primary':''" [name]="i.Icon"></ion-icon> -->
 
-          <span> {{i.Name}} </span>
-        </div>
-        <div class="col-number cell" [class]="c.Code" *ngFor="let c of columns">
-          <span *ngIf="i._data">{{i._data[c.Code] | number: '1.0-2' }} </span>
-        </div>
-      </div>
-    </ng-container>
-  </section>
+					<span> {{i.Name}} </span>
+				</div>
+				<div class="col-number cell" [class]="c.Code" *ngFor="let c of columns">
+					<span *ngIf="i._data">{{i._data[c.Code] | number: '1.0-2' }} </span>
+				</div>
+			</div>
+		</ng-container>
+	</section>
 </ion-content>

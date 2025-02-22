@@ -8,115 +8,115 @@ import { environment } from 'src/environments/environment';
 import { lib } from 'src/app/services/static/global-functions';
 
 @Component({
-    selector: 'app-branch-payroll-report',
-    templateUrl: 'branch-payroll-report.page.html',
-    styleUrls: ['branch-payroll-report.page.scss'],
-    standalone: false
+	selector: 'app-branch-payroll-report',
+	templateUrl: 'branch-payroll-report.page.html',
+	styleUrls: ['branch-payroll-report.page.scss'],
+	standalone: false,
 })
 export class BranchPayrollReportPage extends PageBase {
-  itemsState = [];
-  isAllRowOpened = true;
-  //itemsState: any = [];
-  caseList = [];
-  columns = [];
+	itemsState = [];
+	isAllRowOpened = true;
+	//itemsState: any = [];
+	caseList = [];
+	columns = [];
 
-  selectedCycle;
-  cycles = [];
+	selectedCycle;
+	cycles = [];
 
-  constructor(
-    public pageProvider: BI_HRM_PayrollPerBranchProvider,
-    public caseProvider: AC_CaseProvider,
-    public modalController: ModalController,
-    public popoverCtrl: PopoverController,
-    public alertCtrl: AlertController,
-    public loadingController: LoadingController,
-    public env: EnvService,
-    public navCtrl: NavController,
-    public location: Location,
-  ) {
-    super();
+	constructor(
+		public pageProvider: BI_HRM_PayrollPerBranchProvider,
+		public caseProvider: AC_CaseProvider,
+		public modalController: ModalController,
+		public popoverCtrl: PopoverController,
+		public alertCtrl: AlertController,
+		public loadingController: LoadingController,
+		public env: EnvService,
+		public navCtrl: NavController,
+		public location: Location
+	) {
+		super();
 
-    for (let i = 0; i < 12; i++) {
-      let d = new Date();
-      let rd = new Date(d.setMonth(d.getMonth() - i));
+		for (let i = 0; i < 12; i++) {
+			let d = new Date();
+			let rd = new Date(d.setMonth(d.getMonth() - i));
 
-      this.cycles.push({
-        Name: rd.getMonth() + 1 + '-' + rd.getFullYear(),
-        Month: rd.getMonth() + 1,
-        Year: rd.getFullYear(),
-      });
-    }
+			this.cycles.push({
+				Name: rd.getMonth() + 1 + '-' + rd.getFullYear(),
+				Month: rd.getMonth() + 1,
+				Year: rd.getFullYear(),
+			});
+		}
 
-    this.selectedCycle = this.cycles[1];
+		this.selectedCycle = this.cycles[1];
 
-    this.query.Year = this.selectedCycle.Year;
-    this.query.Month = this.selectedCycle.Month;
-  }
+		this.query.Year = this.selectedCycle.Year;
+		this.query.Month = this.selectedCycle.Month;
+	}
 
-  preLoadData(event?: any): void {
-    this.env.getBranch(this.env.selectedBranch, true).then((ls) => {
-      this.itemsState = lib.cloneObject(ls);
-    });
+	preLoadData(event?: any): void {
+		this.env.getBranch(this.env.selectedBranch, true).then((ls) => {
+			this.itemsState = lib.cloneObject(ls);
+		});
 
-    this.caseProvider.read().then((result) => {
-      this.caseList = result['data'];
-      this.columns = [...new Map(this.caseList.map((i) => [i['Code'], { Code: i.Code, Name: i.Name }])).values()];
-      super.preLoadData(event);
-    });
-  }
+		this.caseProvider.read().then((result) => {
+			this.caseList = result['data'];
+			this.columns = [...new Map(this.caseList.map((i) => [i['Code'], { Code: i.Code, Name: i.Name }])).values()];
+			super.preLoadData(event);
+		});
+	}
 
-  loadedData(event?: any, ignoredFromGroup?: boolean): void {
-    this.itemsState.forEach((b) => {
-      b._data = this.items.find((d) => b.Id == d.IDBranch);
-    });
-    super.loadedData(event, ignoredFromGroup);
-  }
+	loadedData(event?: any, ignoredFromGroup?: boolean): void {
+		this.itemsState.forEach((b) => {
+			b._data = this.items.find((d) => b.Id == d.IDBranch);
+		});
+		super.loadedData(event, ignoredFromGroup);
+	}
 
-  changeCycle() {
-    this.query.Year = this.selectedCycle.Year;
-    this.query.Month = this.selectedCycle.Month;
-    super.refresh();
-  }
+	changeCycle() {
+		this.query.Year = this.selectedCycle.Year;
+		this.query.Month = this.selectedCycle.Month;
+		super.refresh();
+	}
 
-  toggleRowAll() {
-    this.isAllRowOpened = !this.isAllRowOpened;
-    this.itemsState.forEach((i) => {
-      i.showdetail = !this.isAllRowOpened;
-      this.toggleRow(this.itemsState, i, true);
-    });
-  }
+	toggleRowAll() {
+		this.isAllRowOpened = !this.isAllRowOpened;
+		this.itemsState.forEach((i) => {
+			i.showdetail = !this.isAllRowOpened;
+			this.toggleRow(this.itemsState, i, true);
+		});
+	}
 
-  syncFromHR() {
-    this.env
-      .showLoading(
-        'Please wait for a few moments',
-        this.pageProvider.commonService
-          .connect('GET', environment.appDomain + 'api/JOBS/SyncHRPayrollPerBranch', {
-            Month: this.selectedCycle.Month,
-            Year: this.selectedCycle.Year,
-          })
-          .toPromise(),
-      )
-      .then((resp) => {
-        this.refresh();
-      })
-      .catch((err) => {});
-  }
+	syncFromHR() {
+		this.env
+			.showLoading(
+				'Please wait for a few moments',
+				this.pageProvider.commonService
+					.connect('GET', environment.appDomain + 'api/JOBS/SyncHRPayrollPerBranch', {
+						Month: this.selectedCycle.Month,
+						Year: this.selectedCycle.Year,
+					})
+					.toPromise()
+			)
+			.then((resp) => {
+				this.refresh();
+			})
+			.catch((err) => {});
+	}
 
-  syncToSAP() {
-    this.env
-      .showLoading(
-        'Please wait for a few moments',
-        this.pageProvider.commonService
-          .connect('GET', environment.appDomain + 'api/JOBS/SyncHRPayrollPerBranchToSAP', {
-            Month: this.selectedCycle.Month,
-            Year: this.selectedCycle.Year,
-          })
-          .toPromise(),
-      )
-      .then((resp) => {
-        this.env.showMessage('Đã đồng bộ xong.');
-      })
-      .catch((err) => {});
-  }
+	syncToSAP() {
+		this.env
+			.showLoading(
+				'Please wait for a few moments',
+				this.pageProvider.commonService
+					.connect('GET', environment.appDomain + 'api/JOBS/SyncHRPayrollPerBranchToSAP', {
+						Month: this.selectedCycle.Month,
+						Year: this.selectedCycle.Year,
+					})
+					.toPromise()
+			)
+			.then((resp) => {
+				this.env.showMessage('Đã đồng bộ xong.');
+			})
+			.catch((err) => {});
+	}
 }
