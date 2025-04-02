@@ -178,12 +178,24 @@ export class DynamicDashboardDetailPage extends PageBase {
 			let config = item.Config ? item.Config : { Layout: {} };
 			config.Layout[this.segmentView.Code] = { x: item.x, y: item.y, cols: item.cols, rows: item.rows };
 			widget.Config = JSON.stringify(config);
-
-			this.saveWidgetConfig(widget).then((resp) => {
-				if (item.Id == 0) {
-					item.Id = resp['Id'];
-				}
-			});
+			if(!this.item.Id){
+				this.saveChange().then((resp) => {
+					this.item.IDDashboard = resp['Id'];
+					this.saveWidgetConfig(widget).then((resp) => {
+						if (item.Id == 0) {
+							item.Id = resp['Id'];
+						}
+					});
+				});
+			}
+			else{
+				this.saveWidgetConfig(widget).then((resp) => {
+					if (item.Id == 0) {
+						item.Id = resp['Id'];
+					}
+				});
+			}
+			
 		}
 	}
 
@@ -244,18 +256,28 @@ export class DynamicDashboardDetailPage extends PageBase {
 	}
 
 	setSegmentView(layout = null) {
-		if (this.items.length == 0) return;
+		// if (this.items.length == 0) return;
 
 		let l = layout;
 		let element = document.getElementById('grid-layout');
 
 		if (l && element) {
 			element.style.width = 'calc(' + l.Value + 'px + 16px)';
-		} else if (!l && element && this.item?.Config?.Layout.length > 0 && !this.options?.draggable?.enabled) {
+		} else if (!l && element && ((this.item?.Config?.Layout.length > 0 && !this.options?.draggable?.enabled) || !this.item?.Id)) {
 			//Get layout from item config layouts by #grid-layout width
 			element.style.width = '100%';
 			let width = element.offsetWidth;
-
+			if(!this.item.Id){
+				this.item.Config={
+					Layout: [
+						{ Code: 'xs', Name: 'Mobile S', Value: 320, Cols: 2, Active: true, RowHeight: 380 },
+						{ Code: 'sm', Name: 'Mobile L', Value: 576, Cols: 4, Active: true, RowHeight: 380 },
+						{ Code: 'md', Name: 'Tablet', Value: 768, Cols: 6, Active: true, RowHeight: 380 },
+						{ Code: 'lg', Name: 'Laptop', Value: 992, Cols: 8, Active: true, RowHeight: 380 },
+						{ Code: 'xl', Name: 'Desktop', Value: 1200, Cols: 12, Active: true, RowHeight: 380 },
+					]
+				}
+			}
 			let layouts = this.item.Config.Layout;
 			if (width < 576) {
 				l = layouts.find((x) => x.Code == 'xs');
@@ -435,6 +457,6 @@ export class DynamicDashboardDetailPage extends PageBase {
 	}
 
 	async saveChange(publishEventCode?: any) {
-		this.saveChange2(publishEventCode);
+		return this.saveChange2(publishEventCode);
 	}
 }
