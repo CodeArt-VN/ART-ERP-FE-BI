@@ -9,7 +9,7 @@ import { ReportService } from 'src/app/services/report.service';
 import { ActivatedRoute } from '@angular/router';
 import { IonSearchbar } from '@ionic/angular';
 import { DisplayGrid, GridType, GridsterItem } from 'angular-gridster2';
-import { BI_DashboardDetailProvider, BI_DashboardProvider } from 'src/app/services/static/services.service';
+import { BI_DashboardDetailProvider, BI_DashboardProvider, SYS_FormProvider } from 'src/app/services/static/services.service';
 
 @Component({
 	selector: 'app-dynamic-dashboard-detail',
@@ -24,11 +24,12 @@ export class DynamicDashboardDetailPage extends PageBase {
 	options: any;
 	items: Array<GridsterItem>;
 	isAddReportModalOpen = false;
-
+	groupList
 	reportSearchKeyword = '';
 
 	constructor(
 		public pageProvider: BI_DashboardProvider,
+		public formProvider: SYS_FormProvider,
 		public dashboardDetailProvider: BI_DashboardDetailProvider,
 		public rpt: ReportService,
 		public modalController: ModalController,
@@ -49,7 +50,7 @@ export class DynamicDashboardDetailPage extends PageBase {
 
 		this.formGroup = formBuilder.group({
 			Id: new FormControl({ value: '', disabled: true }),
-			Code: [''],
+			Code: ['',Validators.required],
 			Name: ['', Validators.required],
 			Remark: [''],
 			Sort: [''],
@@ -60,7 +61,7 @@ export class DynamicDashboardDetailPage extends PageBase {
 			ModifiedBy: new FormControl({ value: '', disabled: true }),
 			ModifiedDate: new FormControl({ value: '', disabled: true }),
 
-			Type: new FormControl({ value: '', disabled: false }),
+			Type: ['',Validators.required],
 			Icon: new FormControl({ value: '', disabled: false }),
 			Color: new FormControl({ value: '', disabled: false }),
 
@@ -79,13 +80,15 @@ export class DynamicDashboardDetailPage extends PageBase {
 		}
 
 		//Check pageProvider is ready
-		this.rpt
-			.readReports()
-			.then(() => {
+		Promise.all([this.rpt
+			.readReports(),this.formProvider
+			.read({ IDParent: 2, Type: 11 })]).then((res) => {
+				this.groupList = res[1]['data'];
+				this.groupList.forEach((i: any) => {
+					i.Id = '' + i.Id;
+				});
 				super.preLoadData(event);
-			})
-			.catch((err) => {
-				console.log(err);
+			}).catch((err) => {
 				super.loadedData();
 			});
 	}
@@ -93,23 +96,19 @@ export class DynamicDashboardDetailPage extends PageBase {
 	loadedData(event?: any, ignoredFromGroup?: boolean): void {
 		this.segmentView = null;
 		this.items = [];
+		//Grid size config
+		if (!this.item.Config) {
+			this.item.Config = {
+				Layout: [
+					{ Code: 'xs', Name: 'Mobile S', Value: 320, Cols: 2, Active: true, RowHeight: 380 },
+					{ Code: 'sm', Name: 'Mobile L', Value: 576, Cols: 4, Active: true, RowHeight: 380 },
+					{ Code: 'md', Name: 'Tablet', Value: 768, Cols: 6, Active: true, RowHeight: 380 },
+					{ Code: 'lg', Name: 'Laptop', Value: 992, Cols: 8, Active: true, RowHeight: 380 },
+					{ Code: 'xl', Name: 'Desktop', Value: 1200, Cols: 12, Active: true, RowHeight: 380 },
+				],
+			};
+		} else this.item.Config = JSON.parse(this.item.Config);
 		if (this.item?.Id) {
-			//Grid size config
-
-			if (!this.item.Config) {
-				this.item.Config = {
-					Layout: [
-						{ Code: 'xs', Name: 'Mobile S', Value: 320, Cols: 2, Active: true, RowHeight: 380 },
-						{ Code: 'sm', Name: 'Mobile L', Value: 576, Cols: 4, Active: true, RowHeight: 380 },
-						{ Code: 'md', Name: 'Tablet', Value: 768, Cols: 6, Active: true, RowHeight: 380 },
-						{ Code: 'lg', Name: 'Laptop', Value: 992, Cols: 8, Active: true, RowHeight: 380 },
-						{ Code: 'xl', Name: 'Desktop', Value: 1200, Cols: 12, Active: true, RowHeight: 380 },
-					],
-				};
-			} else {
-				this.item.Config = JSON.parse(this.item.Config);
-			}
-
 			this.dashboardDetailProvider
 				.read({ IdDashboard: this.id })
 				.then((resp: any) => {
@@ -178,12 +177,22 @@ export class DynamicDashboardDetailPage extends PageBase {
 			let config = item.Config ? item.Config : { Layout: {} };
 			config.Layout[this.segmentView.Code] = { x: item.x, y: item.y, cols: item.cols, rows: item.rows };
 			widget.Config = JSON.stringify(config);
-
-			this.saveWidgetConfig(widget).then((resp) => {
-				if (item.Id == 0) {
-					item.Id = resp['Id'];
-				}
-			});
+			if (!this.item.Id) {
+				this.saveChange().then((resp) => {
+					this.item.IDDashboard = resp['Id'];
+					this.saveWidgetConfig(widget).then((resp) => {
+						if (item.Id == 0) {
+							item.Id = resp['Id'];
+						}
+					});
+				});
+			} else {
+				this.saveWidgetConfig(widget).then((resp) => {
+					if (item.Id == 0) {
+						item.Id = resp['Id'];
+					}
+				});
+			}
 		}
 	}
 
@@ -244,14 +253,14 @@ export class DynamicDashboardDetailPage extends PageBase {
 	}
 
 	setSegmentView(layout = null) {
-		if (this.items.length == 0) return;
+		// if (this.items.length == 0) return;
 
 		let l = layout;
 		let element = document.getElementById('grid-layout');
 
 		if (l && element) {
 			element.style.width = 'calc(' + l.Value + 'px + 16px)';
-		} else if (!l && element && this.item?.Config?.Layout.length > 0 && !this.options?.draggable?.enabled) {
+		} else if (!l && element && ((this.item?.Config?.Layout.length > 0 && !this.options?.draggable?.enabled) || !this.item?.Id)) {
 			//Get layout from item config layouts by #grid-layout width
 			element.style.width = '100%';
 			let width = element.offsetWidth;
@@ -435,6 +444,6 @@ export class DynamicDashboardDetailPage extends PageBase {
 	}
 
 	async saveChange(publishEventCode?: any) {
-		this.saveChange2(publishEventCode);
+		return this.saveChange2(publishEventCode);
 	}
 }
