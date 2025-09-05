@@ -2,9 +2,9 @@ import { Component, ViewChild } from '@angular/core';
 import { ActionSheetController, AlertController, LoadingController, PopoverController, NavController, Platform } from '@ionic/angular';
 import { EnvService } from 'src/app/services/core/env.service';
 import { PageBase } from 'src/app/page-base';
-import { ReportService } from 'src/app/services/report.service';
+import { ReportService } from 'src/app/services/custom/report.service';
 import { lib } from 'src/app/services/static/global-functions';
-import { CustomService } from 'src/app/services/custom.service';
+import { CustomService } from 'src/app/services/custom/custom.service';
 import { ApiSetting } from 'src/app/services/static/api-setting';
 import { CommonService } from 'src/app/services/core/common.service';
 

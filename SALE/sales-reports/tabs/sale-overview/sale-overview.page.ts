@@ -2,8 +2,8 @@ import { Component } from '@angular/core';
 import { ActionSheetController, NavController, Platform } from '@ionic/angular';
 import { PageBase } from 'src/app/page-base';
 import { EnvService } from 'src/app/services/core/env.service';
-import { CustomService } from 'src/app/services/custom.service';
-import { ReportService } from 'src/app/services/report.service';
+import { CustomService } from 'src/app/services/custom/custom.service';
+import { ReportService } from 'src/app/services/custom/report.service';
 
 @Component({
 	selector: 'app-sale-overview',

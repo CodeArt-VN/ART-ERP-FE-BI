@@ -3,8 +3,8 @@ import { ActionSheetController, AlertController, LoadingController, NavControlle
 import { TranslateService } from '@ngx-translate/core';
 import { PageBase } from 'src/app/page-base';
 import { EnvService } from 'src/app/services/core/env.service';
-import { CustomService } from 'src/app/services/custom.service';
-import { ReportService } from 'src/app/services/report.service';
+import { CustomService } from 'src/app/services/custom/custom.service';
+import { ReportService } from 'src/app/services/custom/report.service';
 import { ApiSetting } from 'src/app/services/static/api-setting';
 import { lib } from 'src/app/services/static/global-functions';
 import { BRA_BranchProvider } from 'src/app/services/static/services.service';

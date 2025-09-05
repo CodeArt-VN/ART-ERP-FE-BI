@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { PageBase } from 'src/app/page-base';
 import { EnvService } from 'src/app/services/core/env.service';
-import { ReportService } from 'src/app/services/report.service';
+import { ReportService } from 'src/app/services/custom/report.service';
 import { CRM_ContactProvider, HRM_StaffProvider, SALE_OrderProvider } from 'src/app/services/static/services.service';
 import { NgSelectConfig } from '@ng-select/ng-select';
 import { concat, of, Subject } from 'rxjs';

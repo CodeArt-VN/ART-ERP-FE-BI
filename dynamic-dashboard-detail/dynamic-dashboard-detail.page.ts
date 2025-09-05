@@ -1,10 +1,10 @@
 import { ChangeDetectorRef, Component, Type, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { AlertController, LoadingController, ModalController, NavController, PopoverController } from '@ionic/angular';
-import { BIReport } from 'src/app/models/options-interface';
+import { BIReport } from 'src/app/interfaces/options-interface';
 import { PageBase } from 'src/app/page-base';
 import { EnvService } from 'src/app/services/core/env.service';
-import { ReportService } from 'src/app/services/report.service';
+import { ReportService } from 'src/app/services/custom/report.service';
 
 import { ActivatedRoute } from '@angular/router';
 import { IonSearchbar } from '@ionic/angular';
