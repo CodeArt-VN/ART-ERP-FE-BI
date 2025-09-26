@@ -73,9 +73,7 @@ export class DynamicDashboardPage extends PageBase {
 	}
 
 	onGroupChange(g) {
-		// this.pageConfig.isMainPageActive = false;
 		this.pageConfig.isSubActive = true;
-		// this.pageConfig.isShowFeature = false;
 		this.groupControl.selectedGroup = g;
 		if (g) {
 			this.query.Type = g.Id;
