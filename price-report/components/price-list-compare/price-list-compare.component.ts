@@ -16,6 +16,7 @@ import { lib } from 'src/app/services/static/global-functions';
 })
 export class PriceListCompareComponent extends PageBase {
 	columns = [];
+	changeshowDifferenceOnly = false;
 	@Input() set showSearch(value) {
 		this.pageConfig.isShowSearch = value;
 	}
@@ -27,6 +28,13 @@ export class PriceListCompareComponent extends PageBase {
 		}
 		this.clearData();
 		this.loadData(null);
+	}
+
+	_showDifferenceOnly: boolean = false;
+	@Input() set showDifferenceOnly(value) {
+		this.changeshowDifferenceOnly = true;
+		this._showDifferenceOnly = value;
+		this.loadedData(null);
 	}
 
 	constructor(
@@ -91,11 +99,13 @@ export class PriceListCompareComponent extends PageBase {
 
 	loadedData(event) {
 		if (this.items.length) {
-			this.columns = Object.getOwnPropertyNames(this.items[0]).splice(4);
+			if (!this.changeshowDifferenceOnly) this.columns = Object.getOwnPropertyNames(this.items[0]).splice(4);
 
 			let compareCol = this.query.CompareName;
 			this.items.forEach((i) => {
+				let arrPriceCols: number[] = [];
 				this.columns.forEach((c) => {
+					if (c !== 'UoM') arrPriceCols.push(i[c]);
 					i[c + 'Text'] = lib.formatMoney(i[c], 2);
 
 					if (compareCol && compareCol != c && i[c] != null && i[compareCol] && i[c] != i[compareCol]) {
@@ -104,6 +114,12 @@ export class PriceListCompareComponent extends PageBase {
 						i[c + 'ComparePercent'] = Math.round((i[c + 'Compare'] / i[compareCol]) * 1000) / 10;
 					}
 				});
+				if (this._showDifferenceOnly) {
+					const allEqual = arrPriceCols.length > 0 && arrPriceCols.every((v) => v === arrPriceCols[0]);
+					i._hidden = allEqual;
+				}else{
+					i._hidden = false;
+				}
 			});
 
 			//this.columns = Object.getOwnPropertyNames(this.items[0]).splice(4);
@@ -121,5 +137,6 @@ export class PriceListCompareComponent extends PageBase {
 		// }
 
 		super.loadedData(event);
+		this.changeshowDifferenceOnly = false;
 	}
 }
