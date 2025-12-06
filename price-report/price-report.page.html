@@ -14,12 +14,7 @@
 		(archiveItems)="archiveItems()"
 		(deleteItems)="delete()"
 		(changeBranch)="changeBranch($event)"
-	>
-		<ion-button>
-			<ion-label slot="end">{{ 'Show difference only' | translate }}</ion-label>
-			<ion-toggle size="small" slot="end" [checked]="showDifferenceOnly" (ionChange)="showDifferenceOnlyChange()"></ion-toggle>
-		</ion-button>
-	</app-list-toolbar>
+	></app-list-toolbar>
 </ion-header>
 
 <ion-content appScrollbarTheme class="left scrollx" [ngClass]="{withFeature: pageConfig.isShowFeature}" forceOverscroll="false">
@@ -44,25 +39,6 @@
 
 			<div *ngIf="segmentView == 'price-list-compare' ">
 				<ion-list-header lines="full">
-					<ion-label color="dark">{{'Filter item' | translate}}</ion-label>
-				</ion-list-header>
-				<ion-list>
-					<div class="ion-padding">
-						<app-form-control
-							[field]="{id:'IDBussinessPartner', type : 'ng-select-bp', label: 'Bussiness partner', form : formGroup,dataSource:_vendorDataSource,bindLabel:'Name',bindValue:'Id' ,multiple:true,clearable:true }"
-							(change)="vendorSelectedChange($event)"
-						></app-form-control>
-						<app-form-control
-							[field]="{id:'IDItemGroup', type : 'ng-select-async', label: 'Item group', form : formGroup,dataSource:_itemGroupDataSource,bindLabel:'Name',bindValue:'Id',multiple:true ,clearable:true }"
-							(change)="itemGroupSelectedChange($event)"
-						></app-form-control>
-						<app-form-control
-							[field]="{id:'IDItem', type : 'ng-select-item', label: 'Item', form : formGroup,dataSource:_itemDataSource,bindLabel:'Name',bindValue:'Id',multiple:true ,clearable:true }"
-							(change)="itemSelectedChange($event)"
-						></app-form-control>
-					</div>
-				</ion-list>
-				<ion-list-header lines="full">
 					<ion-label color="dark">{{'Select price list' | translate}}</ion-label>
 					<ion-button size="small" (click)="selectAllPriceList()">
 						{{'All' | translate}}
@@ -71,7 +47,7 @@
 				</ion-list-header>
 				<ion-list>
 					<ion-item lines="full" *ngFor="let i of items">
-						<ion-checkbox slot="start" [(ngModel)]="i.isChecked" (ionChange)="priceListSelectedChange(i)"></ion-checkbox>
+						<ion-checkbox slot="start" [(ngModel)]="i.isChecked" (ionChange)="priceListSelectedChange()"></ion-checkbox>
 						<ion-label class="ion-text-wrap">
 							<ion-text>
 								<h3>{{i.Name}}</h3>
@@ -205,12 +181,7 @@
 	</ion-fab>
 
 	<div *ngIf="item && setQuery" style="min-width: 300px; height: calc(100vh - 65px)">
-		<app-price-list-compare
-			[showSearch]="pageConfig.isShowSearch"
-			[setQuery]="setQuery"
-			[showDifferenceOnly]="showDifferenceOnly"
-			*ngIf="segmentView=='price-list-compare'"
-		></app-price-list-compare>
+		<app-price-list-compare [showSearch]="pageConfig.isShowSearch" [setQuery]="setQuery" *ngIf="segmentView=='price-list-compare'"></app-price-list-compare>
 		<app-price-list-version-compare
 			[showSearch]="pageConfig.isShowSearch"
 			[setQuery]="setQuery"

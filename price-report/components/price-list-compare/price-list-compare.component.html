@@ -26,15 +26,14 @@
 	</form>
 
 	<app-page-message [itemsLength]="items.length" [showSpinner]="pageConfig.showSpinner"></app-page-message>
-	<div *ngFor="let i of items; let j = index" class="row" [hidden]="i._hidden"  [ngClass]="{ odd: j % 2 != 0 }" [ngClass]="{ selected: i.checked }">
+	<div *ngFor="let i of items; let j = index" class="row" [ngClass]="{ odd: j % 2 != 0 }" [ngClass]="{ selected: i.checked }">
 		<div class="col-checkbox cell">
 			<input (click)="changeSelection(i, $event)" class="c-checkbox" [(ngModel)]="i.checked" type="checkbox" />
 		</div>
 
 		<div class="col-name cell" [ngClass]="{ disabled: i.IsDisabled }">
-
 			<span [title]="i.ItemName">
-				<a (click)="nav('item/'+i.ItemId)" class="clickable">
+				<a [routerLink]="'/item/' + i.ItemId" class="clickable">
 					<ion-icon color="warning" *ngIf="i.IsDisabled" name="archive"></ion-icon>
 					<span *ngIf="!i.IsDisabled">#</span>{{ i.ItemId }}&nbsp;</a
 				>
