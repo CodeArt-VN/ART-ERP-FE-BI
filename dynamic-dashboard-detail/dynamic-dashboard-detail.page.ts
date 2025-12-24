@@ -24,7 +24,7 @@ export class DynamicDashboardDetailPage extends PageBase {
 	options: any;
 	items: Array<GridsterItem>;
 	isAddReportModalOpen = false;
-	groupList
+	groupList;
 	reportSearchKeyword = '';
 
 	constructor(
@@ -50,7 +50,7 @@ export class DynamicDashboardDetailPage extends PageBase {
 
 		this.formGroup = formBuilder.group({
 			Id: new FormControl({ value: '', disabled: true }),
-			Code: ['',Validators.required],
+			Code: ['', Validators.required],
 			Name: ['', Validators.required],
 			Remark: [''],
 			Sort: [''],
@@ -61,7 +61,7 @@ export class DynamicDashboardDetailPage extends PageBase {
 			ModifiedBy: new FormControl({ value: '', disabled: true }),
 			ModifiedDate: new FormControl({ value: '', disabled: true }),
 
-			Type: ['',Validators.required],
+			Type: ['', Validators.required],
 			Icon: new FormControl({ value: '', disabled: false }),
 			Color: new FormControl({ value: '', disabled: false }),
 
@@ -80,15 +80,15 @@ export class DynamicDashboardDetailPage extends PageBase {
 		}
 
 		//Check pageProvider is ready
-		Promise.all([this.rpt
-			.readReports(),this.formProvider
-			.read({ IDParent: 2, Type: 11 })]).then((res) => {
+		Promise.all([this.rpt.readReports(), this.formProvider.read({ IDParent: 2, Type: 11 })])
+			.then((res) => {
 				this.groupList = res[1]['data'];
 				this.groupList.forEach((i: any) => {
 					i.Id = '' + i.Id;
 				});
 				super.preLoadData(event);
-			}).catch((err) => {
+			})
+			.catch((err) => {
 				super.loadedData();
 			});
 	}
@@ -148,7 +148,9 @@ export class DynamicDashboardDetailPage extends PageBase {
 		super.ionViewDidEnter();
 		//Resize grid when parent dom resize
 		var chartDom = document.getElementById('dashboard');
-		this.observer = new ResizeObserver(() => this.setSegmentView());
+		this.observer = new ResizeObserver(() => {
+			if (this.options && this.options.api) this.setSegmentView();
+		});
 		this.observer.observe(chartDom);
 	}
 
