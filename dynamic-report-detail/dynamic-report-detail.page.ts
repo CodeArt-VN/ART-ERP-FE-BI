@@ -46,10 +46,15 @@ export class DynamicReportDetailPage extends PageBase {
 
 		this.route.paramMap.subscribe((param) => {
 			let id = param.get('id') != 'null' ? parseInt(param.get('id')) : null;
-			let code = param.get('code') != 'null' ? parseInt(param.get('code')) : null;
+			let code = param.get('code') != 'null' ? param.get('code') : null;
 
-			if (id != this.id || code != this.code) {
+			if (id && id != this.id ) {
 				this.id = id;
+				this.code = null;
+				this.refresh();
+			}
+			else if (code && code != this.code) {
+				this.id = null;
 				this.code = code;
 				this.refresh();
 			}

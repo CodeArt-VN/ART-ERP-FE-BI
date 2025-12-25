@@ -57,7 +57,7 @@
   </ion-refresher> -->
 
 	<app-page-title
-		*ngIf="item"
+		*ngIf="item?.Id"
 		class="ion-padding safe-max-width"
 		[icon]="formGroup.get('Icon').value"
 		[color]="formGroup.get('Color').value"

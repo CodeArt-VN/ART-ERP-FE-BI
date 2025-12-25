@@ -44,6 +44,16 @@ export class DynamicDashboardDetailPage extends PageBase {
 	) {
 		super();
 		this.code = this.route.snapshot.paramMap.get('code');
+
+		this.route.paramMap.subscribe((param) => {
+			let code = param.get('code') != 'null' ? param.get('code') : null;
+
+			if (code && code != this.code) {
+				this.code = code;
+				this.refresh();
+			}
+		});
+
 		this.pageConfig.isShowFeature = false;
 		this.pageConfig.ShowFeature = true;
 		this.pageConfig.isDetailPage = true;
