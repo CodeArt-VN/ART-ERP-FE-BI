@@ -306,21 +306,8 @@ export class DynamicReportDetailPage extends PageBase {
 		if (this.items && this.items.length > 0) {
 			// Create CSV content with BOM
 			let csvContent = '\uFEFF'; // Byte Order Mark (BOM) for UTF-8
-
-			let compareByHeader = this.item.DataConfig.CompareBy?.map((compare) => compare.Property);
-			let intervalByHeader = this.item.DataConfig?.Interval?.Title || this.item.DataConfig?.Interval?.Property;
-			let measureByHeader = this.item.DataConfig.MeasureBy?.map((measure) => (measure.Title ? measure.Title : measure.Property));
-
-			compareByHeader = compareByHeader?.filter(
-				(c) =>
-					((!this.treeConfig.isTreeList || c != this.treeConfig.treeColumn) && this.treeConfig.excludes.indexOf(c) == -1) ||
-					(this.treeConfig.isTreeList && c == this.treeConfig.treeColumn)
-			);
-
-			const headerKeys = [...compareByHeader, intervalByHeader, ...measureByHeader];
-
-			const headerRow = headerKeys.join(',');
-			csvContent += headerRow + '\r\n';
+			const headerKeys = Object.keys(this.items[0]);
+			csvContent += headerKeys.join(',') + '\r\n';
 			// Add data rows
 			this.items.forEach((data) => {
 				const rowValues = headerKeys.map((key) => {
