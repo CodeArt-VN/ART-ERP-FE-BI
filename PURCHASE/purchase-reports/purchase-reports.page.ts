@@ -72,7 +72,7 @@ export class PurchaseReportsPage extends PageBase {
 				distinctUntilChanged(),
 				tap(() => (this.buyerListLoading = true)),
 				switchMap((term) =>
-					this.staffProvider.search({ Take: 20, Skip: 0, Term: term }).pipe(
+					this.staffProvider.search({ Take: 20, Skip: 0, Keyword: term }).pipe(
 						catchError(() => of([])), // empty list on error
 						tap(() => (this.buyerListLoading = false))
 					)
@@ -98,7 +98,7 @@ export class PurchaseReportsPage extends PageBase {
 						.search({
 							Take: 20,
 							Skip: 0,
-							Term: term,
+							Keyword: term,
 							IsVendor: true,
 							SkipAddress: true,
 						})
@@ -212,7 +212,7 @@ export class PurchaseReportsPage extends PageBase {
 								SortBy: ['Id_desc'],
 								Take: 20,
 								Skip: 0,
-								Term: term,
+								Keyword: term,
 							})
 							.pipe(
 								catchError(() => of([])), // empty list on error
@@ -243,7 +243,7 @@ export class PurchaseReportsPage extends PageBase {
 								SortBy: ['Id_desc'],
 								Take: 20,
 								Skip: 0,
-								Term: term,
+								Keyword: term,
 								IsVendor: true,
 								SkipAddress: true,
 							})
