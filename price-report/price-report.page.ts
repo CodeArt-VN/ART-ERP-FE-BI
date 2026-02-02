@@ -52,7 +52,7 @@ export class PriceReportPage extends PageBase {
 			SortBy: ['Id_desc'],
 			Take: 20,
 			Skip: 0,
-			Term: term,
+			Keyword: term,
 		});
 	});
 
@@ -61,7 +61,7 @@ export class PriceReportPage extends PageBase {
 			SortBy: ['Id_desc'],
 			Take: 20,
 			Skip: 0,
-			Term: term,
+			Keyword: term,
 		});
 	});
 
@@ -70,7 +70,7 @@ export class PriceReportPage extends PageBase {
 			SortBy: ['Id_desc'],
 			Take: 20,
 			Skip: 0,
-			Term: term,
+			Keyword: term,
 		});
 	});
 
