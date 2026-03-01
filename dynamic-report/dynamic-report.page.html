@@ -69,7 +69,7 @@
 			(sort)="onSort($event)"
 		>
 			<datatable-column [checkbox]="true" name=""></datatable-column>
-			<datatable-column class="col-id" name="#" property="Id"></datatable-column>
+			<datatable-column class="col-id" name="#" property="Id" [navLink]="pageConfig.pageName"></datatable-column>
 			<datatable-column class="col-icon large" name="" property="Icon">
 				<ng-template let-i="row" datatable-cell-template>
 					<ion-icon [name]="i.Icon || 'bars'" [color]="i.Color || 'primary'" [routerLink]="['/'+pageConfig.pageName+'/'+i.Id]"></ion-icon>
