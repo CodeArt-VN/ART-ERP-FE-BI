@@ -9,6 +9,7 @@ import { ReportService } from 'src/app/services/custom/report.service';
 import { ActivatedRoute } from '@angular/router';
 import { IonSearchbar } from '@ionic/angular';
 import { DisplayGrid, GridType, GridsterItem } from 'angular-gridster2';
+import { dog } from 'src/environments/environment';
 import { BI_DashboardDetailProvider, BI_DashboardProvider, SYS_FormProvider } from 'src/app/services/static/services.service';
 
 @Component({
@@ -43,20 +44,26 @@ export class DynamicDashboardDetailPage extends PageBase {
 		public loadingController: LoadingController
 	) {
 		super();
+		this.pageConfig.isShowFeature = false;
+		this.pageConfig.ShowFeature = true;
+		this.pageConfig.isDetailPage = true;
+		this.id = this.route.snapshot.paramMap.get('id');
 		this.code = this.route.snapshot.paramMap.get('code');
 
 		this.route.paramMap.subscribe((param) => {
+			let id = param.get('id') != 'null' ? param.get('id') : null;
 			let code = param.get('code') != 'null' ? param.get('code') : null;
 
-			if (code && code != this.code) {
+			if (id && id != this.id) {
+				this.id = id;
+				this.code = null;
+				this.refresh();
+			} else if (code && code != this.code) {
+				this.id = null;
 				this.code = code;
 				this.refresh();
 			}
 		});
-
-		this.pageConfig.isShowFeature = false;
-		this.pageConfig.ShowFeature = true;
-		this.pageConfig.isDetailPage = true;
 
 		this.formGroup = formBuilder.group({
 			Id: new FormControl({ value: '', disabled: true }),
@@ -83,7 +90,8 @@ export class DynamicDashboardDetailPage extends PageBase {
 	}
 
 	preLoadData(event?: any): void {
-		if (!this.id) this.id = 1;
+		this.getPagePermission('dynamic-dashboard');
+
 		if (this.pageConfig.canEdit) {
 			this.pageConfig.canEditScript = true;
 			this.pageConfig.canChangeReportConfig = true;
@@ -103,9 +111,47 @@ export class DynamicDashboardDetailPage extends PageBase {
 			});
 	}
 
+	loadData(event?: any): void {
+		if (this.id) {
+			this.pageProvider
+				.getAnItem(this.id, null)
+				.then((ite) => {
+					this.item = ite;
+					this.loadedData(event);
+				})
+				.catch((err) => {
+					dog && console.log(err);
+					if (err && typeof err === 'object' && 'status' in err && err.status == 404) {
+						// not found
+					} else {
+						this.item = null;
+						this.loadedData(event);
+					}
+				});
+		} else if (this.code) {
+			this.pageProvider
+				.read({ Code: this.code }, true)
+				.then((resp: any) => {
+					this.item = resp?.data?.[0] || null;
+					if (this.item) this.id = this.item.Id;
+					this.loadedData(event);
+				})
+				.catch((err) => {
+					dog && console.log(err);
+					this.item = null;
+					this.loadedData(event);
+				});
+		} else {
+			this.loadedData(event);
+		}
+	}
 	loadedData(event?: any, ignoredFromGroup?: boolean): void {
 		this.segmentView = null;
 		this.items = [];
+		if (!this.item) {
+			super.loadedData(event, ignoredFromGroup);
+			return;
+		}
 		//Grid size config
 		if (!this.item.Config) {
 			this.item.Config = {
