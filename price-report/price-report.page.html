@@ -1,4 +1,4 @@
-<ion-header>
+<ion-header [translucent]="true">
 	<app-list-toolbar
 		pageTitle="{{'Price reports' | translate}}"
 		[pageConfig]="pageConfig"
@@ -22,7 +22,7 @@
 	</app-list-toolbar>
 </ion-header>
 
-<ion-content appScrollbarTheme class="left scrollx" [ngClass]="{withFeature: pageConfig.isShowFeature}" forceOverscroll="false">
+<ion-content [fullscreen]="true" appScrollbarTheme class="left scrollx" [ngClass]="{withFeature: pageConfig.isShowFeature}" forceOverscroll="false">
 	<ion-fab *ngIf="pageConfig.isShowFeature" class="feature no-print" vertical="bottom" horizontal="start" slot="fixed">
 		<div id="order-detail-page" style="position: absolute"></div>
 		<app-page-message [itemsLength]="1" [showSpinner]="pageConfig.showSpinner"></app-page-message>

@@ -92,7 +92,7 @@
 	<div class="ion-padding"></div>
 	<ion-modal #modal [isOpen]="isAddReportModalOpen" (willDismiss)="isAddReportModalOpen = false; " [initialBreakpoint]="0.5" [breakpoints]="[0, 0.25, 0.5, 0.75]">
 		<ng-template>
-			<ion-content appScrollbarTheme>
+			<ion-content appScrollbarTheme [fullscreen]="true">
 				<ion-searchbar #reportSearch placeholder="Search" [debounce]="300" [(ngModel)]="reportSearchKeyword"></ion-searchbar>
 				<ion-list>
 					<ion-item button *ngFor="let r of rpt.items | searchNoAccent:{Name:reportSearchKeyword}" (click)="addItem(r)" deltail="false">

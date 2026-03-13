@@ -1,8 +1,8 @@
-<ion-header>
+<ion-header [translucent]="true">
 	<app-toolbar BackHref="dynamic-report" [page]="this"></app-toolbar>
 </ion-header>
 
-<ion-content appScrollbarTheme class="scrollx" [ngClass]="{withFeature: pageConfig.isShowFeature}">
+<ion-content [fullscreen]="true" appScrollbarTheme class="scrollx" [ngClass]="{withFeature: pageConfig.isShowFeature}">
 	<ion-fab *ngIf="pageConfig.isShowFeature && item" class="feature" vertical="top" horizontal="end" slot="fixed" [ngClass]="{'ion-hide-md-down': !pageConfig.isSubActive}">
 		<ion-accordion-group *ngIf="pageConfig.canEdit" [value]="item.Id? '':'first'">
 			<ion-accordion value="first" style="background: transparent">

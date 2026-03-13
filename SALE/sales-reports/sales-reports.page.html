@@ -1,4 +1,4 @@
-<ion-header>
+<ion-header [translucent]="true">
 	<ion-toolbar>
 		<ion-buttons slot="start" class="ion-hide-sm-down_">
 			<ion-button color="dark" class="ion-hide-sm-down"> {{'Sales reports' | translate}} </ion-button>
@@ -51,7 +51,7 @@
 	</ion-toolbar>
 </ion-header>
 
-<ion-content appScrollbarTheme appPrintFix class="A4" [ngClass]="{withFeature: pageConfig.isShowFeature}" forceOverscroll="false">
+<ion-content [fullscreen]="true" appScrollbarTheme appPrintFix class="A4" [ngClass]="{withFeature: pageConfig.isShowFeature}" forceOverscroll="false">
 	<ion-fab *ngIf="pageConfig.isShowFeature" [ngClass]="{withSearch: pageConfig.isShowSearch}" class="feature no-print" vertical="top" horizontal="end" slot="fixed">
 		<ion-list-header lines="inset">
 			<ion-label color="dark">{{'Sort condition' | translate}}</ion-label>

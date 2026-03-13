@@ -1,4 +1,4 @@
-<ion-header>
+<ion-header [translucent]="true">
 	<app-list-toolbar
 		[ShowRefresh]="false"
 		[ShowSearch]="false"
@@ -47,7 +47,7 @@
 	</app-list-toolbar>
 </ion-header>
 
-<ion-content appScrollbarTheme class="scrollx">
+<ion-content [fullscreen]="true" appScrollbarTheme class="scrollx">
 	<ion-fab *ngIf="pageConfig.isShowFeature" class="feature" vertical="top" horizontal="end" slot="fixed">
 		<div class="ion-padding"></div>
 	</ion-fab>

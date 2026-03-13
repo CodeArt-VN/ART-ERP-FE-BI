@@ -1,4 +1,4 @@
-<ion-header>
+<ion-header [translucent]="true">
 	<ion-toolbar>
 		<ion-buttons slot="start" class="ion-hide-sm-down_">
 			<ion-button color="dark" class="ion-hide-sm-down"> {{'Sale report' | translate}} </ion-button>
@@ -26,7 +26,7 @@
 	</ion-toolbar>
 </ion-header>
 
-<ion-content appScrollbarTheme>
+<ion-content [fullscreen]="true" appScrollbarTheme>
 	<div class="main-view ion-padding">
 		<!-- <div class="row-1" [hidden]="!(items.length && segmentView.Page == 's1')">
 			<div class="col-1">
