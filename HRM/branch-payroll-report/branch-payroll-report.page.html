@@ -1,50 +1,33 @@
 <ion-header [translucent]="true">
-	<app-list-toolbar
-		[ShowRefresh]="false"
-		[ShowSearch]="false"
-		[pageConfig]="pageConfig"
-		[selectedItems]="selectedItems"
-		[query]="query"
-		(add)="add()"
-		(refresh)="refresh()"
-		(export)="export()"
-		(import)="import($event)"
-		(help)="help()"
-		(unselect)="unselect()"
-		(archiveItems)="archiveItems()"
-		(deleteItems)="delete()"
-		(changeBranch)="changeBranch($event)"
-	>
-		<ng-container>
-			<ng-select
-				class="c-input no-check-dirty"
-				appendTo="#ng-select-holder"
-				[clearable]="false"
-				(change)="changeCycle()"
-				[(ngModel)]="selectedCycle"
-				[items]="cycles"
-				bindLabel="Name"
-				bindValue=""
-				placeholder="Chọn kỳ lương..."
-			>
-				<ng-template let-i="item" let-search="searchTerm">
-					<div *ngIf="i">
-						<div>
-							<span *ngFor="let l of i.levels">&nbsp;&nbsp;&nbsp;</span>
-							<span>{{i.Name}}</span>
-						</div>
+	<app-toolbar [page]="this" [ShowRefresh]="false" [ShowSearch]="false">
+		<ng-select
+			class="c-input no-check-dirty"
+			appendTo="#ng-select-holder"
+			[clearable]="false"
+			(change)="changeCycle()"
+			[(ngModel)]="selectedCycle"
+			[items]="cycles"
+			bindLabel="Name"
+			bindValue=""
+			placeholder="Chọn kỳ lương..."
+		>
+			<ng-template let-i="item" let-search="searchTerm">
+				<div *ngIf="i">
+					<div>
+						<span *ngFor="let l of i.levels">&nbsp;&nbsp;&nbsp;</span>
+						<span>{{i.Name}}</span>
 					</div>
-				</ng-template>
-			</ng-select>
+				</div>
+			</ng-template>
+		</ng-select>
 
-			<ion-button (click)="syncFromHR()" title="Đồng bộ từ HR về ERP" class="ion-hide-sm-down">
-				<ion-icon slot="icon-only" name="sync-outline"></ion-icon>
-			</ion-button>
-			<ion-button (click)="syncToSAP()" title="Đồng bộ về SAP" class="ion-hide-sm-down">
-				<ion-icon slot="icon-only" name="send-outline"></ion-icon>
-			</ion-button>
-		</ng-container>
-	</app-list-toolbar>
+		<ion-button (click)="syncFromHR()" title="Đồng bộ từ HR về ERP" class="ion-hide-sm-down">
+			<ion-icon slot="icon-only" name="sync-outline"></ion-icon>
+		</ion-button>
+		<ion-button (click)="syncToSAP()" title="Đồng bộ về SAP" class="ion-hide-sm-down">
+			<ion-icon slot="icon-only" name="send-outline"></ion-icon>
+		</ion-button>
+	</app-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true" appScrollbarTheme class="scrollx">
