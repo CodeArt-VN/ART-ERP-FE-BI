@@ -23,7 +23,7 @@ export class DynamicReportDetailPage extends PageBase {
 	comparitionData: any[] = [];
 	showComparitionData = false;
 
-	groupList: [];
+	groupList: any[] = [];
 
 	constructor(
 		public pageProvider: ReportService,
