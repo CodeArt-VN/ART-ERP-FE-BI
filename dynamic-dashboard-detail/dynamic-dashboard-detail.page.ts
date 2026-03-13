@@ -50,20 +50,22 @@ export class DynamicDashboardDetailPage extends PageBase {
 		this.id = this.route.snapshot.paramMap.get('id');
 		this.code = this.route.snapshot.paramMap.get('code');
 
-		this.route.paramMap.subscribe((param) => {
-			let id = param.get('id') != 'null' ? param.get('id') : null;
-			let code = param.get('code') != 'null' ? param.get('code') : null;
+		this.subscriptions.push(
+			this.route.paramMap.subscribe((param) => {
+				let id = param.get('id') != 'null' ? param.get('id') : null;
+				let code = param.get('code') != 'null' ? param.get('code') : null;
 
-			if (id && id != this.id) {
-				this.id = id;
-				this.code = null;
-				this.refresh();
-			} else if (code && code != this.code) {
-				this.id = null;
-				this.code = code;
-				this.refresh();
-			}
-		});
+				if (id && id != this.id) {
+					this.id = id;
+					this.code = null;
+					this.refresh();
+				} else if (code && code != this.code) {
+					this.id = null;
+					this.code = code;
+					this.refresh();
+				}
+			})
+		);
 
 		this.formGroup = formBuilder.group({
 			Id: new FormControl({ value: '', disabled: true }),
