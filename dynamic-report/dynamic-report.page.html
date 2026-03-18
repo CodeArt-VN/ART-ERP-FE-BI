@@ -6,6 +6,9 @@
 	<ion-refresher [disabled]="!pageConfig.refresher" slot="fixed" (ionRefresh)="refresh($event)">
 		<ion-refresher-content></ion-refresher-content>
 	</ion-refresher>
+	<ion-header collapse="condense">
+		<app-toolbar [page]="this" [NoBorder]="true"></app-toolbar>
+	</ion-header>
 
 	<ion-fab *ngIf="pageConfig.isShowFeature" [ngClass]="{'ion-hide-md-down': pageConfig.isSubActive}" class="feature no-print" vertical="bottom" horizontal="start" slot="fixed">
 		<ion-list>
