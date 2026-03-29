@@ -98,7 +98,7 @@ export class ARInvoiceReportPage extends PageBase {
 				distinctUntilChanged(),
 				tap(() => (this.outletListLoading = true)),
 				switchMap((term) =>
-					this.contactProvider.search({ Take: 20, Skip: 0, Term: term }).pipe(
+					this.contactProvider.search({ Take: 20, Skip: 0, Keyword: term }).pipe(
 						catchError(() => of([])), // empty list on error
 						tap(() => (this.outletListLoading = false))
 					)
