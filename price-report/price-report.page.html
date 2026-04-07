@@ -8,7 +8,7 @@
 </ion-header>
 
 <ion-content [fullscreen]="true" appScrollbarTheme class="left scrollx" [ngClass]="{withFeature: pageConfig.isShowFeature}" forceOverscroll="false">
-	<ion-fab *ngIf="pageConfig.isShowFeature" class="feature no-print" vertical="bottom" horizontal="start" slot="fixed">
+	<ion-fab *ngIf="pageConfig.isShowFeature" class="feature no-print" vertical="bottom" horizontal="start" slot="fixed" (scroll)="onFeaturePanelScroll($event)">
 		<div id="order-detail-page" style="position: absolute"></div>
 		<app-page-message [itemsLength]="1" [showSpinner]="pageConfig.showSpinner"></app-page-message>
 		<div *ngIf="pageConfig.showSpinner==false">
@@ -63,6 +63,10 @@
 							</ion-text>
 						</ion-label>
 					</ion-item>
+					<ion-item lines="none" *ngIf="segmentView == 'price-list-compare' && isLoadingMorePriceLists">
+						<ion-spinner slot="start" name="dots"></ion-spinner>
+						<ion-label>{{ 'Loading...' | translate }}</ion-label>
+					</ion-item>
 					<ion-item lines="full" *ngIf="selectedPriceList.length>1">
 						<div class="c-control">
 							<label class="c-label" for="compareTo">{{'Compared to' | translate}}</label>
@@ -87,6 +91,8 @@
 							</ng-select>
 						</div>
 					</ion-item>
+				
+
 				</ion-list>
 				<div class="ion-padding">
 					<div class="c-control">
