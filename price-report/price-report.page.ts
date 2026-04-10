@@ -20,6 +20,7 @@ export class PriceReportPage extends PageBase {
 	selectedVersionList = [];
 	compareWithVersion = null;
 	setQuery;
+	isLoadingMorePriceLists = false;
 
 	selectedPriceList = [];
 	compareWithPriceList = null;
@@ -101,19 +102,42 @@ export class PriceReportPage extends PageBase {
 	}
 
 	loadedData(event) {
+		const isFeatureInfinite = event === 'feature-infinite';
 		super.loadedData(event);
+		this.isLoadingMorePriceLists = false;
 		this.item = this.items.find((d) => d.Id == this.id);
 		if (!this.item || this.item.disabled) {
 			this.item = this.items.find((d) => true);
 		}
 		this.selectPriceList();
-		this._itemDataSource.selected = this._itemSeleted;
-		this._itemGroupDataSource.selected = this._itemGroupSeleted;
-		this._vendorDataSource.selected = this._venderSeleted;
+		if (!isFeatureInfinite) {
+			this._itemDataSource.selected = this._itemSeleted;
+			this._itemGroupDataSource.selected = this._itemGroupSeleted;
+			this._vendorDataSource.selected = this._venderSeleted;
 
-		this._itemDataSource.initSearch();
-		this._itemGroupDataSource.initSearch();
-		this._vendorDataSource.initSearch();
+			this._itemDataSource.initSearch();
+			this._itemGroupDataSource.initSearch();
+			this._vendorDataSource.initSearch();
+		}
+	}
+
+	onFeaturePanelScroll(event: Event) {
+		if (this.segmentView != 'price-list-compare' || this.pageConfig.showSpinner || this.pageConfig.isEndOfData || this.isLoadingMorePriceLists) {
+			return;
+		}
+
+		const target = event.target as HTMLElement;
+		if (!target) {
+			return;
+		}
+
+		const distanceToBottom = target.scrollHeight - target.scrollTop - target.clientHeight;
+		if (distanceToBottom > 120) {
+			return;
+		}
+
+		this.isLoadingMorePriceLists = true;
+		this.loadData('feature-infinite');
 	}
 
 	loadNode(option = null) {
