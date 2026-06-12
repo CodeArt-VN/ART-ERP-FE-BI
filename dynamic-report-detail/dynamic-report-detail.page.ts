@@ -311,20 +311,24 @@ export class DynamicReportDetailPage extends PageBase {
 
 	onExportData() {
 		if (this.items && this.items.length > 0) {
+			const escapeCsvValue = (value: any): string => {
+				if (value === null || value === undefined) {
+					return '';
+				}
+
+				const stringValue = String(value);
+				return /[",\r\n]/.test(stringValue)
+					? `"${stringValue.replace(/"/g, '""')}"`
+					: stringValue;
+			};
+
 			// Create CSV content with BOM
 			let csvContent = '\uFEFF'; // Byte Order Mark (BOM) for UTF-8
 			const headerKeys = Object.keys(this.items[0]);
-			csvContent += headerKeys.join(',') + '\r\n';
+			csvContent += headerKeys.map(escapeCsvValue).join(',') + '\r\n';
 			// Add data rows
 			this.items.forEach((data) => {
-				const rowValues = headerKeys.map((key) => {
-					const val = data[key];
-					// Escape double quotes by doubling them
-					if (typeof val === 'string' && val.includes('"')) {
-						return '"' + val.replace(/"/g, '""') + '"';
-					}
-					return val;
-				});
+				const rowValues = headerKeys.map((key) => escapeCsvValue(data[key]));
 				// Join values into a CSV row
 				const row = rowValues.join(',');
 				csvContent += row + '\r\n';
