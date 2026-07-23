@@ -506,9 +506,15 @@ export class DynamicReportDetailPage extends PageBase {
 			this.isAllRowOpened = !this.isAllRowOpened;
 			for (let i of this.items) {
 				i.showdetail = !this.isAllRowOpened;
-				this.toggleRow(this.items, i, true);
+				super.toggleRow(this.items, i, true);
 			}
+			this.items = [...this.items];
 			resolve(true);
 		});
+	}
+
+	toggleRow(ls, ite, toogle = false) {
+		super.toggleRow(ls, ite, toogle);
+		this.items = [...this.items];
 	}
 }

@@ -79,6 +79,7 @@
 	<div class="safe-max-width" style="position: relative; z-index: 0" *ngIf="item && !treeConfig.isLoading">
 		<app-data-table
 			style="width: fit-content; min-width: calc(100% - 32px)"
+			[virtualScroll]="true"
 			[rows]="items"
 			[isQueryLocalOnly]="true"
 			[query]="query"
