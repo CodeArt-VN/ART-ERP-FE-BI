@@ -115,7 +115,7 @@ export class BranchPayrollReportPage extends PageBase {
 					.toPromise()
 			)
 			.then((resp) => {
-				this.env.showMessage('Đã đồng bộ xong.');
+				this.env.showMessage('Synchronization completed');
 			})
 			.catch((err) => {});
 	}
