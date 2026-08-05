@@ -130,9 +130,27 @@ export class DynamicReportDetailPage extends PageBase {
 		if (this.id || this.code) {
 			this.item = this.pageProvider.getReport(this.id, this.code);
 			if (this.item) this.pageProvider.saveReportConfig(this.item);
+			this.applyDefaultTableSort();
 		}
 
 		this.loadedData(event);
+	}
+
+	/** Map DataConfig.OrderBy → table SortBy (e.g. DoanhSo_desc) */
+	applyDefaultTableSort() {
+		const orderBy = this.item?.DataConfig?.OrderBy;
+		if (!orderBy?.length) return;
+
+		this.pageConfig.sort = orderBy.map((o) => {
+			const dim = (o.Title || o.Property || '').replace(/^\[|\]$/g, '');
+			const method = (o.Method || '').toLowerCase();
+			return {
+				Dimension: dim,
+				Order: method === 'desc' ? ('DESC' as const) : ('ASC' as const),
+			};
+		}).filter((s) => s.Dimension);
+
+		this.parseSort();
 	}
 
 	loadedData(event?: any, ignoredFromGroup?: boolean): void {
@@ -283,6 +301,20 @@ export class DynamicReportDetailPage extends PageBase {
 			// });
 
 			// console.log(keysValue);
+		}
+
+		const sort = this.pageConfig.sort;
+		if (sort?.length) {
+			data.sort((a, b) => {
+				for (const s of sort) {
+					const cmp = s.Order === 'ASC' ? 1 : -1;
+					const av = a[s.Dimension];
+					const bv = b[s.Dimension];
+					if (av > bv) return cmp;
+					if (av < bv) return -cmp;
+				}
+				return 0;
+			});
 		}
 
 		this.items = [...data];
